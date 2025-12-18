@@ -70,18 +70,21 @@ body {
   color: #cbd5f5;
   text-decoration: none;
 }
-
 .signup {
   display: block;
   text-align: right;
   margin-bottom: 30px;
   color: #cbd5f5;
 }
-
-.signup span {
+.signup a {
   color: #cfff12;
   cursor: pointer;
+  text-decoration: none;
 }
+/* .signup span {
+  color: #cfff12;
+  cursor: pointer;
+} */
 .button-container {
   display: flex;
   justify-content: right;

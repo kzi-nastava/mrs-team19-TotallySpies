@@ -29,7 +29,14 @@ body {
 .login-card h1 {
   font-size: 32px;
 }
-
+.forgot {
+  display: block;
+  text-align: right;
+  color: #cbd5f5;
+  font-size: 14px;
+  margin-right: 25px;
+  text-decoration: none;
+}
 .register-card label {
   display: flex;
   flex-direction: column;
@@ -64,6 +71,10 @@ body {
 .button-container {
   display: flex;
   justify-content: center;
+}
+.browse {
+  text-decoration: none;
+  color: #cfff12;
 }
 .register-card button {
   width: 40%;
