@@ -1,0 +1,77 @@
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+}
+.register-bg {
+  background: #261f32;
+  display: flex;
+  justify-content: center;
+}
+.illustration img {
+  width: 100%;
+  max-width: 550px;
+  margin-bottom: 20%;
+}
+.register-card {
+  background: linear-gradient(to bottom, #261f32, #572fd2);
+  padding-right: 2%;
+  padding-left: 2%;
+  margin-top: 10px;
+  border-radius: 20px;
+  color: #fff;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+}
+.register-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 50px;
+}
+.login-card h1 {
+  font-size: 32px;
+}
+
+.register-card label {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+.register-card input {
+  background: transparent;
+  border: 1.5px solid #572fd2;
+  border-radius: 14px;
+  padding: 14px;
+  color: #fff;
+  font-size: 12px;
+  width: 500px;
+}
+.register-card input:focus {
+  outline: none;
+}
+.add-photo-icon {
+  border: 2px dashed #cfff12;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2%;
+  width: 500px;
+}
+.add-photo-icon img {
+  width: 50px;
+}
+.button-container {
+  display: flex;
+  justify-content: center;
+}
+.register-card button {
+  width: 40%;
+  padding: 14px;
+  font-size: 16px;
+  border: none;
+  border-radius: 16px;
+  background: #cfff12;
+  color: #261f32;
+  cursor: pointer;
+}
