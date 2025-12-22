@@ -5,7 +5,7 @@ body {
 
 .login-bg {
   min-height: 100vh;
-  background: linear-gradient(to bottom, #261f32, #572fd2);
+  background: linear-gradient(to bottom, #261f32, #6e58c6);
   display: flex;
   justify-content: center;
 }
@@ -49,7 +49,7 @@ body {
 
 .login-card input {
   background: transparent;
-  border: 1.5px solid #572fd2;
+  border: 1.5px solid #6e58c6;
   border-radius: 14px;
   padding: 14px;
   color: #fff;
@@ -70,18 +70,21 @@ body {
   color: #cbd5f5;
   text-decoration: none;
 }
-
 .signup {
   display: block;
   text-align: right;
   margin-bottom: 30px;
   color: #cbd5f5;
 }
-
-.signup span {
+.signup a {
+  color: #c8e261;
+  cursor: pointer;
+  text-decoration: none;
+}
+/* .signup span {
   color: #cfff12;
   cursor: pointer;
-}
+} */
 .button-container {
   display: flex;
   justify-content: right;
@@ -92,7 +95,7 @@ body {
   font-size: 16px;
   border: none;
   border-radius: 16px;
-  background: #cfff12;
+  background: #c8e261;
   color: #261f32;
   cursor: pointer;
 }
