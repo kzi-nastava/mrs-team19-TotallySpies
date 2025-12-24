@@ -1,0 +1,40 @@
+.passengers-wrapper {
+  display: flex;
+  gap: 15px;
+  height: 100%;
+  align-items: center;
+  justify-content: flex-end; 
+}
+
+.passenger-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100px;
+  background-color: #C5B6FF40;
+  padding: 1.2rem 1.2rem;
+  border-radius: 0.8rem;
+}
+
+.image-frame {
+  width: 6rem;
+  height: 6rem;
+  border: 3px solid #bfaee3;
+  border-radius: 0.5rem; 
+  overflow: hidden;
+  margin-bottom: 8px;
+  background-color: white;
+}
+
+.image-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.name {
+  color: #bfaee3;
+  font-size: 0.8rem;
+  text-align: center;
+  font-weight: 600;
+}

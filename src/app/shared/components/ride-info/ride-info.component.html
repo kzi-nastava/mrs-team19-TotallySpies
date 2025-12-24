@@ -1,0 +1,38 @@
+<div class="ride-card">
+  <div class="ride-details-section">
+    <div class="route-info">
+      <h3>Ride details</h3>
+      <p class="time-label">{{ ride.date }} {{ ride.startTime }} till {{ ride.endTime }}</p>
+      
+      <div class="route-container">
+        <div class="visual-track">
+          <span class="dot green"></span>
+          <div class="location-line"></div>
+          <img src="/icons/location-icon.png" alt="destination" class="location-icon">
+        </div>
+
+        <div class="addresses">
+          <div class="address-pill">{{ ride.startLocation }}</div>
+          <div class="address-pill">{{ ride.endLocation }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="status-container">
+      <div class="price-tag">{{ ride.price }} din</div>
+      
+      <div class="status-alerts">
+        <div class="alert cancelled" *ngIf="ride.status === 'Cancelled'">
+          <span>Cancelled by {{ ride.cancelledBy === 'Driver' ? 'Driver' : 'Passenger' }}</span>
+        </div>
+
+        <div class="alert panic" *ngIf="ride.panicPressed">
+          <span>Panic button pressed</span>
+        </div>
+        
+        <div class="alert finished" *ngIf="ride.status === 'Finished'">
+          <span>Finished</span>
+          <span class="check-icon">✓</span>
+        </div>
+      </div>
+    </div> </div> </div>
