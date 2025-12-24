@@ -1,0 +1,101 @@
+<div class="profile-page">
+  <div class="profile-card">
+
+    <div class="avatar-wrapper">
+      <img src="https://i.pravatar.cc/300?img=5" alt="Avatar" class="avatar" />
+      <button class="avatar-add">+</button>
+    </div>
+
+    <div class="field">
+      <label>Name</label>
+      <div class="field-row">
+        <input value="Elena" [readonly]="editingField !== 'name'" [class.editing]="editingField === 'name'" />
+
+        <button *ngIf="editingField !== 'name'" class="icon-btn" (click)="editingField = 'name'">
+          <img src="/icons/edit-icon.png" alt="Edit" class="icon-img" />
+        </button>
+
+        <button *ngIf="editingField === 'name'" class="icon-btn" (click)="editingField = null">
+          <img src="/icons/check-icon.png" alt="Edit" class="icon-img" />
+        </button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Surname</label>
+      <div class="field-row">
+        <input value="Vukovic" [readonly]="editingField !== 'surname'" [class.editing]="editingField === 'surname'" />
+
+        <button *ngIf="editingField !== 'surname'" class="icon-btn" (click)="editingField = 'surname'">
+          <img src="/icons/edit-icon.png" alt="Edit" class="icon-img" />
+        </button>
+
+        <button *ngIf="editingField === 'surname'" class="icon-btn" (click)="editingField = null">
+          <img src="/icons/check-icon.png" alt="Edit" class="icon-img" />
+        </button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Email</label>
+      <div class="field-row">
+        <input value="elenavukovic@gmail.com" [readonly]="editingField !== 'email'"
+          [class.editing]="editingField === 'email'" />
+
+        <button *ngIf="editingField !== 'email'" class="icon-btn" (click)="editingField = 'email'">
+          <img src="/icons/edit-icon.png" alt="Edit" class="icon-img" />
+        </button>
+
+        <button *ngIf="editingField === 'email'" class="icon-btn" (click)="editingField = null">
+          <img src="/icons/check-icon.png" alt="Edit" class="icon-img" />
+        </button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Password</label>
+
+      <div class="field-row">
+        <input [type]="showPassword ? 'text' : 'password'" value="password123" readonly />
+
+        <button class="icon-btn" (click)="showPassword = !showPassword">
+          <img src="/icons/eye-icon.png" alt="Edit" class="icon-img" />
+        </button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Phone number</label>
+      <div class="field-row">
+        <input value="+381 123 1234" [readonly]="editingField !== 'phone'" [class.editing]="editingField === 'phone'" />
+
+        <button *ngIf="editingField !== 'phone'" class="icon-btn" (click)="editingField = 'phone'">
+          <img src="/icons/edit-icon.png" alt="Edit" class="icon-img" />
+        </button>
+
+        <button *ngIf="editingField === 'phone'" class="icon-btn" (click)="editingField = null">
+          <img src="/icons/check-icon.png" alt="Edit" class="icon-img" />
+        </button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Address</label>
+      <div class="field-row">
+        <input value="Narodnog fronta 24, Novi Sad" [readonly]="editingField !== 'address'"
+          [class.editing]="editingField === 'address'" />
+
+        <button *ngIf="editingField !== 'address'" class="icon-btn" (click)="editingField = 'address'">
+          <img src="/icons/edit-icon.png" alt="Edit" class="icon-img" />
+        </button>
+
+        <button *ngIf="editingField === 'address'" class="icon-btn" (click)="editingField = null">
+          <img src="/icons/check-icon.png" alt="Edit" class="icon-img" />
+        </button>
+      </div>
+    </div>
+
+    <button class="change-password-btn">
+      Change password
+    </button>
+  </div>

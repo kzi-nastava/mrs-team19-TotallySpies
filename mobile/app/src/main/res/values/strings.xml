@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">mobile</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="log_in">Log in</string>
+    <string name="login_illustration">Login illustration</string>
+    <string name="email">Email</string>
+    <string name="enter_email">Enter email</string>
+    <string name="password">Password</string>
+    <string name="enter_password">Enter password</string>
+    <string name="forgot_password">Forgot password?</string>
+</resources>
