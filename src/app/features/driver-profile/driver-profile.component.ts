@@ -17,12 +17,10 @@ interface UserProfile {
   templateUrl: './driver-profile.component.html',
   styleUrls: ['./driver-profile.component.css'],
 })
-export class DriverProfileComponent implements OnInit {
-  // Polje koje se trenutno edituje
+export class DriverProfileComponent{
   editingField: string | null = null;
   showPassword: boolean = false;
 
-  // Originalni podaci (referenca za poređenje)
   originalUser: UserProfile = {
     name: 'Elena',
     surname: 'Vukovic',
@@ -30,22 +28,14 @@ export class DriverProfileComponent implements OnInit {
     phone: '+381 123 1234',
     address: 'Narodnog fronta 24, Novi Sad'
   };
-
-  // Trenutni podaci (oni koji se menjaju u inputima)
   currentUser: UserProfile = { ...this.originalUser };
 
-  // Dummy podaci za donje kartice (Driver notes)
   driverNotes = [
     { text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas nec nibh eget magna congue viverra.' },
     { text: 'Vivamus ut lectus in dolor elementum interdum. Sed malesuada ornare molestie.' },
     { text: 'Suspendisse potenti. Aenean urna purus, feugiat at accumsan in, condimentum non massa.' }
   ];
 
-  ngOnInit(): void {
-    // Inicijalizacija ako treba
-  }
-
-  // Funkcija za omogućavanje editovanja
   enableEdit(field: string): void {
     if (this.editingField === field) {
     this.editingField = null;
@@ -54,12 +44,10 @@ export class DriverProfileComponent implements OnInit {
     }
   }
 
-  // Provera da li je specifično polje izmenjeno
   isFieldChanged(field: keyof UserProfile): boolean {
     return this.currentUser[field] !== this.originalUser[field];
   }
 
-  // Provera da li ima BILO KAKVIH izmena (za Save dugme)
   get hasAnyChanges(): boolean {
     return JSON.stringify(this.currentUser) !== JSON.stringify(this.originalUser);
   }
@@ -67,9 +55,8 @@ export class DriverProfileComponent implements OnInit {
   saveChanges(): void {
     if (this.hasAnyChanges) {
       console.log('Saving data...', this.currentUser);
-      // Ovde bi išao poziv servisu
-      this.originalUser = { ...this.currentUser }; // Resetovanje stanja
-      this.editingField = null; // Izlaz iz edit moda
+      this.originalUser = { ...this.currentUser };
+      this.editingField = null;
     }
   }
 }

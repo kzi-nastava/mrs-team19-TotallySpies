@@ -1,7 +1,7 @@
 /* GLOBAL LAYOUT */
 .profile-page {
   display: flex;
-  gap: 30px; /* Razmak između levog i desnog panela */
+  gap: 30px;
   min-height: 100vh;
   background-color: #261F32;
   color: white;
@@ -10,7 +10,6 @@
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* --- LEFT PANEL --- */
 .profile-card {
   width: 30%;
   background-color: rgba(110, 88, 198, 0.3); 
@@ -52,7 +51,6 @@
   font-size: 20px;
 }
 
-/* FIELDS */
 .field {
   margin-bottom: 5px;
 }
@@ -83,7 +81,6 @@ input.editing {
   border-bottom: 1px solid #7c6ae6;
 }
 
-/* Unsaved Changes Text */
 .unsaved-msg {
   color: #ef4444; 
   font-size: 12px;
@@ -100,8 +97,6 @@ input.editing {
 
 .icon-img { width: 18px; height: 18px;}
 
-
-/* BOTTOM ACTIONS */
 .bottom-actions {
   display: flex;
   justify-content: space-between;
@@ -132,7 +127,7 @@ input.editing {
 }
 
 .save-btn.active {
-  background: rgba(239, 68, 68, 0.15); /* Translucent red bg */
+  background: rgba(239, 68, 68, 0.15);
   border: 1px solid #ef4444;
   color: #ef4444;
   cursor: pointer;
@@ -142,7 +137,6 @@ input.editing {
   color: white;
 }
 
-/* --- RIGHT PANEL --- */
 .right-panel {
   flex: 1;
   max-width: 800px;
@@ -158,7 +152,6 @@ input.editing {
   box-shadow: 0 5px 20px rgba(0,0,0,0.2);
 }
 
-/* Timer Card */
 .timer-card {
   background: linear-gradient(to left, #261f32,  rgba(110, 88, 198, 0.3));;
   display: flex;
@@ -192,7 +185,6 @@ input.editing {
   font-weight: bold;
 }
 
-/* Driver Notes Section */
 .notes-section h3 {
   margin: 10px 0 15px 0;
   font-size: 18px;
@@ -201,12 +193,12 @@ input.editing {
 .notes-container {
   display: flex;
   gap: 20px;
-  overflow-x: auto; /* Skroluje horizontalno ako ih ima puno */
-  padding-bottom: 10px; /* prostor za scrollbar */
+  overflow-x: auto;
+  padding-bottom: 10px;
 }
 
 .note-card {
-  background-color:  rgba(110, 88, 198, 0.3); /* Malo drugacija nijansa ljubicaste */
+  background-color:  rgba(110, 88, 198, 0.3);
   padding: 20px;
   border-radius: 12px;
   min-width: 200px;
@@ -217,7 +209,6 @@ input.editing {
   box-shadow: 0 8px 12px rgba(0, 0, 0, 0.3);
 }
 
-/* RESPONSIVE */
 @media (max-width: 900px) {
   .profile-page {
     flex-direction: column;
@@ -227,6 +218,6 @@ input.editing {
     width: 100%;
   }
   .notes-container {
-    flex-direction: column; /* Na mobilnom jedna ispod druge */
+    flex-direction: column;
   }
 }
