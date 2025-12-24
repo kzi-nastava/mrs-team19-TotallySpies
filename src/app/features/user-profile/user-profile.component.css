@@ -1,0 +1,117 @@
+
+.profile-page {
+  display: flex;
+  min-height: 100vh;
+  background-color: #261F32; /* tamna pozadina */
+  color: white;
+  padding: 30px;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.profile-card {
+  width: 30%; /* trećina ekrana */
+  background-color: rgba(110, 88, 198, 0.3);
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* AVATAR */
+.avatar-wrapper {
+  position: relative;
+  align-self: center;
+  margin-bottom: 20px;
+}
+
+.avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.avatar-add {
+  position: absolute; /* apsolutno pozicioniranje unutar roditelja */
+  bottom: 5px;
+  right: 5px;
+  background-color: #6b5ce7;
+  border: none;
+  border-radius: 50%;
+  color: white;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+.change-password-btn {
+  margin-top: 30px;
+  background: #6b5ce7;
+  border: none;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  width: 150px;
+}
+
+.field {
+  margin-bottom: 5px;
+}
+
+label {
+  font-size: 13px;
+  color: #b8b4d8;
+}
+
+.field-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+input {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid transparent;
+  color: white;
+  font-size: 16px;
+  padding: 4px 0;
+  width: 100%;
+  outline: none;
+}
+
+input.editing {
+  border-bottom: 1px solid #7c6ae6;
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
+.icon-img {
+  width: 20px;
+  height: 20px;
+}
+
+/* RESPONSIVNOST (za manje ekrane) */
+@media (max-width: 900px) {
+  .profile-page {
+    flex-direction: column;
+    padding: 20px;
+  }
+  .profile-card {
+    width: 100%;
+  }
+}
