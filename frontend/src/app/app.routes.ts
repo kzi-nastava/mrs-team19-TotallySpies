@@ -5,6 +5,7 @@ import { RegisterComponent } from './core/auth/pages/register/register.component
 import { UserProfileComponent } from './features/user-profile/user-profile.component';
 import { DriverProfileComponent } from './features/driver-profile/driver-profile.component';
 import { AdminProfileComponent } from './features/admin-profile/admin-profile.component';
+import { RideHistoryComponent } from './features/ride-history/ride-history.component';
 
 export const routes: Routes = [
   {
@@ -30,5 +31,14 @@ export const routes: Routes = [
   {
     path: 'admin-profile',
     component: AdminProfileComponent
+  },
+    {
+    path: '',
+    redirectTo: 'home',
+    pathMatch: 'full'
+  },
+  {
+    path: 'ride-history',
+    component: RideHistoryComponent,
   },
 ];
