@@ -1,0 +1,140 @@
+<div class="profile-page">
+
+  <div class="profile-card left-panel">
+
+    <div class="avatar-wrapper">
+      <img src="https://i.pravatar.cc/300?img=5" alt="Avatar" class="avatar" />
+      <button class="avatar-add">+</button>
+    </div>
+
+    <div class="field">
+      <label>Name</label>
+      <div class="field-row">
+        <input [(ngModel)]="currentUser.name" [readonly]="editingField !== 'name'"
+          [class.editing]="editingField === 'name'" />
+        <button class="icon-btn" (click)="enableEdit('name')">
+          <img src="icons/edit-icon.png" alt="Edit" class="icon-img" />
+        </button>
+      </div>
+      <div class="unsaved-msg" *ngIf="isFieldChanged('name')">Unsaved changes</div>
+    </div>
+
+    <div class="field">
+      <label>Surname</label>
+      <div class="field-row">
+        <input [(ngModel)]="currentUser.surname" [readonly]="editingField !== 'surname'"
+          [class.editing]="editingField === 'surname'" />
+        <button class="icon-btn" (click)="enableEdit('surname')">
+          <img src="icons/edit-icon.png" alt="Edit" class="icon-img" />
+        </button>
+      </div>
+      <div class="unsaved-msg" *ngIf="isFieldChanged('surname')">Unsaved changes</div>
+    </div>
+
+    <div class="field">
+      <label>Email</label>
+      <div class="field-row">
+        <input [(ngModel)]="currentUser.email" [readonly]="editingField !== 'email'"
+          [class.editing]="editingField === 'email'" />
+        <button class="icon-btn" (click)="enableEdit('email')">
+          <img src="icons/edit-icon.png" alt="Edit" class="icon-img" />
+        </button>
+      </div>
+      <div class="unsaved-msg" *ngIf="isFieldChanged('email')">Unsaved changes</div>
+    </div>
+
+    <div class="field">
+      <label>Password</label>
+      <div class="field-row">
+        <input [type]="showPassword ? 'text' : 'password'" value="password123" readonly />
+        <button class="icon-btn" (click)="showPassword = !showPassword">
+          <img src="icons/eye-icon.png" alt="View" class="icon-img" />
+        </button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Phone number</label>
+      <div class="field-row">
+        <input [(ngModel)]="currentUser.phone" [readonly]="editingField !== 'phone'"
+          [class.editing]="editingField === 'phone'" />
+        <button class="icon-btn" (click)="enableEdit('phone')">
+          <img src="icons/edit-icon.png" alt="Edit" class="icon-img" />
+        </button>
+      </div>
+      <div class="unsaved-msg" *ngIf="isFieldChanged('phone')">Unsaved changes</div>
+    </div>
+
+    <div class="field">
+      <label>Address</label>
+      <div class="field-row">
+        <input [(ngModel)]="currentUser.address" [readonly]="editingField !== 'address'"
+          [class.editing]="editingField === 'address'" />
+        <button class="icon-btn" (click)="enableEdit('address')">
+          <img src="icons/edit-icon.png" alt="Edit" class="icon-img" />
+        </button>
+      </div>
+      <div class="unsaved-msg" *ngIf="isFieldChanged('address')">Unsaved changes</div>
+    </div>
+
+    <div class="bottom-actions">
+      <button class="change-password-btn">Change password</button>
+
+      <button class="save-btn" [disabled]="!hasAnyChanges" [class.active]="hasAnyChanges" (click)="saveChanges()">
+        Save
+      </button>
+    </div>
+
+  </div>
+  <div class="right-panel">
+
+    <div class="info-card timer-card">
+      <span class="timer-label">Active for:</span>
+      <span class="timer-value">7 h 30 min</span>
+    </div>
+
+    <div class="info-card">
+      <h3>Vehicle Information</h3>
+
+      <div class="vehicle-grid">
+        <div class="v-item">
+          <label>Model</label>
+          <div class="v-value">Toyota Corolla</div>
+        </div>
+        <div class="v-item">
+          <label>Baby friendly</label>
+          <div class="v-value">Yes</div>
+        </div>
+        <div class="v-item">
+          <label>Type</label>
+          <div class="v-value">Standard</div>
+        </div>
+        <div class="v-item">
+          <label>Pet friendly</label>
+          <div class="v-value">No</div>
+        </div>
+        <div class="v-item">
+          <label>Licence Plate</label>
+          <div class="v-value">NS 123 AA</div>
+        </div>
+        <div class="v-item">
+          <label>Seats</label>
+          <div class="v-value">4</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="notes-section">
+      <h3>Driver notes</h3>
+      <div class="notes-container">
+        <div class="note-card" *ngFor="let note of driverNotes">
+          <p>{{ note.text }}</p>
+        </div>
+        <div *ngIf="driverNotes.length === 0" class="note-card empty">
+          No active notes.
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
