@@ -6,4 +6,7 @@
     <color name = "background">#261F32</color>
     <color name = "accent">#C8E261</color>
     <color name = "placeholder">#CCCCCC</color>
+    <color name="card_color">#3c305e</color>
+    <color name="text">#E8EDFC</color>
+    <color name="error">#EA4A7A</color>
 </resources>

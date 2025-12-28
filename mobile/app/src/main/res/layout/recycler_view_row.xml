@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="4dp">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="4dp"
+        app:cardUseCompatPadding="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/card_color"
+            android:padding="12dp">
+
+            <TextView
+                android:id="@+id/txtEndTime"
+                android:layout_width="64dp"
+                android:layout_height="14dp"
+                android:layout_marginStart="72dp"
+                android:textColor="@color/text"
+                android:textSize="12sp"
+                app:layout_constraintStart_toStartOf="@id/txtEndLocation"
+                app:layout_constraintTop_toBottomOf="@id/txtEndLocation"
+                tools:text="..." />
+
+            <TextView
+                android:id="@+id/txtStartTime"
+                android:layout_width="64dp"
+                android:layout_height="15dp"
+                android:layout_marginStart="72dp"
+                android:textColor="@color/text"
+                android:textSize="12sp"
+                app:layout_constraintStart_toStartOf="@id/txtStartLocation"
+                app:layout_constraintTop_toBottomOf="@id/txtStartLocation"
+                tools:text="..." />
+
+            <TextView
+                android:id="@+id/txtPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="..."
+                android:textColor="@color/accent"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageButton
+                android:id="@+id/btnNextPassenger"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_arrow_right"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/imgPassenger"
+                app:layout_constraintBottom_toBottomOf="@id/imgPassenger"
+                android:contentDescription="@string/next"/>
+
+            <ImageView
+                android:id="@+id/imgPassenger"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_marginTop="36dp"
+                android:layout_marginEnd="8dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_passenger_placeholder"
+                app:layout_constraintEnd_toStartOf="@id/btnNextPassenger"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageButton
+                android:id="@+id/btnPrevPassenger"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginEnd="4dp"
+                android:src="@drawable/ic_arrow_left"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                app:layout_constraintEnd_toStartOf="@id/imgPassenger"
+                app:layout_constraintTop_toTopOf="@id/imgPassenger"
+                app:layout_constraintBottom_toBottomOf="@id/imgPassenger"
+                android:contentDescription="@string/previous"/>
+
+
+            <TextView
+                android:id="@+id/txtPassengerName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="44dp"
+                android:ellipsize="end"
+                android:gravity="center"
+                android:maxLines="1"
+                tools:text="..."
+                android:textColor="@color/text"
+                android:textSize="12sp"
+                app:layout_constraintEnd_toEndOf="@id/btnNextPassenger"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@id/btnPrevPassenger"
+                app:layout_constraintTop_toBottomOf="@id/imgPassenger" />
+
+            <ImageView
+                android:id="@+id/lblStart"
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:layout_marginTop="9dp"
+                android:src="@drawable/ic_start"
+                android:textColor="@color/text"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/txtPrice" />
+
+            <TextView
+                android:id="@+id/txtStartLocation"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                tools:text="..."
+                android:textStyle="bold"
+                android:textColor="@color/text"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                app:layout_constraintStart_toEndOf="@id/lblStart"
+                app:layout_constraintEnd_toStartOf="@id/btnPrevPassenger"
+                app:layout_constraintTop_toTopOf="@id/lblStart"/>
+
+            <TextView
+                android:id="@+id/txtStartDate"
+                android:layout_width="64dp"
+                android:layout_height="15dp"
+                tools:text="..."
+                android:textColor="@color/text"
+                android:textSize="12sp"
+                app:layout_constraintStart_toStartOf="@id/txtStartLocation"
+                app:layout_constraintTop_toBottomOf="@id/txtStartLocation" />
+
+
+            <ImageView
+                android:id="@+id/lblEnd"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginTop="3dp"
+                android:src="@drawable/ic_end"
+                android:textColor="@color/text"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/txtStartTime" />
+
+            <View
+                android:layout_width="2dp"
+                android:layout_height="0dp"
+                android:background="@color/primary"
+                app:layout_constraintTop_toBottomOf="@id/lblStart"
+                app:layout_constraintBottom_toTopOf="@id/lblEnd"
+                app:layout_constraintStart_toStartOf="@id/lblStart"
+                app:layout_constraintEnd_toEndOf="@id/lblStart"/>
+
+            <TextView
+                android:id="@+id/txtEndLocation"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                tools:text="..."
+                android:textStyle="bold"
+                android:textColor="@color/text"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                app:layout_constraintStart_toEndOf="@id/lblEnd"
+                app:layout_constraintEnd_toStartOf="@id/btnPrevPassenger"
+                app:layout_constraintTop_toTopOf="@id/lblEnd"/>
+
+            <TextView
+                android:id="@+id/txtEndDate"
+                android:layout_width="64dp"
+                android:layout_height="14dp"
+                tools:text="..."
+                android:textColor="@color/text"
+                android:textSize="12sp"
+                app:layout_constraintStart_toStartOf="@id/txtEndLocation"
+                app:layout_constraintTop_toBottomOf="@id/txtEndLocation" />
+
+            <LinearLayout
+                android:layout_width="228dp"
+                android:layout_height="29dp"
+                android:layout_marginTop="16dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/txtEndTime"
+                app:layout_constraintVertical_bias="1.0">
+
+                <ImageView
+                    android:id="@+id/imgPanic"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginEnd="8dp"
+                    android:src="@drawable/ic_warning"
+                    android:visibility="visible"
+                    app:tint="@color/error" />
+
+                <TextView
+                    android:id="@+id/txtStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="..."
+                    android:textColor="@color/error"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+</androidx.constraintlayout.widget.ConstraintLayout>
