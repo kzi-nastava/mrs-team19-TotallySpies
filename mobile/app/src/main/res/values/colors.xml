@@ -6,4 +6,5 @@
     <color name = "background">#261F32</color>
     <color name = "accent">#C8E261</color>
     <color name = "placeholder">#CCCCCC</color>
+    <color name="primary_30">#4D6E58C6</color>
 </resources>
