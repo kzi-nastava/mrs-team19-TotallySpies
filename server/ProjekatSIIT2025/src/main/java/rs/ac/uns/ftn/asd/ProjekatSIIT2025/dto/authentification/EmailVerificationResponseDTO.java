@@ -1,4 +1,4 @@
-package rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto;
+package rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.authentification;
 
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.AcceptanceState;
 

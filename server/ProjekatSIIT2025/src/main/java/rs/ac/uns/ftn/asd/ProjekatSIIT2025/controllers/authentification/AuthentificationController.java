@@ -1,16 +1,16 @@
-package rs.ac.uns.ftn.asd.ProjekatSIIT2025.controllers;
+package rs.ac.uns.ftn.asd.ProjekatSIIT2025.controllers.authentification;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.*;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.authentification.*;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.AcceptanceState;
 
 @RestController
 @RequestMapping("/api/v1/auth")
-public class AuthController {
+public class AuthentificationController {
 
     @PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserLoginResponseDTO> login(@RequestBody UserLoginRequestDTO request) throws Exception{
