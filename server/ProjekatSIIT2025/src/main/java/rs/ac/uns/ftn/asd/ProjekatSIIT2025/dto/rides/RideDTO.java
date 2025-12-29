@@ -1,9 +1,12 @@
-package rs.ac.uns.ftn.asd.ProjekatSIIT2025.model;
+package rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides;
+
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.RideStatus;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.VehicleType;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
-public class Ride {
+public class RideDTO {
     private Long id;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
@@ -20,7 +23,12 @@ public class Ride {
     private VehicleType vehicleType;
     private ArrayList<Long> reports;
 
-    public Ride(Long id, LocalDateTime startTime, LocalDateTime endTime, double totalPrice, Long riderId, ArrayList<Long> passengers, ArrayList<Long> paths, ArrayList<Long> reviews, RideStatus status, Long rideRejectionId, boolean panic, boolean babiesTransport, boolean petsTransport, VehicleType vehicleType, ArrayList<Long> reports) {
+    public RideDTO() {}
+
+    public RideDTO(Long id, LocalDateTime startTime, LocalDateTime endTime, double totalPrice,
+                   Long riderId, ArrayList<Long> passengers, ArrayList<Long> paths, ArrayList<Long> reviews,
+                   RideStatus status, Long rideRejectionId, boolean panic, boolean babiesTransport, boolean petsTransport,
+                   VehicleType vehicleType, ArrayList<Long> reports) {
         this.id = id;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -158,4 +166,3 @@ public class Ride {
         this.reports = reports;
     }
 }
-

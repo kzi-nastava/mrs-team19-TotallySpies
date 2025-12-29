@@ -1,28 +1,34 @@
 package rs.ac.uns.ftn.asd.ProjekatSIIT2025.model;
 
 public class Review {
-    private int rating;
-    private String comment;
+    private Long id;
+    private Long passengerId;
     private Long rideId;
-    private String passenger;
-    
-    public Review() {
-    }
+    private String comment;
+    private int grade;
 
-    public int getRating() {
-        return rating;
-    }
-
-    public void setRating(int rating) {
-        this.rating = rating;
-    }
-
-    public String getComment() {
-        return comment;
-    }
-
-    public void setComment(String comment) {
+    public Review(Long id, Long passengerId, Long rideId, String comment, int grade) {
+        this.id = id;
+        this.passengerId = passengerId;
+        this.rideId = rideId;
         this.comment = comment;
+        this.grade = grade;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getPassengerId() {
+        return passengerId;
+    }
+
+    public void setPassengerId(Long passengerId) {
+        this.passengerId = passengerId;
     }
 
     public Long getRideId() {
@@ -33,11 +39,19 @@ public class Review {
         this.rideId = rideId;
     }
 
-    public String getPassenger() {
-        return passenger;
+    public String getComment() {
+        return comment;
     }
 
-    public void setPassenger(String passenger) {
-        this.passenger = passenger;
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    public int getGrade() {
+        return grade;
+    }
+
+    public void setGrade(int grade) {
+        this.grade = grade;
     }
 }

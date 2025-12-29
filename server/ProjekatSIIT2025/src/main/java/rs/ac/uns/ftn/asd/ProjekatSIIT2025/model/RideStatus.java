@@ -4,5 +4,6 @@ public enum RideStatus {
     COMPLETED,
     CANCELLED,
     ACTIVE,
-    SCHEDULED
+    SCHEDULED,
+    STOPPED
 }
