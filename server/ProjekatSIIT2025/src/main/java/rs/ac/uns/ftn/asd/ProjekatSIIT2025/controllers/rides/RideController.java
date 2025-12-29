@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.InconsistencyReportRequestDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.RideFinishResponseDTO;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.RideStartResponseDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.VehicleDisplayResponseDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.RideStatus;
 
@@ -64,5 +65,14 @@ public class RideController {
         ride.setTotalPrice(450.00);
         futureRides.add(ride);
         return new ResponseEntity<>(futureRides, HttpStatus.OK);
+    }
+
+    @PutMapping("/{rideId}/start")
+    public ResponseEntity<RideStartResponseDTO> startRide(@PathVariable Long rideId) {
+        RideStartResponseDTO response = new RideStartResponseDTO();
+        response.setRideId(rideId);
+        response.setStatus("STARTED");
+        response.setMessage("Ride has successfully started.");
+        return ResponseEntity.ok(response);
     }
 }
