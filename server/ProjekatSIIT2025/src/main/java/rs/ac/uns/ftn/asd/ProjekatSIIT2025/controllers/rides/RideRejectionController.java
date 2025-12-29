@@ -6,12 +6,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.LocationDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.RideDTO;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.RidePreviewResponseDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.RideRejectionDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.RideResponseDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
