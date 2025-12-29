@@ -7,6 +7,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.authentification.*;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.AcceptanceState;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.UserRole;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -16,8 +17,8 @@ public class AuthentificationController {
     public ResponseEntity<UserLoginResponseDTO> login(@RequestBody UserLoginRequestDTO request) throws Exception{
         if (request.getPassword().equals("123") && request.getEmail().equals("milan.lazarevic@gmail.com")){
             UserLoginResponseDTO userLogin = new UserLoginResponseDTO();
-            userLogin.setName("Milan");
-            userLogin.setLastName("Lazarevic");
+            userLogin.setJwt("");
+            userLogin.setRole(UserRole.RIDER);
             return new ResponseEntity<UserLoginResponseDTO>(userLogin, HttpStatus.OK);
         }
         return ResponseEntity.notFound().build();
@@ -26,6 +27,7 @@ public class AuthentificationController {
     @PutMapping(value = "/update-password/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> updatePassword(@RequestBody UpdateUserPasswordRequestDTO request, @PathVariable Long id) throws Exception{
         if(id == 1){
+            //update password
             return ResponseEntity.ok().build();
         }
         return  ResponseEntity.notFound().build();
@@ -33,6 +35,7 @@ public class AuthentificationController {
 
     @PostMapping(value = "/register", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserRegisterResponseDTO> register(@Validated @RequestBody UserRegisterRequestDTO request) throws Exception{
+        //check if user with that email already exists
         UserRegisterResponseDTO userRegister = new UserRegisterResponseDTO();
         userRegister.setId(1L);
         userRegister.setEmail(request.getEmail());

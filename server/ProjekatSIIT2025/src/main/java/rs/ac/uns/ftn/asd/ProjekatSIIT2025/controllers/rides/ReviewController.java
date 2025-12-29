@@ -20,7 +20,7 @@ public class ReviewController {
         response.setId(101L);
         response.setRating(request.getRating());
         response.setComment(request.getComment());
-        response.setPassengerEmail("passenger@gmail.com");
+        response.setPassengerId(1L);
         
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -34,7 +34,7 @@ public class ReviewController {
         response.setId(102L);
         response.setRating(request.getRating());
         response.setComment(request.getComment());
-        response.setPassengerEmail("passenger@gmail.com");
+        response.setPassengerId(1L);
         
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

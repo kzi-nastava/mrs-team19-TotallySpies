@@ -8,9 +8,9 @@ import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.RideEstimationRequestDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.RideEstimationResponseDTO;
 
 @RestController
-@RequestMapping("api/v1/rides")
+@RequestMapping("api/v1/ride-estimation")
 public class RideEstimationController {
-    @GetMapping(value = "/estimation", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping( produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<RideEstimationResponseDTO> estimateRide(@RequestBody RideEstimationRequestDTO request){
         RideEstimationResponseDTO response = new RideEstimationResponseDTO();
         response.setEstimatedMoney(1500);

@@ -4,7 +4,7 @@ public class ReviewResponseDTO {
     private Long id;
     private int rating;
     private String comment;
-    private String passengerEmail;
+    private Long passengerId;
 
     public ReviewResponseDTO() {
     }
@@ -33,12 +33,12 @@ public class ReviewResponseDTO {
         this.comment = comment;
     }
 
-    public String getPassengerEmail() {
-        return passengerEmail;
+    public Long getPassengerId() {
+        return passengerId;
     }
 
-    public void setPassengerEmail(String passengerEmail) {
-        this.passengerEmail = passengerEmail;
+    public void setPassengerId(Long passengerId) {
+        this.passengerId = passengerId;
     }
 
      
