@@ -9,10 +9,14 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_marginStart="0dp"
+            android:layout_marginTop="10dp"
+            android:orientation="vertical"
+            android:paddingBottom="15dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/ConstraintLayerUserInfo"
@@ -41,7 +45,7 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:layout_marginTop="20dp"
                     android:layout_marginEnd="20dp"
@@ -52,7 +56,7 @@
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         android:layout_marginBottom="10dp"
                         android:gravity="center_vertical"
@@ -79,7 +83,7 @@
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         android:layout_marginBottom="10dp"
                         android:gravity="center_vertical"
@@ -106,7 +110,7 @@
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         android:layout_marginBottom="10dp"
                         android:gravity="center_vertical"
@@ -168,9 +172,9 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
                         app:shapeAppearanceOverlay="@style/CircleImageStyle"
+                        app:srcCompat="@mipmap/page_mock"
                         app:strokeColor="#AAFFFFFF"
-                        app:strokeWidth="1dp"
-                        app:srcCompat="@drawable/page_mock_background" />
+                        app:strokeWidth="1dp" />
 
                     <ImageButton
                         android:id="@+id/imageButton"
@@ -226,7 +230,7 @@
                 android:layout_marginEnd="10dp"
                 android:background="@drawable/user_profile_rectangle"
                 android:padding="15dp"
-                android:visibility="gone"
+                android:visibility="visible"
                 tools:visibility="visible">
 
                 <TextView
@@ -237,14 +241,14 @@
                     android:textColor="#ffffff"
                     android:textSize="18sp"
                     android:textStyle="bold"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintStart_toStartOf="parent" />
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
                     android:layout_marginTop="15dp"
+                    android:orientation="vertical"
                     app:layout_constraintTop_toBottomOf="@id/tvDriverTitle">
 
                     <LinearLayout
@@ -301,8 +305,8 @@
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
                             android:layout_marginStart="15dp"
+                            android:layout_weight="1"
                             android:text="Car information"
                             android:textColor="#aaffffff"
                             android:textSize="17sp" />
@@ -325,7 +329,7 @@
                 android:layout_marginEnd="10dp"
                 android:background="@drawable/user_profile_rectangle"
                 android:padding="15dp"
-                android:visibility="gone"
+                android:visibility="visible"
                 tools:visibility="visible">
 
                 <TextView
@@ -336,14 +340,14 @@
                     android:textColor="#ffffff"
                     android:textSize="18sp"
                     android:textStyle="bold"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintStart_toStartOf="parent" />
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
                     android:layout_marginTop="15dp"
+                    android:orientation="vertical"
                     app:layout_constraintTop_toBottomOf="@id/tvAdminTitle">
 
                     <LinearLayout
@@ -364,8 +368,8 @@
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
                             android:layout_marginStart="15dp"
+                            android:layout_weight="1"
                             android:text="Manage users"
                             android:textColor="#aaffffff"
                             android:textSize="17sp" />
@@ -395,8 +399,8 @@
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
                             android:layout_marginStart="15dp"
+                            android:layout_weight="1"
                             android:text="Manage drivers"
                             android:textColor="#aaffffff"
                             android:textSize="17sp" />
@@ -415,14 +419,14 @@
                 style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_margin="10dp"
                 android:text="LogOut"
-                android:textSize="17sp"
                 android:textAllCaps="false"
                 android:textColor="#FF0000"
+                android:textSize="17sp"
                 app:icon="@drawable/logout_icon"
                 app:iconGravity="textStart"
-                app:iconTint="#FF0000"
-                android:layout_margin="10dp"/>
+                app:iconTint="#FF0000" />
 
         </LinearLayout>
     </ScrollView>
