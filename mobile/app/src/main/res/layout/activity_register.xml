@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/register_scroll_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp"
+        android:background="@drawable/login_bg_gradient">
+
+        <ImageView
+            android:id="@+id/imgIllustration"
+            android:layout_width="match_parent"
+            android:layout_height="140dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/illustration_2_v2"
+            android:contentDescription="@string/login_illustration" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/register"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/white" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:textSize = "16sp"
+            android:text="@string/email"
+            android:textColor="@android:color/white" />
+
+        <EditText
+            android:id="@+id/etEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/enter_email"
+            android:textSize="14sp"
+            android:inputType="textEmailAddress"
+            android:textColor="@android:color/white"
+            android:textColorHint="@color/placeholder"
+            android:autofillHints="emailAddress"
+            android:backgroundTint = "@color/accent"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/password"
+            android:textSize = "16sp"
+            android:textColor="@android:color/white"
+            android:layout_marginTop="12dp" />
+
+        <EditText
+            android:id="@+id/etPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/enter_password"
+            android:inputType="textPassword"
+            android:textSize = "14sp"
+            android:textColor="@android:color/white"
+            android:textColorHint="@color/placeholder"
+            android:autofillHints="password"
+            android:backgroundTint = "@color/accent"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/confirm_password"
+            android:textSize = "16sp"
+            android:textColor="@android:color/white"
+            android:layout_marginTop="12dp" />
+
+        <EditText
+            android:id="@+id/etConfirmPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/enter_password"
+            android:inputType="textPassword"
+            android:textSize = "14sp"
+            android:textColor="@android:color/white"
+            android:textColorHint="@color/placeholder"
+            android:autofillHints="password"
+            android:backgroundTint = "@color/accent"/>
+
+
+        <TextView
+            android:id="@+id/tvForgotPassword"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/forgot_password"
+            android:textColor="@android:color/white"
+            android:layout_gravity="end"
+            android:textSize = "14sp"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/add_profile_photo"
+            android:textSize = "16sp"
+            android:textColor="@android:color/white" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/name"
+            android:textSize = "16sp"
+            android:textColor="@android:color/white" />
+
+        <EditText
+            android:id="@+id/etName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/enter_name"
+            android:inputType="textPersonName"
+            android:textSize = "14sp"
+            android:textColor="@android:color/white"
+            android:textColorHint="@color/placeholder"
+            android:autofillHints="name"
+            android:backgroundTint = "@color/accent"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/last_name"
+            android:textSize = "16sp"
+            android:textColor="@android:color/white"
+            android:layout_marginTop="12dp" />
+
+        <EditText
+            android:id="@+id/etLastName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/enter_last_name"
+            android:inputType="text"
+            android:textSize = "14sp"
+            android:textColor="@android:color/white"
+            android:textColorHint="@color/placeholder"
+            android:autofillHints="lastName"
+            android:backgroundTint = "@color/accent"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/address"
+            android:textSize = "16sp"
+            android:textColor="@android:color/white"
+            android:layout_marginTop="12dp" />
+
+        <EditText
+            android:id="@+id/etAddress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/enter_address"
+            android:inputType="text"
+            android:textSize = "14sp"
+            android:textColor="@android:color/white"
+            android:textColorHint="@color/placeholder"
+            android:autofillHints="address"
+            android:backgroundTint = "@color/accent"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/phone_number"
+            android:textSize = "16sp"
+            android:textColor="@android:color/white"
+            android:layout_marginTop="12dp" />
+
+        <EditText
+            android:id="@+id/etPhoneNumber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/enter_last_name"
+            android:inputType="phone"
+            android:textSize = "14sp"
+            android:textColor="@android:color/white"
+            android:textColorHint="@color/placeholder"
+            android:autofillHints="phoneNumber"
+            android:backgroundTint = "@color/accent"/>
+
+        <Button
+            android:id="@+id/btnLogin"
+            android:layout_width="208dp"
+            android:layout_height="56dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="32dp"
+            android:backgroundTint="@color/accent"
+            android:text="@string/register"
+            android:textColor="@color/background"
+            android:textSize="16sp" />
+
+    </LinearLayout>
+
+</ScrollView>

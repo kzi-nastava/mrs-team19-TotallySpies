@@ -1,0 +1,205 @@
+<div class="profile-page">
+
+  <div class="profile-card left-panel">
+
+    <div class="avatar-wrapper">
+      <img src="https://i.pravatar.cc/300?img=5" alt="Avatar" class="avatar" />
+      <button class="avatar-add">+</button>
+    </div>
+
+    <div class="field">
+      <label>Name</label>
+      <div class="field-row">
+        <input value="Elena" [readonly]="editingField !== 'name'" [class.editing]="editingField === 'name'" />
+
+        <button *ngIf="editingField !== 'name'" class="icon-btn" (click)="editingField = 'name'">
+          <img src="icons/edit-icon.png" alt="Edit" class="icon-img" />
+        </button>
+
+        <button *ngIf="editingField === 'name'" class="icon-btn" (click)="editingField = null">
+          <img src="icons/check-icon.png" alt="Edit" class="icon-img" />
+        </button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Surname</label>
+      <div class="field-row">
+        <input value="Vukovic" [readonly]="editingField !== 'surname'" [class.editing]="editingField === 'surname'" />
+
+        <button *ngIf="editingField !== 'surname'" class="icon-btn" (click)="editingField = 'surname'">
+          <img src="icons/edit-icon.png" alt="Edit" class="icon-img" />
+        </button>
+
+        <button *ngIf="editingField === 'surname'" class="icon-btn" (click)="editingField = null">
+          <img src="icons/check-icon.png" alt="Edit" class="icon-img" />
+        </button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Email</label>
+      <div class="field-row">
+        <input value="elenavukovic@gmail.com" [readonly]="editingField !== 'email'"
+          [class.editing]="editingField === 'email'" />
+
+        <button *ngIf="editingField !== 'email'" class="icon-btn" (click)="editingField = 'email'">
+          <img src="icons/edit-icon.png" alt="Edit" class="icon-img" />
+        </button>
+
+        <button *ngIf="editingField === 'email'" class="icon-btn" (click)="editingField = null">
+          <img src="icons/check-icon.png" alt="Edit" class="icon-img" />
+        </button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Password</label>
+
+      <div class="field-row">
+        <input [type]="showPassword ? 'text' : 'password'" value="password123" readonly />
+
+        <button class="icon-btn" (click)="showPassword = !showPassword">
+          <img src="icons/eye-icon.png" alt="Edit" class="icon-img" />
+        </button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Phone number</label>
+      <div class="field-row">
+        <input value="+381 123 1234" [readonly]="editingField !== 'phone'" [class.editing]="editingField === 'phone'" />
+
+        <button *ngIf="editingField !== 'phone'" class="icon-btn" (click)="editingField = 'phone'">
+          <img src="icons/edit-icon.png" alt="Edit" class="icon-img" />
+        </button>
+
+        <button *ngIf="editingField === 'phone'" class="icon-btn" (click)="editingField = null">
+          <img src="icons/check-icon.png" alt="Edit" class="icon-img" />
+        </button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Address</label>
+      <div class="field-row">
+        <input value="Narodnog fronta 24, Novi Sad" [readonly]="editingField !== 'address'"
+          [class.editing]="editingField === 'address'" />
+
+        <button *ngIf="editingField !== 'address'" class="icon-btn" (click)="editingField = 'address'">
+          <img src="icons/edit-icon.png" alt="Edit" class="icon-img" />
+        </button>
+
+        <button *ngIf="editingField === 'address'" class="icon-btn" (click)="editingField = null">
+          <img src="icons/check-icon.png" alt="Edit" class="icon-img" />
+        </button>
+      </div>
+    </div>
+
+    <button class="change-password-btn">
+      Change password
+    </button>
+  </div>
+
+  <div class="right-panel dashboard-card">
+    
+    <div class="dashboard-header">
+      <div class="title-section">
+        <h2>Users</h2>
+        <p>Manage users</p>
+      </div>
+      <div class="header-buttons">
+        <button class="add-btn">+ Add driver</button>
+        <button class="pdf-btn">
+          Generate Report
+        </button>
+      </div>
+    </div>
+
+    <div class="tabs-nav">
+      <button 
+        class="tab-item" 
+        [class.active]="activeTab === 'drivers'" 
+        (click)="setActiveTab('drivers')">
+        Drivers
+      </button>
+      
+      <button 
+        class="tab-item" 
+        [class.active]="activeTab === 'approvals'" 
+        (click)="setActiveTab('approvals')">
+        Approvals
+      </button>
+
+      <button 
+        class="tab-item" 
+        [class.active]="activeTab === 'users'" 
+        (click)="setActiveTab('users')">
+        Users
+      </button>
+    </div>
+
+    <div class="table-container" *ngIf="activeTab === 'drivers'">
+      <table class="custom-table">
+        <thead>
+          <tr>
+            <th style="width: 30%">EMAIL</th>
+            <th style="width: 20%">DRIVER</th>
+            <th style="width: 15%">STATUS</th>
+            <th style="width: 20%">CHANGE STATUS</th>
+            <th style="width: 15%; text-align: right;">BLOCK</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let driver of driversList">
+            <td class="text-light">{{ driver.email }}</td>
+            <td class="text-light">{{ driver.name }}</td>
+            <td>
+              <span class="badge" [ngClass]="getStatusClass(driver.status)">
+                {{ driver.status }}
+              </span>
+            </td>
+            <td>
+              <button class="change-status-btn">CHANGE</button>
+            </td>
+            <td style="text-align: right;">
+              <button class="block-btn">
+                 <img src="icons/block-icon.png" alt="Block" /> 
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="table-container" *ngIf="activeTab === 'approvals'">
+      <div class="empty-state">
+        <p>No pending approvals.</p>
+      </div>
+    </div>
+
+    <div class="table-container" *ngIf="activeTab === 'users'">
+      <table class="custom-table">
+        <thead>
+          <tr>
+            <th style="width: 40%">EMAIL</th>
+            <th style="width: 40%">USER</th>
+            <th style="width: 20%; text-align: right;">BLOCK</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let user of usersList">
+            <td class="text-light">{{ user.email }}</td>
+            <td class="text-light">{{ user.name }}</td>
+            <td style="text-align: right;">
+              <button class="block-btn">
+                <img src="icons/block-icon.png" alt="Block" />
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
