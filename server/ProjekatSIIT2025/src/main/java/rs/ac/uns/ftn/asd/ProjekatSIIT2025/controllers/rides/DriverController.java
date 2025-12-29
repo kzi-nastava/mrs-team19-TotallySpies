@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.DriverRideHistoryResponseDTO;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.users.DriverProfileResponseDTO;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -34,5 +35,18 @@ public class DriverController {
         history.add(h1);
         
         return new ResponseEntity<>(history, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/{id}")
+    public ResponseEntity<DriverProfileResponseDTO> getDriverProfile(@PathVariable Long id) {
+        DriverProfileResponseDTO dto = new DriverProfileResponseDTO();
+        dto.setId(id);
+        dto.setName("DriverName");
+        dto.setLastName("DriverLast");
+        dto.setEmail("driver@gmail.com");
+        dto.setProfilePicture("driver.png");
+        dto.setVehicleModel("Skoda Octavia");
+        dto.setLicensePlate("NS-123-YY");
+        return ResponseEntity.ok(dto);
     }
 }
