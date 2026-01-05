@@ -1,0 +1,57 @@
+.map-container {
+  position: relative;
+  height: 100vh;
+  background-color: #261f32;
+  margin: 0;
+  padding-top: 0;
+}
+.main-box {
+  position: absolute;
+  bottom: 150px;
+  left: 20px;
+  z-index: 1000;
+  background: linear-gradient(to right, #261f32, #6e58c6);
+  border-radius: 8px;
+  padding: 30px;
+  font-family: 'Montserrat', sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+.header {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 18px;
+  color: #c8e261;
+  text-align: center;
+}
+.estimated-container {
+  border-radius: 8px;
+  background-color: #261f32;
+  padding: 20px;
+}
+.row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.paragraphs {
+  display: flex;
+  flex-direction: column;
+}
+img {
+  width: 35px;
+  height: 35px;
+}
+p {
+  color: white;
+  font-size: 14px;
+}
+.choose {
+  border-radius: 8px;
+  background-color: #c8e261;
+  color: #261f32;
+  width: 120px;
+  height: 40px;
+  margin: auto;
+  margin-top: 30px;
+  font-family: 'Montserrat', sans-serif;
+}

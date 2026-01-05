@@ -1,37 +1,91 @@
-import { Component, AfterViewInit } from '@angular/core';
+import {
+  Component,
+  AfterViewInit,
+  Input,
+  Output,
+  EventEmitter,
+  SimpleChanges,
+  OnChanges,
+} from '@angular/core';
 import * as L from 'leaflet';
 import { MapService } from './map.service';
+import 'leaflet-routing-machine';
+export type RouteInfo = { distanceKm: number; estimatedTime: number };
 
 @Component({
   selector: 'app-map',
   templateUrl: './map.component.html',
   styleUrls: ['./map.component.css'],
+  standalone: true,
 })
 export class MapComponent implements AfterViewInit {
-  private map: any;
+  private map!: L.Map;
+  private routeControl?: L.Routing.Control;
+  @Input() pickupAddress = '';
+  @Input() destinationAddress = '';
+  @Output() routeInfo = new EventEmitter<RouteInfo>();
 
   constructor(private mapService: MapService) {}
 
   setRoute(): void {
-    //defining a route
-    const routeControl = L.Routing.control({
-      waypoints: [L.latLng(57.74, 11.94), L.latLng(57.6792, 11.949)],
+    if (!this.pickupAddress?.trim() || !this.destinationAddress?.trim()) return;
+    // geocode pickup
+    this.mapService.search(this.pickupAddress).subscribe((p: any) => {
+      if (!p?.length) return;
+
+      const pickupLatitude = +p[0].lat; //takes the first result(because it expects array of results)p[0]
+      const pickupLongitude = +p[0].lon;
+      // geocode destination
+      this.mapService.search(this.destinationAddress).subscribe((d: any) => {
+        if (!d?.length) return;
+
+        const destinationLatitude = +d[0].lat;
+        const destinationLongitude = +d[0].lon;
+
+        this.drawRoute(pickupLatitude, pickupLongitude, destinationLatitude, destinationLongitude);
+      });
+    });
+  }
+
+  private drawRoute(
+    pickupLatitude: number,
+    pickupLongitude: number,
+    destinationLatitude: number,
+    destinationLongitude: number
+  ) {
+    // remove previous route if any
+    if (this.routeControl) {
+      this.map.removeControl(this.routeControl);
+      this.routeControl = undefined;
+    }
+
+    this.routeControl = L.Routing.control({
+      waypoints: [
+        L.latLng(pickupLatitude, pickupLongitude),
+        L.latLng(destinationLatitude, destinationLongitude),
+      ],
       router: L.routing.mapbox(
         'pk.eyJ1IjoidG90YWxseS1zcGllczMzIiwiYSI6ImNtanpxYm54dzV1MTEzZnF4M3c4ejZ0c28ifQ.iwa5IGW8kqTBZtwXvVTQcQ',
-        { profile: 'mapbox/walking' }
+        { profile: 'mapbox/driving' }
       ),
+      fitSelectedRoutes: false,
+      show: false,
+      addWaypoints: false,
+      routeWhileDragging: false,
     }).addTo(this.map);
 
-    routeControl.on('routesfound', function (e) {
-      var routes = e.routes;
-      var summary = routes[0].summary;
-      alert(
-        'Total distance is ' +
-          summary.totalDistance / 1000 +
-          ' km and total time is ' +
-          Math.round((summary.totalTime % 3600) / 60) +
-          ' minutes'
-      );
+    this.routeControl.on('routesfound', (e: any) => {
+      const route = e.routes[0];
+      //creating a rectangle around the route
+      const bounds = L.latLngBounds(route.coordinates as any);
+      //moves and zooms the map so the entire rectangle with route is visible
+      this.map.fitBounds(bounds, { padding: [30, 30] });
+
+      const summary = e.routes[0].summary;
+      const distanceKm = Math.round((summary.totalDistance / 1000) * 10) / 10;
+      const estimatedTime = Math.round(summary.totalTime / 60);
+
+      this.routeInfo.emit({ distanceKm, estimatedTime });
     });
   }
 
@@ -45,24 +99,9 @@ export class MapComponent implements AfterViewInit {
       maxZoom: 18,
       minZoom: 3,
       attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-    });
-
-    tiles.addTo(this.map);
-    this.setRoute();
+    }).addTo(this.map);
   }
-  search(): void {
-    this.mapService.search('Vojvodjanska 36, Novi Sad').subscribe({
-      next: (result) => {
-        console.log(result);
-        L.marker([result[0].lat, result[0].lon])
-          .addTo(this.map)
-          .bindPopup('Pozdrav iz Vojvodjanske 36.')
-          .openPopup();
-      },
-      error: () => {},
-    });
-  }
-
+  //maybe fix to populate input fields with user clicked addresses
   registerOnClick(): void {
     this.map.on('click', (e: any) => {
       const coord = e.latlng;
@@ -73,10 +112,21 @@ export class MapComponent implements AfterViewInit {
       });
       console.log('You clicked the map at latitude: ' + lat + ' and longitude: ' + lng);
       const mp = new L.Marker([lat, lng]).addTo(this.map);
-      alert(mp.getLatLng());
+      //alert(mp.getLatLng());
     });
   }
+  ngOnChanges(changes: SimpleChanges): void {
+    if (!this.map) return; // map not created yet
 
+    const pickupChanged = !!changes['pickupAddress'];
+    const destinationChanged = !!changes['destinationAddress'];
+
+    if (!pickupChanged && !destinationChanged) return;
+
+    if (!this.pickupAddress.trim() || !this.destinationAddress.trim()) return;
+
+    this.setRoute();
+  }
   ngAfterViewInit(): void {
     let DefaultIcon = L.icon({
       iconUrl: 'icons/map-icons/map-marker-icon.png',
@@ -85,6 +135,11 @@ export class MapComponent implements AfterViewInit {
 
     L.Marker.prototype.options.icon = DefaultIcon;
     this.initMap();
-    this.registerOnClick();
+    //this.setRoute();
+    // if inputs are already set by the time map is ready, draw route now
+    if (this.pickupAddress.trim() && this.destinationAddress.trim()) {
+      this.setRoute();
+    }
+    //this.registerOnClick();
   }
 }
