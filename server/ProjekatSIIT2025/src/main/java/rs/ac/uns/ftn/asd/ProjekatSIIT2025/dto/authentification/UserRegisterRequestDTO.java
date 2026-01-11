@@ -1,7 +1,6 @@
 package rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.authentification;
 
 public class UserRegisterRequestDTO {
-    private Long id;
     private String email;
     private String password;
     private String name;
@@ -13,12 +12,6 @@ public class UserRegisterRequestDTO {
 
     public UserRegisterRequestDTO(){}
 
-    public Long getId(){
-        return this.id;
-    }
-    public void setId(Long id){
-        this.id = id;
-    }
     public String getEmail(){
         return this.email;
     }
