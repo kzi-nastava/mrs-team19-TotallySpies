@@ -1,0 +1,66 @@
+<div class="main-container">
+  <div class="left-container">
+    <div class="form-container">
+      <h1 class="gradient-text">Plan Your Yourney</h1>
+      <div class="routeBlock">
+        <div class="row">
+          <span class="icon dot"></span>
+          <!-- pickup -->
+          <div class="content">
+            <div class="label">Pickup location</div>
+            <input
+              class="input"
+              type="text"
+              placeholder="Enter starting point"
+              [(ngModel)]="pickup"
+            />
+            <div class="error" *ngIf="showError">Please enter pickup and destination</div>
+          </div>
+        </div>
+
+        <!-- vertical line between -->
+        <div class="stem"></div>
+
+        <!-- destination -->
+        <div class="row">
+          <span class="icon pin"></span>
+
+          <div class="content">
+            <div class="label">Destination</div>
+            <input
+              class="input"
+              type="text"
+              placeholder="Enter destination point"
+              [(ngModel)]="destination"
+            />
+            <div class="error" *ngIf="showError">Please enter pickup and destination</div>
+          </div>
+        </div>
+      </div>
+
+      <button class="search-button" (click)="search()">Search</button>
+    </div>
+
+    <div class="illustration-container">
+      <h1 class="illustration-header">Your Yourney</h1>
+      <h1 class="illustration-header">Starts Here!</h1>
+      <p>Safe, comfortable rides at your fingertips</p>
+      <div class="illustration">
+        <img src="/illustrations/illustration_1_v2.png" alt="illustration" />
+      </div>
+      <div class="bottom-paragraphs">
+        <p>1M+</p>
+        <p>24/7</p>
+        <p>5★</p>
+      </div>
+      <div class="bottom-paragraphs">
+        <p>Passengers</p>
+        <p>Available</p>
+        <p>Rated</p>
+      </div>
+    </div>
+  </div>
+  <div class="right-container">
+    <app-map></app-map>
+  </div>
+</div>

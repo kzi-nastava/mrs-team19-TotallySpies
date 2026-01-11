@@ -7,6 +7,8 @@ import { DriverProfileComponent } from './features/driver-profile/driver-profile
 import { AdminProfileComponent } from './features/admin-profile/admin-profile.component';
 import { RideHistoryComponent } from './features/ride-history/ride-history.component';
 import { MapComponent } from './shared/components/map/map.component';
+import { RideFormUnregisteredComponent } from './features/ride-form-unregistered/ride-form-unregistered.component';
+import { EstimatedRouteComponent } from './features/estimated-route/estimated-route.component';
 
 export const routes: Routes = [
   {
@@ -45,5 +47,13 @@ export const routes: Routes = [
   {
     path: 'map',
     component: MapComponent,
+  },
+  {
+    path: 'ride-form-unregistered',
+    component: RideFormUnregisteredComponent,
+  },
+  {
+    path: 'estimated-route',
+    component: EstimatedRouteComponent,
   },
 ];
