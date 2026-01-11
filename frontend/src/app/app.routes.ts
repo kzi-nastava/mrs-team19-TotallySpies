@@ -9,6 +9,7 @@ import { RideHistoryComponent } from './features/ride-history/ride-history.compo
 import { MapComponent } from './shared/components/map/map.component';
 import { RideFormUnregisteredComponent } from './features/ride-form-unregistered/ride-form-unregistered.component';
 import { EstimatedRouteComponent } from './features/estimated-route/estimated-route.component';
+import { DisplayInfoComponent } from './features/display-info/display-info.component';
 
 export const routes: Routes = [
   {
@@ -56,4 +57,8 @@ export const routes: Routes = [
     path: 'estimated-route',
     component: EstimatedRouteComponent,
   },
+  {
+    path: 'display-info',
+    component: DisplayInfoComponent,
+  }
 ];
