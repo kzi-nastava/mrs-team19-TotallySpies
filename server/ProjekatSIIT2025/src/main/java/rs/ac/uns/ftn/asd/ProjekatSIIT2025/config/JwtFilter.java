@@ -1,5 +1,56 @@
 package rs.ac.uns.ftn.asd.ProjekatSIIT2025.config;
 
-public class JwtFilter {
-    
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.services.JWTService;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.services.impl.CustomUserDetailsService;
+
+import java.io.IOException;
+
+//for every request, this filter will be executed once
+//if this filter is successful , then it will forward to UsernamePasswordAuthenticationFilter
+@Component
+public class JwtFilter extends OncePerRequestFilter {
+
+    @Autowired
+    JWTService jwtService;
+
+    @Autowired
+    ApplicationContext context;
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        String authHeader = request.getHeader("Authorization");
+        String token = null;
+        String email = null;
+
+        if (authHeader != null && authHeader.startsWith("Bearer ")){ //token in request from user starts with Bearer
+            token = authHeader.substring(7); //skip the Bearer word
+            email = jwtService.extractEmail(token);
+        }
+        //check if is already authenticated
+        if (email != null && SecurityContextHolder.getContext().getAuthentication() == null){
+            //gets email and other user details from database
+            UserDetails userDetails = context.getBean(CustomUserDetailsService.class).loadUserByUsername(email);
+            if(jwtService.validateToken(token,userDetails)){
+                //if token is valid, next filter is used
+                UsernamePasswordAuthenticationToken authToken =
+                        new UsernamePasswordAuthenticationToken(userDetails,null, userDetails.getAuthorities());
+                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                //adding the token in the chain
+                SecurityContextHolder.getContext().setAuthentication(authToken);
+            }
+        }
+        filterChain.doFilter(request,response);
+    }
 }

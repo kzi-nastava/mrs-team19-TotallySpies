@@ -10,8 +10,8 @@ import java.util.List;
 
 @Entity
 @Table(name = "users")
-// POJO koji implementira Spring Security UserDetails interfejs koji specificira
-// osnovne osobine Spring korisnika (koje role ima, da li je nalog zakljucan, istekao, da li su kredencijali istekli)
+// POJO that implements Spring Security UserDetails interface that specify primary informations of spring user
+// (which roles he has, is account locked, expired, are credentials expired)
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
