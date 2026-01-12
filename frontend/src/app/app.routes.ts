@@ -6,6 +6,10 @@ import { UserProfileComponent } from './features/user-profile/user-profile.compo
 import { DriverProfileComponent } from './features/driver-profile/driver-profile.component';
 import { AdminProfileComponent } from './features/admin-profile/admin-profile.component';
 import { RideHistoryComponent } from './features/ride-history/ride-history.component';
+import { MapComponent } from './shared/components/map/map.component';
+import { RideFormUnregisteredComponent } from './features/ride-form-unregistered/ride-form-unregistered.component';
+import { EstimatedRouteComponent } from './features/estimated-route/estimated-route.component';
+import { DisplayInfoComponent } from './features/display-info/display-info.component';
 import { DriverRegistrationComponent } from './features/driver-registration/driver-registration.component';
 import { ActivateDriverComponent } from './features/activate-driver/activate-driver.component';
 
@@ -24,25 +28,41 @@ export const routes: Routes = [
   },
   {
     path: 'profile',
-    component: UserProfileComponent
+    component: UserProfileComponent,
   },
   {
     path: 'driver-profile',
-    component: DriverProfileComponent
+    component: DriverProfileComponent,
   },
   {
     path: 'admin-profile',
-    component: AdminProfileComponent
+    component: AdminProfileComponent,
   },
-    {
+  {
     path: '',
     redirectTo: 'home',
-    pathMatch: 'full'
+    pathMatch: 'full',
   },
   {
     path: 'ride-history',
     component: RideHistoryComponent,
   },
+  {
+    path: 'map',
+    component: MapComponent,
+  },
+  {
+    path: 'ride-form-unregistered',
+    component: RideFormUnregisteredComponent,
+  },
+  {
+    path: 'estimated-route',
+    component: EstimatedRouteComponent,
+  },
+  {
+    path: 'display-info',
+    component: DisplayInfoComponent,
+  }
   {
     path: 'driver-registration',
     component: DriverRegistrationComponent

@@ -1,0 +1,22 @@
+<div class="map-container">
+  <app-map
+    [pickupAddress]="pickup"
+    [destinationAddress]="destination"
+    (routeInfo)="onRouteInfo($event)"
+  >
+  </app-map>
+  <div class="main-box">
+    <h1 class="header">We found a route for you!</h1>
+    <div class="estimated-container">
+      <div class="row">
+        <img src="icons/time-icon.png" alt="Time icon" />
+        <p>Estimated time : {{ estimatedTime }}min</p>
+      </div>
+      <div class="row">
+        <img src="icons/distance-icon.png" alt="Distance icon" />
+        <p>Distance : {{ distanceKm }}km</p>
+      </div>
+    </div>
+    <button class="choose" (click)="goLogin()">Choose</button>
+  </div>
+</div>
