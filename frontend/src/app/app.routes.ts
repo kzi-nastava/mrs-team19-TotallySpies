@@ -7,6 +7,7 @@ import { DriverProfileComponent } from './features/driver-profile/driver-profile
 import { AdminProfileComponent } from './features/admin-profile/admin-profile.component';
 import { RideHistoryComponent } from './features/ride-history/ride-history.component';
 import { DriverRegistrationComponent } from './features/driver-registration/driver-registration.component';
+import { ActivateDriverComponent } from './features/activate-driver/activate-driver.component';
 
 export const routes: Routes = [
   {
@@ -45,5 +46,9 @@ export const routes: Routes = [
   {
     path: 'driver-registration',
     component: DriverRegistrationComponent
+  },
+  {
+    path: 'activate-driver-account',
+    component: ActivateDriverComponent
   },
 ];
