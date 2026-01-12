@@ -62,7 +62,7 @@ export const routes: Routes = [
   {
     path: 'display-info',
     component: DisplayInfoComponent,
-  }
+  },
   {
     path: 'driver-registration',
     component: DriverRegistrationComponent
