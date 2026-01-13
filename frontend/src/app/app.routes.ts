@@ -10,6 +10,8 @@ import { MapComponent } from './shared/components/map/map.component';
 import { RideFormUnregisteredComponent } from './features/ride-form-unregistered/ride-form-unregistered.component';
 import { EstimatedRouteComponent } from './features/estimated-route/estimated-route.component';
 import { DisplayInfoComponent } from './features/display-info/display-info.component';
+import { DriverRegistrationComponent } from './features/driver-registration/driver-registration.component';
+import { ActivateDriverComponent } from './features/activate-driver/activate-driver.component';
 
 export const routes: Routes = [
   {
@@ -60,5 +62,13 @@ export const routes: Routes = [
   {
     path: 'display-info',
     component: DisplayInfoComponent,
-  }
+  },
+  {
+    path: 'driver-registration',
+    component: DriverRegistrationComponent
+  },
+  {
+    path: 'activate-driver-account',
+    component: ActivateDriverComponent
+  },
 ];
