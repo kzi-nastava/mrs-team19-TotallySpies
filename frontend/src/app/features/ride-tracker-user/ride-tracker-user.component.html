@@ -1,0 +1,18 @@
+<div class="page-container">
+
+  <div class="overlay-cards">
+    
+    <app-driver-info 
+      [driverName]="currentDriver.driverName" 
+      [carModel]="currentDriver.carModel" 
+      [rating]="currentDriver.rating"
+      [profileImageUrl]="currentDriver.profileImageUrl">
+    </app-driver-info>
+
+    <app-timer-card 
+      [minutes]="minutesRemaining" 
+      [progressValue]="progress">
+    </app-timer-card>
+
+  </div>
+</div>

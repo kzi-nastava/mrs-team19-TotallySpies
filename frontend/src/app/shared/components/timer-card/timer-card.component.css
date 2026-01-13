@@ -1,0 +1,53 @@
+*{
+  font-family: 'Montserrat', sans-serif;
+}
+.timer-card {
+  margin-left: 2.4rem;
+  background-color: #3b3654;
+  padding-left: 3.6rem;
+  padding-right: 3.6rem;
+  padding-top: 1.2rem;
+  padding-bottom: 1.2rem;
+  border-radius: 15px;
+  width: fit-content;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+}
+
+.spinner-wrapper {
+  position: relative; 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+::ng-deep .custom-spinner circle {
+  stroke: #C8E261 !important;
+}
+
+::ng-deep .mat-mdc-progress-spinner {
+  --mdc-circular-progress-active-indicator-color: #c5e17a;
+}
+
+.inner-text {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  color: white;
+}
+
+.label {
+  font-size: 10px;
+  color: #a09cb0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.time {
+  font-size: 20px;
+  font-weight: bold;
+}

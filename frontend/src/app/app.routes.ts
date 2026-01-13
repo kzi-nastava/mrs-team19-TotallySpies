@@ -12,6 +12,7 @@ import { EstimatedRouteComponent } from './features/estimated-route/estimated-ro
 import { DisplayInfoComponent } from './features/display-info/display-info.component';
 import { DriverRegistrationComponent } from './features/driver-registration/driver-registration.component';
 import { ActivateDriverComponent } from './features/activate-driver/activate-driver.component';
+import { RideTrackerUserComponent } from './features/ride-tracker-user/ride-tracker-user.component';
 
 export const routes: Routes = [
   {
@@ -71,4 +72,8 @@ export const routes: Routes = [
     path: 'activate-driver-account',
     component: ActivateDriverComponent
   },
+  {
+    path: 'ride-tracker-user',
+    component: RideTrackerUserComponent
+  }
 ];

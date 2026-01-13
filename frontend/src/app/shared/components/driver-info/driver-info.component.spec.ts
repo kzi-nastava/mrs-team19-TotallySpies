@@ -1,0 +1,22 @@
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+
+import { DriverInfoComponent } from './driver-info.component';
+
+describe('DriverInfoComponent', () => {
+  let component: DriverInfoComponent;
+  let fixture: ComponentFixture<DriverInfoComponent>;
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [DriverInfoComponent]
+    })
+    .compileComponents();
+
+    fixture = TestBed.createComponent(DriverInfoComponent);
+    component = fixture.componentInstance;
+    await fixture.whenStable();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});

@@ -1,0 +1,16 @@
+*{
+    background-color: #261F32;
+    min-height: 100%;
+
+}
+.page-container {
+  width: 100%;
+}
+
+.overlay-cards {
+  top: 50px;
+  left: 50px; 
+  display: flex;
+  flex-direction: column;
+  gap: 20px; 
+}
