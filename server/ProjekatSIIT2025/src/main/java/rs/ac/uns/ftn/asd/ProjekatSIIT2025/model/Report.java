@@ -1,13 +1,29 @@
 package rs.ac.uns.ftn.asd.ProjekatSIIT2025.model;
 
+import jakarta.persistence.*;
+
+@Entity
 public class Report {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long passengerId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="passenger_id")
+    private Passenger passenger;
+
     private String reportReason;
 
-    public Report(Long id, Long passengerId, String reportReason) {
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="ride_id")
+    private Ride ride;
+
+    public Report() {
+    }
+
+    public Report(Long id, Passenger passenger, String reportReason) {
         this.id = id;
-        this.passengerId = passengerId;
+        this.passenger = passenger;
         this.reportReason = reportReason;
     }
 
@@ -19,12 +35,12 @@ public class Report {
         this.id = id;
     }
 
-    public Long getPassengerId() {
-        return passengerId;
+    public Passenger getPassenger() {
+        return passenger;
     }
 
-    public void setPassengerId(Long passengerId) {
-        this.passengerId = passengerId;
+    public void setPassengerId(Passenger passenger) {
+        this.passenger = passenger;
     }
 
     public String getReportReason() {

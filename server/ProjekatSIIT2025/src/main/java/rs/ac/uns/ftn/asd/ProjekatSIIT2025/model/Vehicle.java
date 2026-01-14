@@ -1,8 +1,15 @@
 package rs.ac.uns.ftn.asd.ProjekatSIIT2025.model;
 
+import jakarta.persistence.*;
+
+@Entity
 public class Vehicle {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String model;
+
+    @Enumerated(value = EnumType.STRING)
     private VehicleType vehicleType;
     private String licensePlate;
     private int passengerCapacity;

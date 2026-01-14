@@ -1,29 +1,42 @@
 package rs.ac.uns.ftn.asd.ProjekatSIIT2025.model;
 
-import java.util.ArrayList;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
 public class Passenger extends User {
-    private ArrayList<Ride> rides;
-    private ArrayList<Path> favouritePaths;
+    @ManyToMany(cascade = {CascadeType.ALL}, mappedBy = "passengers")
+    private List<Ride> rides = new ArrayList<>();
+
+    @OneToMany(cascade = {CascadeType.ALL})
+    private List<Path> favouritePaths = new ArrayList<>();
+
+    public Passenger() {
+    }
 
     public Passenger(ArrayList<Ride> rides, ArrayList<Path> favouritePaths) {
         this.rides = rides;
         this.favouritePaths = favouritePaths;
     }
 
-    public ArrayList<Ride> getRides() {
+    public List<Ride> getRides() {
         return rides;
     }
 
-    public void setRides(ArrayList<Ride> rides) {
+    public void setRides(List<Ride> rides) {
         this.rides = rides;
     }
 
-    public ArrayList<Path> getFavouritePaths() {
+    public List<Path> getFavouritePaths() {
         return favouritePaths;
     }
 
-    public void setFavouritePaths(ArrayList<Path> favouritePaths) {
+    public void setFavouritePaths(List<Path> favouritePaths) {
         this.favouritePaths = favouritePaths;
     }
 }

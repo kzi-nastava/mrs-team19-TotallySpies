@@ -1,24 +1,33 @@
-package rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.authentification;
+package rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.auth;
+
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
 public class UserRegisterRequestDTO {
-    private Long id;
+    @NotBlank
+    @Email(message = "Email format is not valid")
     private String email;
+    @NotBlank
+    @Size(min = 8, message = "Password must be at least 8 characters")
     private String password;
+    @NotBlank(message = "Name is required")
     private String name;
+    @NotBlank(message = "Last name is required")
     private String lastName;
     private String profilePicture;
+    @NotBlank
+    @Pattern(
+            regexp = "^\\d{11}$",
+            message = "Phone number must have exactly 10 digits"
+    )
     private String phoneNumber;
     private String address;
 
 
     public UserRegisterRequestDTO(){}
 
-    public Long getId(){
-        return this.id;
-    }
-    public void setId(Long id){
-        this.id = id;
-    }
     public String getEmail(){
         return this.email;
     }
