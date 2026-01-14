@@ -13,6 +13,7 @@ import { DisplayInfoComponent } from './features/display-info/display-info.compo
 import { DriverRegistrationComponent } from './features/driver-registration/driver-registration.component';
 import { ActivateDriverComponent } from './features/activate-driver/activate-driver.component';
 import { RideTrackerUserComponent } from './features/ride-tracker-user/ride-tracker-user.component';
+import { RideOrderingComponent } from './features/ride-ordering/ride-ordering.component';
 
 export const routes: Routes = [
   {
@@ -75,5 +76,9 @@ export const routes: Routes = [
   {
     path: 'ride-tracker-user',
     component: RideTrackerUserComponent
+  },
+  {
+    path: 'ride-ordering',
+    component: RideOrderingComponent
   }
 ];

@@ -1,0 +1,124 @@
+<div class="page-container">
+  <main class="content-wrapper">
+    <aside class="sidebar">
+      <div class="scrollable-form">
+        <h1 class="title">Where <br> to go?</h1>
+
+        <div class="favorites">
+          <span class="star">⭐</span> Pick from favorites
+        </div>
+
+        <div class="route-inputs">
+          <div class="line-decorator"></div>
+
+          <div class="input-row">
+            <div class="dot-icon start"></div>
+            <input type="text" placeholder="Starting point" class="dark-input">
+          </div>
+
+          <div class="input-row draggable">
+            <span class="drag-handle">≡</span>
+            <input type="text" value="Jevrejska 7" class="dark-input">
+            <button class="icon-btn delete">🗑️</button>
+          </div>
+
+          <div class="input-row">
+            <div class="dot-icon end"></div>
+            <input type="text" placeholder="Destination" class="dark-input">
+          </div>
+
+          <button class="add-stop-btn">
+            <span class="plus-icon">⊕</span> Add stop
+          </button>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="section">
+          <label for="passenger-email">Invite passengers by email</label>
+          <div class="email-input-wrapper">
+            <input type="email" id="passenger-email" placeholder="Enter email" class="dark-input">
+            <button class="add-email-btn">⊕</button>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="section">
+          <label>Additional options</label>
+          <p class="sub-label">Vehicle type</p>
+          <div class="radio-group">
+            <label class="custom-radio">
+              <input type="radio" name="vehicle" checked>
+              <span class="radio-mark"></span> Standard
+            </label>
+            <label class="custom-radio">
+              <input type="radio" name="vehicle">
+              <span class="radio-mark"></span> Luxury
+            </label>
+            <label class="custom-radio">
+              <input type="radio" name="vehicle">
+              <span class="radio-mark"></span> Van
+            </label>
+          </div>
+
+          <label class="custom-checkbox">
+            <input type="checkbox"> <span class="check-mark"></span> Traveling with a baby
+          </label>
+          <br>
+          <label class="custom-checkbox">
+            <input type="checkbox"> <span class="check-mark"></span> Traveling with a pet
+          </label>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="section">
+          <label>Schedule ride</label>
+          <div class="radio-vertical">
+            <label class="custom-radio">
+              <input type="radio" name="time" value="now">
+              <span class="radio-mark"></span> Now
+            </label>
+            <label class="custom-radio">
+              <input type="radio" name="time" value="later" checked>
+              <span class="radio-mark"></span> Later
+            </label>
+          </div>
+
+          <div class="time-picker-card">
+            <p class="picker-title">Enter time</p>
+            <div class="time-selector">
+              <div class="time-unit">
+                <span class="val">20</span>
+                <span class="unit-label">Hour</span>
+              </div>
+              <span class="time-separator">:</span>
+              <div class="time-unit">
+                <span class="val">00</span>
+                <span class="unit-label">Minute</span>
+              </div>
+            </div>
+            <div class="picker-actions">
+              <button class="flat-btn">Cancel</button>
+              <button class="flat-btn">OK</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="scroll-spacer"></div>
+      </div>
+
+      <div class="sidebar-footer">
+        <div class="fade-gradient"></div>
+        <button class="search-main-btn">
+          Search
+        </button>
+      </div>
+    </aside>
+
+    <section class="map-view">
+      <app-map></app-map>
+    </section>
+  </main>
+</div>
