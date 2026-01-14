@@ -1,0 +1,13 @@
+<div class="driver-card">
+    <div class="driver-image">
+        <img [src]="profileImageUrl" alt="Driver Image">
+    </div>
+    <h3 class="driver-name">{{ driverName }}</h3>
+    <p class="car-model">{{ carModel }}</p>
+    <div class="rating">
+        <span *ngFor="let star of [1,2,3,4,5]" class="star">★</span>
+    </div>
+    <button class="report-btn" (click)="openReport()">
+    Report
+    </button>
+</div>

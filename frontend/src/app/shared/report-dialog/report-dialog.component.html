@@ -1,0 +1,13 @@
+<div class="report-container">
+  <div class="header">
+    <h2>Report driver</h2>
+    <button mat-icon-button (click)="close()" class="close-btn">×</button>
+  </div>
+
+  <textarea [(ngModel)]="reportText" 
+  name="reportText" placeholder="Your text here..." class="report-input"></textarea>
+
+  <div class="actions">
+    <button class="send-btn" (click)="submit()">Send</button>
+  </div>
+</div>

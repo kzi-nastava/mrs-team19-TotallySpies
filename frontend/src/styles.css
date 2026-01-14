@@ -1,7 +1,20 @@
 /* You can add global styles to this file, and also import other style files */
+* {
+    font-family: 'Montserrat', sans-serif;
+}
+
 html, body {
     margin: 0;
     padding: 0;
     height: 100%;
     overflow-x: hidden;
+}
+.cdk-overlay-backdrop {
+  background: rgba(0, 0, 0, 0.7) !important;
+  backdrop-filter: blur(2px); 
+}
+
+.mat-mdc-dialog-container .mdc-dialog__surface {
+  background-color: transparent !important;
+  box-shadow: none !important;
 }
