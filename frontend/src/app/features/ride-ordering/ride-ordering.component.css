@@ -1,0 +1,359 @@
+:host {
+  /* Colors */
+  --bg-main: #261f32;
+  --bg-card: #3b2f5c;
+  --bg-card-soft: #3b3564;
+
+  --accent: #4e428d;
+  --accent-strong: #473a91;
+  --green: #c8e932;
+  --danger: #ff5a5a;
+
+  --text-main: #ffffff;
+  --text-muted: #8d89a5;
+
+  /* Spacing */
+  --space-xs: 8px;
+  --space-sm: 12px;
+  --space-md: 20px;
+  --space-lg: 30px;
+  --space-xl: 50px;
+
+  /* Radius */
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 18px;
+  --radius-xl: 30px;
+}
+
+/* ========== PAGE LAYOUT ========== */
+
+.page-container {
+  height: calc(100vh - 3.8rem);
+  background: var(--bg-main);
+  font-family: 'Segoe UI', Roboto, sans-serif;
+  color: var(--text-main);
+  overflow: hidden;
+}
+
+.content-wrapper {
+  display: flex;
+  height: 100%;
+}
+
+/* ========== SIDEBAR ========== */
+
+.sidebar {
+  width: 420px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.scrollable-form {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-md) var(--space-md) var(--space-md) var(--space-md);
+}
+
+/* Scrollbar */
+.scrollable-form::-webkit-scrollbar {
+  width: 4px;
+}
+.scrollable-form::-webkit-scrollbar-thumb {
+  background: var(--accent);
+  border-radius: 10px;
+}
+
+/* ========== TYPOGRAPHY ========== */
+
+.title {
+  font-size: 58px;
+  line-height: 1;
+  font-weight: 800;
+  margin-bottom: var(--space-lg);
+  background-image: linear-gradient(to right, #6e58c6, #c8e261, #c8e261);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+.favorites {
+  color: var(--green);
+  font-size: 14px;
+  margin-bottom: var(--space-lg);
+  cursor: pointer;
+}
+
+/* ========== ROUTE INPUTS ========== */
+
+.route-inputs {
+  position: relative;
+  padding-left: 20px;
+}
+
+.line-decorator {
+  position: absolute;
+  left: 3px;
+  top: 25px;
+  bottom: 80px;
+  border-left: 2px dashed #4b4474;
+}
+
+.input-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-sm);
+  position: relative;
+}
+
+.dark-input {
+  width: 100%;
+  background: var(--bg-card);
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 16px 20px;
+  font-size: 15px;
+  color: var(--text-main);
+}
+
+.dark-input::placeholder {
+  color: var(--text-muted);
+}
+
+.dark-input:focus {
+  outline: 1px solid #b6d957;;
+}
+
+/* Email */
+
+.email-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.email-input {
+  max-width: 220px;
+}
+
+.add-email-btn {
+  color: var(--green);
+  background: transparent;
+  outline: none;
+  border-style: none;
+  width: 50px;
+  height: 50px;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+
+/* Route icons */
+
+.dot-icon {
+  position: absolute;
+  left: -24px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.dot-icon.start {
+  border: 2px solid var(--green);
+}
+
+.dot-icon.end {
+  background: var(--danger);
+  border: 2px solid var(--danger);
+}
+
+.drag-handle {
+  font-size: 20px;
+  cursor: grab;
+  color: var(--text-muted);
+}
+
+.icon-btn.delete {
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  color: var(--danger);
+}
+
+/* Add stop */
+
+.add-stop-btn {
+  background: none;
+  border: none;
+  color: var(--green);
+  font-size: 17px;
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  cursor: pointer;
+  padding: var(--space-xs) 0;
+}
+
+/* ========== SECTIONS ========== */
+.section {
+  margin-bottom: 20px;
+}
+
+.section label {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.sub-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin: var(--space-sm) 0;
+}
+
+.divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.05);
+  margin: var(--space-lg) 0;
+}
+
+/* Checkbox */
+
+.custom-checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 15px;
+  cursor: pointer;
+  font-size: 17px;
+}
+
+input[type="radio"], 
+input[type="checkbox"] {
+  accent-color: var(--green); 
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.custom-checkbox span {
+  font-size: 17px;
+}
+
+/* ========== TIME PICKER ========== */
+
+.time-picker-card {
+  width: 220px;
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: var(--space-md);
+  margin-top: var(--space-md);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+}
+
+.picker-title {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: var(--space-sm);
+}
+
+.time-selector {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.time-unit {
+  background: var(--bg-card-soft);
+  border-radius: var(--radius-sm);
+  padding: 10px 15px;
+  text-align: center;
+}
+
+.time-unit .val {
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.time-unit .unit-label {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+.time-separator {
+  font-size: 24px;
+}
+
+.picker-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-sm);
+  margin-top: var(--space-sm);
+}
+
+.flat-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.radio-vertical {
+  margin-top: 10px;
+}
+
+/* ========== FOOTER BUTTON ========== */
+
+.sidebar-footer {
+  padding: 0 var(--space-lg) var(--space-lg) var(--space-xl);
+  position: relative;
+  display: flex;   
+  justify-content: center;
+}
+
+.fade-gradient {
+  position: absolute;
+  top: -80px;
+  left: 0;
+  right: 0;
+  height: 80px;
+  background: linear-gradient(to bottom, transparent, var(--bg-main));
+}
+
+.search-main-btn {
+  width: 60%;
+  background: var(--bg-card);
+  border: none;
+  color: white;
+  padding: 14px;
+  border-radius: var(--radius-lg);
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+/* ========== MAP ========== */
+
+.map-view {
+  flex: 1;
+  margin: 25px;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  border: 5px solid var(--bg-card);
+}
+
+/* Spacer */
+
+.scroll-spacer {
+  height: 40px;
+}
