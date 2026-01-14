@@ -5,13 +5,22 @@
       [driverName]="currentDriver.driverName" 
       [carModel]="currentDriver.carModel" 
       [rating]="currentDriver.rating"
-      [profileImageUrl]="currentDriver.profileImageUrl">
+      [profileImageUrl]="currentDriver.profileImageUrl"
+      [isFinished]="currentDriver.isFinished">
     </app-driver-info>
 
-    <app-timer-card 
-      [minutes]="minutesRemaining" 
-      [progressValue]="progress">
-    </app-timer-card>
+    <div class="timer-section">
+      <app-timer-card *ngIf="!currentDriver.isFinished"
+        [minutes]="minutesRemaining" 
+        [progressValue]="progress">
+      </app-timer-card>
+
+      <app-timer-card *ngIf="currentDriver.isFinished"
+        [minutes]="0" 
+        [progressValue]="100"
+        statusText="Arrived">
+      </app-timer-card>
+    </div>
     
     </div>
 

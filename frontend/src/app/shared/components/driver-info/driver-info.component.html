@@ -7,7 +7,11 @@
     <div class="rating">
         <span *ngFor="let star of [1,2,3,4,5]" class="star">★</span>
     </div>
-    <button class="report-btn" (click)="openReport()">
+    <button *ngIf="!isFinished" class="report-btn" (click)="openReport()">
     Report
-    </button>
+  </button>
+  <div *ngIf="isFinished" class="review-actions">
+    <button class="rate-btn" (click)="openReview('driver')">Rate Driver</button>
+    <button class="rate-btn" (click)="openReview('vehicle')">Rate Vehicle</button>
+  </div>
 </div>
