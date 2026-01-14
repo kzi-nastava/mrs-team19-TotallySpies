@@ -1,45 +1,48 @@
 package rs.ac.uns.ftn.asd.ProjekatSIIT2025.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.parameters.P;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.authentification.UserLoginRequestDTO;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.authentification.UserLoginResponseDTO;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.authentification.UserRegisterRequestDTO;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.authentification.UserRegisterResponseDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.User;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.UserRole;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.UserRepository;
+import java.time.Instant;
+import java.util.Date;
 
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
 
     @Autowired
     UserRepository userRepository;
 
-    @Autowired
-    AuthenticationManager authManager;
+    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 
-    @Autowired
-    JWTService jwtService;
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = userRepository.findByEmail(email);
 
-    private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
-
-    public UserRegisterResponseDTO register(UserRegisterRequestDTO dto){
-        User user = new User(dto);
-        user.setPassword(encoder.encode(user.getPassword()));
-        userRepository.save(user);
-        return new UserRegisterResponseDTO(user);
-    }
-
-    public String verify(UserLoginRequestDTO request){
-        Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
-        if (authentication.isAuthenticated()){
-            return jwtService.generateToken(request.getEmail());
+        if (user == null){
+            System.out.println("User with that email not found");
+            throw new UsernameNotFoundException("User with that email not found");
         }
-        return "Failed";
+        return user;
     }
+
+    public void updatePassword(String email, String password){
+        String encodedPassword = encoder.encode(password);
+        User user = userRepository.findByEmail(email);
+        user.setPassword(encodedPassword);
+        //userRepository.updatePassword(email, encodedPassword);
+        //needed for jwt validation
+        user.setLastPasswordResetDate(Date.from(Instant.now()));
+        userRepository.save(user);
+    }
+    public UserRole getRoleByEmail(String email){
+        return userRepository.getRoleByEmail(email);
+    }
+
 }

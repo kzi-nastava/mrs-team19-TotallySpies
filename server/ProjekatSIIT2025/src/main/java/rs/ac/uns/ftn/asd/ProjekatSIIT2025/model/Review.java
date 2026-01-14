@@ -1,18 +1,34 @@
 package rs.ac.uns.ftn.asd.ProjekatSIIT2025.model;
 
+import jakarta.persistence.*;
+
+@Entity
 public class Review {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long passengerId;
-    private Long rideId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="passenger_id")
+    private Passenger passenger;
+
     private String comment;
+
     private int grade;
 
-    public Review(Long id, Long passengerId, Long rideId, String comment, int grade) {
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="ride_id")
+    private Ride ride;
+
+    public Review() {
+    }
+
+    public Review(Long id, Passenger passenger, String comment, int grade, Ride ride) {
         this.id = id;
-        this.passengerId = passengerId;
-        this.rideId = rideId;
+        this.passenger = passenger;
         this.comment = comment;
         this.grade = grade;
+        this.ride = ride;
     }
 
     public Long getId() {
@@ -23,20 +39,12 @@ public class Review {
         this.id = id;
     }
 
-    public Long getPassengerId() {
-        return passengerId;
+    public Passenger getPassenger() {
+        return passenger;
     }
 
-    public void setPassengerId(Long passengerId) {
-        this.passengerId = passengerId;
-    }
-
-    public Long getRideId() {
-        return rideId;
-    }
-
-    public void setRideId(Long rideId) {
-        this.rideId = rideId;
+    public void setPassenger(Passenger passenger) {
+        this.passenger = passenger;
     }
 
     public String getComment() {
@@ -53,5 +61,13 @@ public class Review {
 
     public void setGrade(int grade) {
         this.grade = grade;
+    }
+
+    public Ride getRide() {
+        return ride;
+    }
+
+    public void setRide(Ride ride) {
+        this.ride = ride;
     }
 }

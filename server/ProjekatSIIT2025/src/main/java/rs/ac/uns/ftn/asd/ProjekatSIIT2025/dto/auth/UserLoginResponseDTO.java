@@ -1,4 +1,4 @@
-package rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.authentification;
+package rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.auth;
 
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.UserRole;
 

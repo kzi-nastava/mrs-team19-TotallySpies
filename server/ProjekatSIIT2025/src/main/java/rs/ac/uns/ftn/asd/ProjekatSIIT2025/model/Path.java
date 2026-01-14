@@ -1,16 +1,34 @@
 package rs.ac.uns.ftn.asd.ProjekatSIIT2025.model;
 
+import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 
+@Entity
 public class Path {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "start_location_id", nullable = false)
     private Location startingAddress;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "dest_location_id", nullable = false)
     private Location destinationAddress;
     private double mileage;
     private double estimatedTime;
     private double pricePerMileage;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="passenger_id")
+    private Passenger passenger;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="ride_id")
+    private Ride ride;
 
     public Path(Long id, LocalDateTime startTime, LocalDateTime endTime, Location startingAddress,
                 Location destinationAddress, double mileage, double estimatedTime, double pricePerMileage) {

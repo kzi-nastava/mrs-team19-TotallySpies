@@ -4,31 +4,43 @@ import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.authentification.UserRegisterRequestDTO;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.auth.UserRegisterRequestDTO;
+
+import java.sql.Timestamp;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 @Entity
 @Table(name = "users")
+@Inheritance(strategy = InheritanceType.JOINED)
 // POJO that implements Spring Security UserDetails interface that specify primary informations of spring user
 // (which roles he has, is account locked, expired, are credentials expired)
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column( nullable = false)
     private String name;
+    @Column( nullable = false)
     private String lastName;
     private String profilePicture;
     private String phoneNumber;
     @Column(unique = true, nullable = false)
     private String email;
+    @Column( nullable = false)
     private String password;
     @Enumerated(EnumType.STRING)
-    @Column(name = "role")
+    @Column( nullable = false)
     private UserRole role;
     private String address;
     private Boolean isBlocked;
-    private String jwt;
+    @OneToOne(mappedBy = "user",cascade = CascadeType.ALL, orphanRemoval = true)
+    ForgotPassword forgotPassword;
+    @Column(name = "last_password_reset_date")
+    private Date lastPasswordResetDate;
+    @Column(nullable = false)
+    private boolean enabled = false;
 
     public User(){}
     public User(UserRegisterRequestDTO request) {
@@ -88,11 +100,30 @@ public class User implements UserDetails {
     public void setEmail(String email) {
         this.email = email;
     }
+    public ForgotPassword getForgotPassword() {
+        return forgotPassword;
+    }
+
+    public void setForgotPassword(ForgotPassword forgotPassword) {
+        this.forgotPassword = forgotPassword;
+    }
+
+    public Date getLastPasswordResetDate() {
+        return lastPasswordResetDate;
+    }
+
+    public void setLastPasswordResetDate(Date lastPasswordResetDate) {
+        this.lastPasswordResetDate = lastPasswordResetDate;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        //return List.of(new SimpleGrantedAuthority(role.name()));
-        return List.of(new SimpleGrantedAuthority("PASSENGER"));
+        if (role == null) return List.of();
+        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
     }
 
     public String getPassword() {
@@ -132,17 +163,10 @@ public class User implements UserDetails {
         isBlocked = blocked;
     }
 
-    public String getJwt() {
-        return jwt;
-    }
-
-    public void setJwt(String jwt) {
-        this.jwt = jwt;
-    }
     @Override public boolean isAccountNonExpired() { return true; }
     @Override public boolean isAccountNonLocked() { return true; }
     @Override public boolean isCredentialsNonExpired() { return true; }
-    @Override public boolean isEnabled() { return true; }
+    @Override public boolean isEnabled() { return enabled; }
 
 }
 

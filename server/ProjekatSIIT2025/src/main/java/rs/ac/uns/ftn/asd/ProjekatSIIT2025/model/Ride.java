@@ -1,31 +1,65 @@
 package rs.ac.uns.ftn.asd.ProjekatSIIT2025.model;
 
+import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
+@Entity
 public class Ride {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private LocalDateTime startTime;
-    private LocalDateTime endTime;
-    private double totalPrice;
-    private Long riderId;
-    private ArrayList<Long> passengers;
-    private ArrayList<Long> paths;
-    private ArrayList<Long> reviews;
-    private RideStatus status;
-    private Long rideRejectionId;
-    private boolean panic;
-    private boolean babiesTransport;
-    private boolean petsTransport;
-    private VehicleType vehicleType;
-    private ArrayList<Long> reports;
 
-    public Ride(Long id, LocalDateTime startTime, LocalDateTime endTime, double totalPrice, Long riderId, ArrayList<Long> passengers, ArrayList<Long> paths, ArrayList<Long> reviews, RideStatus status, Long rideRejectionId, boolean panic, boolean babiesTransport, boolean petsTransport, VehicleType vehicleType, ArrayList<Long> reports) {
+    private LocalDateTime startTime;
+
+    private LocalDateTime endTime;
+
+    private double totalPrice;
+
+    @ManyToOne
+    private Driver driver;
+
+    @ManyToMany()
+    private List<Passenger> passengers = new ArrayList<>();
+
+    @OneToMany(mappedBy = "ride")
+    private List<Path> paths;
+
+    @OneToMany(mappedBy = "ride")
+    private List<Review> reviews;
+
+    @OneToMany(mappedBy = "ride")
+    private List<Report> reports;
+
+    @Enumerated(EnumType.STRING)
+    private RideStatus status;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    private RideRejection rideRejectionId;
+
+    private boolean panic;
+
+    private boolean babiesTransport;
+
+    private boolean petsTransport;
+
+    @Enumerated(EnumType.STRING)
+    private VehicleType vehicleType;
+
+    public Ride() {
+    }
+
+    public Ride(Long id, LocalDateTime startTime, LocalDateTime endTime, double totalPrice, Driver driver,
+                List<Passenger> passengers, List<Path> paths, List<Review> reviews, RideStatus status,
+                RideRejection rideRejectionId, boolean panic, boolean babiesTransport, boolean petsTransport,
+                VehicleType vehicleType, List<Report> reports) {
         this.id = id;
         this.startTime = startTime;
         this.endTime = endTime;
         this.totalPrice = totalPrice;
-        this.riderId = riderId;
+        this.driver = driver;
         this.passengers = passengers;
         this.paths = paths;
         this.reviews = reviews;
@@ -70,35 +104,35 @@ public class Ride {
         this.totalPrice = totalPrice;
     }
 
-    public Long getRiderId() {
-        return riderId;
+    public Driver getDriver() {
+        return driver;
     }
 
-    public void setRiderId(Long riderId) {
-        this.riderId = riderId;
+    public void setDriver(Driver driver) {
+        this.driver = driver;
     }
 
-    public ArrayList<Long> getPassengers() {
+    public List<Passenger> getPassengers() {
         return passengers;
     }
 
-    public void setPassengers(ArrayList<Long> passengers) {
+    public void setPassengers(List<Passenger> passengers) {
         this.passengers = passengers;
     }
 
-    public ArrayList<Long> getPaths() {
+    public List<Path> getPaths() {
         return paths;
     }
 
-    public void setPaths(ArrayList<Long> paths) {
+    public void setPaths(List<Path> paths) {
         this.paths = paths;
     }
 
-    public ArrayList<Long> getReviews() {
+    public List<Review> getReviews() {
         return reviews;
     }
 
-    public void setReviews(ArrayList<Long> reviews) {
+    public void setReviews(List<Review> reviews) {
         this.reviews = reviews;
     }
 
@@ -110,11 +144,11 @@ public class Ride {
         this.status = status;
     }
 
-    public Long getRideRejectionId() {
+    public RideRejection getRideRejectionId() {
         return rideRejectionId;
     }
 
-    public void setRideRejectionId(Long rideRejectionId) {
+    public void setRideRejectionId(RideRejection rideRejectionId) {
         this.rideRejectionId = rideRejectionId;
     }
 
@@ -150,11 +184,11 @@ public class Ride {
         this.vehicleType = vehicleType;
     }
 
-    public ArrayList<Long> getReports() {
+    public List<Report> getReports() {
         return reports;
     }
 
-    public void setReports(ArrayList<Long> reports) {
+    public void setReports(List<Report> reports) {
         this.reports = reports;
     }
 }

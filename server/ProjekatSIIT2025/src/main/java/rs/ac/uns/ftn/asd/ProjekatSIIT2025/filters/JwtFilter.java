@@ -1,4 +1,4 @@
-package rs.ac.uns.ftn.asd.ProjekatSIIT2025.config;
+package rs.ac.uns.ftn.asd.ProjekatSIIT2025.filters;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -12,10 +12,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.User;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.services.JWTService;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.services.impl.CustomUserDetailsService;
-
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.services.UserService;
 import java.io.IOException;
+import java.sql.Timestamp;
+import java.util.Date;
 
 //for every request, this filter will be executed once
 //if this filter is successful , then it will forward to UsernamePasswordAuthenticationFilter
@@ -41,16 +43,27 @@ public class JwtFilter extends OncePerRequestFilter {
         //check if is already authenticated
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null){
             //gets email and other user details from database
-            UserDetails userDetails = context.getBean(CustomUserDetailsService.class).loadUserByUsername(email);
-            if(jwtService.validateToken(token,userDetails)){
+            UserDetails userDetails = context.getBean(UserService.class).loadUserByUsername(email);
+            User user = (User) userDetails;
+            Date lastPasswordResetDate = user.getLastPasswordResetDate();
+            if(jwtService.validateToken(token,userDetails,lastPasswordResetDate)){
                 //if token is valid, next filter is used
                 UsernamePasswordAuthenticationToken authToken =
                         new UsernamePasswordAuthenticationToken(userDetails,null, userDetails.getAuthorities());
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 //adding the token in the chain
+                //it tells Spring Security that For THIS request, the currently logged-in user is
+                // userDetails with these authorities
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
         }
         filterChain.doFilter(request,response);
+    }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getServletPath();
+        return path.startsWith("/api/v1/auth/")
+                || path.startsWith("/api/v1/forgot-password/");
     }
 }
