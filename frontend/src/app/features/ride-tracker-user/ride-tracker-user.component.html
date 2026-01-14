@@ -1,0 +1,25 @@
+<div class="main-container">
+  
+  <div class="info-panel">
+    <app-driver-info 
+      [driverName]="currentDriver.driverName" 
+      [carModel]="currentDriver.carModel" 
+      [rating]="currentDriver.rating"
+      [profileImageUrl]="currentDriver.profileImageUrl">
+    </app-driver-info>
+
+    <app-timer-card 
+      [minutes]="minutesRemaining" 
+      [progressValue]="progress">
+    </app-timer-card>
+    
+    </div>
+
+  <div class="map-container">
+    <app-map 
+      [pickupAddress]="pickupAddress" 
+      [destinationAddress]="destinationAddress">
+    </app-map>
+  </div>
+
+</div>

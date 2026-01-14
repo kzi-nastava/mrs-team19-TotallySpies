@@ -1,0 +1,23 @@
+*{
+    background-color: #261F32;
+    height: 100%;
+
+}
+.main-container {
+  display: flex;
+  width: 100%;
+}
+.info-panel {
+  margin-top: 4rem;
+  align-items: center;
+  width: 25rem; 
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto; 
+}
+
+.map-container {
+  flex: 1; 
+  position: relative;
+  border-left: 1px solid #3b3654;
+}
