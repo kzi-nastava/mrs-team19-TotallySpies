@@ -76,7 +76,7 @@ export const routes: Routes = [
   {
     path: 'ride-tracker-user',
     component: RideTrackerUserComponent
-  }
+  },
   {
     path: 'ride-ordering',
     component: RideOrderingComponent
