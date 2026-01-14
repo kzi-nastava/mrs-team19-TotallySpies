@@ -9,8 +9,8 @@
     </mat-progress-spinner>
     
     <div class="inner-text">
-      <span class="label">Arriving in</span>
-      <span class="time">4 min</span>
+      <span class="label">{{ statusText }}</span>
+      <span class="time" *ngIf="minutes > 0">{{ minutes }} min</span>
     </div>
   </div>
 </div>

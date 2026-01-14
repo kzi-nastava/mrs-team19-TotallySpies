@@ -64,3 +64,27 @@
   gap: 8px;
   font-size: 14px;
 }
+
+.review-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  margin-top: 15px;
+}
+
+.rate-btn {
+  background-color: #6E58C6;
+  color: #E8EDFC;
+  border: none;
+  padding: 10px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: 0.3s;
+}
+
+.rate-btn:hover {
+  background-color: #5a48a3;
+}

@@ -12,4 +12,5 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 export class TimerCardComponent {
   @Input() progressValue: number = 70;
   @Input() minutes: number = 7;
+  @Input() statusText: string = 'Arriving in'
 }
