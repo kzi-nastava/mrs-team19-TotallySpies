@@ -1,0 +1,52 @@
+h2 {
+    color: #C5B6FF;
+    font-size: 2.5rem;
+}
+.scheduled-container {
+    background-color: #261F32;
+    min-height: 100vh;
+    padding: 1.3rem 8rem;
+    font-family: 'Montserrat', sans-serif;
+}
+.ride-card-container {
+    background-color: #6E58C630; 
+    border-radius: 15px;
+    display: flex;
+    justify-content: space-between; 
+    padding: 2rem;
+    position: relative;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+.left-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; 
+    gap: 1rem;
+ }
+
+.right-section {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+.start-btn {
+    padding: 8px 20px;
+    background-color: #C5B6FF;
+    color: #261F32;
+    border: none;
+    border-radius: 0.6rem;
+    cursor: pointer;
+    font-weight: 600;
+    width: fit-content;
+    margin-top: 10px;
+    transition: all 0.2s ease;
+}
+
+.start-btn:hover {
+    background-color: #b3a1ff;
+    transform: translateY(-2px);
+}

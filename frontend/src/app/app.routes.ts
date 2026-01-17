@@ -14,6 +14,7 @@ import { DriverRegistrationComponent } from './features/driver-registration/driv
 import { ActivateDriverComponent } from './features/activate-driver/activate-driver.component';
 import { RideTrackerUserComponent } from './features/ride-tracker-user/ride-tracker-user.component';
 import { RideOrderingComponent } from './features/ride-ordering/ride-ordering.component';
+import { ScheduledRidesComponent } from './features/scheduled-rides/scheduled-rides.component';
 
 export const routes: Routes = [
   {
@@ -80,5 +81,9 @@ export const routes: Routes = [
   {
     path: 'ride-ordering',
     component: RideOrderingComponent
+  },
+  {
+    path: 'scheduled-rides',
+    component: ScheduledRidesComponent
   }
 ];

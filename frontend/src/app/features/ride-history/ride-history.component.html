@@ -7,7 +7,7 @@
     <div class="ride-card-container" *ngFor="let ride of rides">
         
         <div class="left-section">
-            <app-ride-info [ride]="ride"></app-ride-info>
+            <app-ride-info [ride]="ride" [isUpcoming]="!ride.isUpcoming"></app-ride-info>
         </div>
 
         <div class="right-section">
