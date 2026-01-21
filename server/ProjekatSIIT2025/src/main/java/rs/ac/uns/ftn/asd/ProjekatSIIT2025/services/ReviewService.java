@@ -1,5 +1,8 @@
 package rs.ac.uns.ftn.asd.ProjekatSIIT2025.services;
 
+import java.time.LocalDateTime;
+
+import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -33,6 +36,8 @@ public class ReviewService {
 
         Ride ride = rideRepository.findById(rideId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "ride is not found"));
         
+        validateReviewTime(ride.getEndTime());
+
         boolean participated = ride.getPassengers().stream().anyMatch(p -> p.getId().equals(passenger.getId()));
         if (!participated) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "you cannot review a ride you did not participate in!");
@@ -49,5 +54,15 @@ public class ReviewService {
         review.setType(type);
 
         return reviewRepository.save(review);
+    }
+
+    private void validateReviewTime(LocalDateTime endTime) {
+        if (endTime == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ride isnt finished yet");
+        }
+        LocalDateTime deadline = endTime.plusDays(3);
+        if (LocalDateTime.now().isAfter(deadline)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "review deadline has expired (3 days limit)");
+        }
     }
 }
