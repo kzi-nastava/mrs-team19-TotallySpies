@@ -8,6 +8,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.RidePreviewResponseDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.users.*;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.Driver;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.services.DriverService;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.services.ProfileChangeService;
 
 import java.time.LocalDateTime;
@@ -20,6 +22,9 @@ import java.util.List;
 public class AdminController {
     @Autowired
     ProfileChangeService profileChangeService;
+
+    @Autowired
+    DriverService driverService;
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping(value = "/profile-change-requests")
@@ -39,6 +44,13 @@ public class AdminController {
     public ResponseEntity<Void> reject(@PathVariable Long id){
         profileChangeService.rejectRequest(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/create-driver")
+    public ResponseEntity<Void> createDriver(@RequestBody CreateDriverRequestDTO dto) {
+        driverService.createDriver(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     /* @GetMapping("/{id}")
