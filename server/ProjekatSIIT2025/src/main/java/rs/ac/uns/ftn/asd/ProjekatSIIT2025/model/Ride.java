@@ -36,8 +36,8 @@ public class Ride {
     @Enumerated(EnumType.STRING)
     private RideStatus status;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    private RideRejection rideRejectionId;
+    @OneToOne()
+    private RideCancellation rideCancellation;
 
     private boolean panic;
 
@@ -53,7 +53,7 @@ public class Ride {
 
     public Ride(Long id, LocalDateTime startTime, LocalDateTime endTime, double totalPrice, Driver driver,
                 List<Passenger> passengers, List<Path> paths, List<Review> reviews, RideStatus status,
-                RideRejection rideRejectionId, boolean panic, boolean babiesTransport, boolean petsTransport,
+                RideCancellation rideCancellation, boolean panic, boolean babiesTransport, boolean petsTransport,
                 VehicleType vehicleType, List<Report> reports) {
         this.id = id;
         this.startTime = startTime;
@@ -64,7 +64,7 @@ public class Ride {
         this.paths = paths;
         this.reviews = reviews;
         this.status = status;
-        this.rideRejectionId = rideRejectionId;
+        this.rideCancellation = rideCancellation;
         this.panic = panic;
         this.babiesTransport = babiesTransport;
         this.petsTransport = petsTransport;
@@ -144,12 +144,12 @@ public class Ride {
         this.status = status;
     }
 
-    public RideRejection getRideRejectionId() {
-        return rideRejectionId;
+    public RideCancellation getRideCancellation() {
+        return rideCancellation;
     }
 
-    public void setRideRejectionId(RideRejection rideRejectionId) {
-        this.rideRejectionId = rideRejectionId;
+    public void setRideCancellation(RideCancellation rideCancellation) {
+        this.rideCancellation = rideCancellation;
     }
 
     public boolean isPanic() {
