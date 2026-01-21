@@ -15,6 +15,10 @@ import { ActivateDriverComponent } from './features/activate-driver/activate-dri
 import { RideTrackerUserComponent } from './features/ride-tracker-user/ride-tracker-user.component';
 import { RideOrderingComponent } from './features/ride-ordering/ride-ordering.component';
 import { ScheduledRidesComponent } from './features/scheduled-rides/scheduled-rides.component';
+import { ForgotPasswordComponent } from './core/auth/pages/forgot-password/forgot-password.component';
+import { VerifyOtpComponent } from './core/auth/pages/verify-otp/verify-otp.component';
+import { ChangePasswordComponent } from './core/auth/pages/change-password/change-password.component';
+import { ActivateAccountComponent } from './core/auth/pages/activate-account/activate-account.component';
 
 export const routes: Routes = [
   {
@@ -28,6 +32,22 @@ export const routes: Routes = [
   {
     path: 'register',
     component: RegisterComponent,
+  },
+  {
+    path: 'forgot-password',
+    component: ForgotPasswordComponent
+  },
+  {
+    path: 'verify-otp',
+    component : VerifyOtpComponent
+  },
+  {
+    path: 'change-password',
+    component : ChangePasswordComponent
+  },
+  {
+    path : 'activate-account',
+    component : ActivateAccountComponent
   },
   {
     path: 'profile',

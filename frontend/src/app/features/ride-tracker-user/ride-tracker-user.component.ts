@@ -16,7 +16,7 @@ export class RideTrackerUserComponent {
     carModel: 'Subaru XV',
     rating: 5,
     profileImageUrl: '/images/driver_placeholder.png',
-    isFinished: false,  //when ride is finished, set to true
+    isFinished: true, //when ride is finished, set to true
   };
 
   minutesRemaining: number = 7;

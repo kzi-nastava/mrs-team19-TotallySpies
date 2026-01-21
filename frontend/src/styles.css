@@ -18,3 +18,27 @@ html, body {
   background-color: transparent !important;
   box-shadow: none !important;
 }
+.error-snackbar {
+  background: #ff4d4f;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 500;
+  border-radius: 12px;
+  /* padding: 14px 20px; */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+.confirm-snackbar {
+  background: #6e58c6;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 500;
+  border-radius: 12px;
+  padding: 2px 2px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+/* action button (OK) */
+.error-snackbar .mat-mdc-snack-bar-action {
+  color: #ffffff;
+  font-weight: 600;
+}

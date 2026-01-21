@@ -4,6 +4,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import org.springframework.web.multipart.MultipartFile;
 
 public class UserRegisterRequestDTO {
     @NotBlank
@@ -12,17 +13,22 @@ public class UserRegisterRequestDTO {
     @NotBlank
     @Size(min = 8, message = "Password must be at least 8 characters")
     private String password;
+    @NotBlank
+    @Size(min = 8, message = "Password must be at least 8 characters")
+    private String confirmedPassword;
     @NotBlank(message = "Name is required")
     private String name;
     @NotBlank(message = "Last name is required")
     private String lastName;
-    private String profilePicture;
+    private MultipartFile profilePicture;
     @NotBlank
     @Pattern(
             regexp = "^\\d{11}$",
-            message = "Phone number must have exactly 10 digits"
+            message = "Phone number must have exactly 11 digits"
     )
+    @NotBlank(message = "Phone number is required")
     private String phoneNumber;
+    @NotBlank(message = "Address is required")
     private String address;
 
 
@@ -52,12 +58,15 @@ public class UserRegisterRequestDTO {
     public void setLastName(String lastName){
         this.lastName = lastName;
     }
-    public String getProfilePicture(){
-        return this.profilePicture;
+
+    public MultipartFile getProfilePicture() {
+        return profilePicture;
     }
-    public void setProfilePicture(String profilePicture){
+
+    public void setProfilePicture(MultipartFile profilePicture) {
         this.profilePicture = profilePicture;
     }
+
     public String getPhoneNumber(){
         return this.phoneNumber;
     }
@@ -70,4 +79,6 @@ public class UserRegisterRequestDTO {
     public void setAddress(String address){
         this.address = address;
     }
+    public String getConfirmedPassword() {return confirmedPassword;}
+    public void setConfirmedPassword(String confirmedPassword) {this.confirmedPassword = confirmedPassword;}
 }

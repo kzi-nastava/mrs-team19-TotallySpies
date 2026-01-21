@@ -16,6 +16,9 @@ public class Review {
 
     private int grade;
 
+    @Enumerated(EnumType.STRING)
+    private ReviewType type;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="ride_id")
     private Ride ride;
@@ -23,11 +26,12 @@ public class Review {
     public Review() {
     }
 
-    public Review(Long id, Passenger passenger, String comment, int grade, Ride ride) {
+    public Review(Long id, Passenger passenger, String comment, int grade, ReviewType type, Ride ride) {
         this.id = id;
         this.passenger = passenger;
         this.comment = comment;
         this.grade = grade;
+        this.type = type;
         this.ride = ride;
     }
 
@@ -61,6 +65,14 @@ public class Review {
 
     public void setGrade(int grade) {
         this.grade = grade;
+    }
+
+    public ReviewType getType() {
+        return type;
+    }
+
+    public void setType(ReviewType type) {
+        this.type = type;
     }
 
     public Ride getRide() {
