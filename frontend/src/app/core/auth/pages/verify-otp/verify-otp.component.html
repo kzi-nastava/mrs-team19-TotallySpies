@@ -1,0 +1,36 @@
+<div class="verify-otp-bg">
+  <div class="verify-otp-layout">
+    <div class="illustration">
+      <img src="/illustrations/illustration_1_v2.png" alt="illustration" />
+    </div>
+
+    <div class="verify-otp-card">
+      <h1>Check your email</h1>
+      <p>We sent a reset link to you, please enter a 6 digit code that is mentioned in email.</p>
+
+      <form [formGroup] = "verifyOtpForm" (ngSubmit)="verifyOtp()">
+        <div class="otp" formArrayName="otp" >
+            <input
+                *ngFor="let control of otp.controls; let i = index"
+                class="otp-box"
+                autocomplete="one-time-code"
+                maxlength="1"
+                [formControl]="control"
+                (input)="onInput($event, i)"
+
+            />
+        </div>
+        @if(otp.touched && otp.invalid){
+            <div
+            class="error">
+            OTP invalid format
+          </div>
+          }
+        <div class="button-container">
+          <button type="submit">Continue</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+

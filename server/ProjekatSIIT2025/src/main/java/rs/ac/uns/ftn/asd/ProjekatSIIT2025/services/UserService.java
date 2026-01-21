@@ -18,6 +18,7 @@ import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.UserRole;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.UserRepository;
 import java.time.Instant;
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -36,15 +37,14 @@ public class UserService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = userRepository.findByEmail(email);
-
         if (user == null){
-            System.out.println("User with that email not found");
             throw new UsernameNotFoundException("User with that email not found");
         }
         return user;
     }
 
     public void updatePassword(String email, String password){
+        //System.out.println("Nova lozinka " + password);
         String encodedPassword = encoder.encode(password);
         User user = userRepository.findByEmail(email);
         user.setPassword(encodedPassword);
@@ -52,6 +52,7 @@ public class UserService implements UserDetailsService {
         //needed for jwt validation
         user.setLastPasswordResetDate(Date.from(Instant.now()));
         userRepository.save(user);
+
     }
     public UserRole getRoleByEmail(String email){
         return userRepository.getRoleByEmail(email);

@@ -2,54 +2,116 @@
   <div class="register-bg">
     <div class="register-card">
       <h1>Register</h1>
-      <div class="register-layout">
-        <div>
-          <label>
-            Email
-            <input type="text" placeholder="Enter your email" />
-          </label>
-          <label>
-            Password
-            <input type="password" placeholder="Enter your password" />
-          </label>
-          <a class="forgot" href="#">Forgot password</a>
-          <label>
-            Confirm password
-            <input type="password" placeholder="Confirm your password" />
-          </label>
-          <div class="illustration">
-            <img src="/illustrations/illustration_2_v2.png" alt="illustration" />
-          </div>
-        </div>
-        <div>
-          <label>
-            Name
-            <input type="text" placeholder="Enter your name" />
-          </label>
-          <label>
-            Last name
-            <input type="text" placeholder="Enter your last name" />
-          </label>
-          <label>
-            Address
-            <input type="text" placeholder="Enter your address" />
-          </label>
-          <label>
-            Phone number
-            <input type="text" placeholder="Enter your phone number" />
-          </label>
-          <label>
-            Add profile photo
-            <div class="add-photo-icon">
-              <img src="/icons/add-photo-icon.png" alt="add-photo-icon" />
-              <p>Drop your image here or <a class="browse" href="#"> browse</a></p>
+        <form  [formGroup]="registerForm" (ngSubmit) = "register()">
+          <div class="register-layout">
+            <div>
+              <label>
+                Email
+                <input type="email" formControlName = "email" placeholder="Enter your email" />
+                @if (email.touched && email.invalid){
+                  <div
+                    class="error">
+                    Email is required
+                  </div>
+                } 
+              </label>
+              <label>
+                Password
+                <input type="password" formControlName = "password" placeholder="Enter your password" />
+                @if(password.touched && password.invalid){
+                  <div
+                    class="error">
+                    Password is required in format of at least 8 characters
+                  </div>
+                }
+              </label>
+              
+              <label>
+                Confirm password
+                <input type="password" formControlName = "confirmedPassword" placeholder="Confirm your password" />
+                @if(confirmedPassword.touched && confirmedPassword.invalid){
+                  <div
+                    class="error">
+                    Password is required in format of at least 8 characters
+                  </div>
+                }
+              </label>
+              <div class="illustration">
+                <img src="/illustrations/illustration_2_v2.png" alt="illustration" />
+              </div>
             </div>
-          </label>
-          <div class="button-container">
-            <button>Register</button>
+            <div>
+              <label>
+                Name
+                <input type="text" formControlName = "name" placeholder="Enter your name" />
+                @if(name.touched && name.invalid){
+                  <div
+                    class="error">
+                    Name is required
+                  </div>
+                }
+              </label>
+              <label>
+                Last name
+                <input type="text" formControlName = "lastName" placeholder="Enter your last name" />
+                @if(lastName.touched && lastName.invalid){
+                  <div
+                    class="error">
+                    Last name is required
+                  </div>
+                }
+              </label>
+              <label>
+                Address
+                <input type="text" formControlName = "address" placeholder="Enter your address" />
+                @if(address.touched && address.invalid){
+                  <div
+                    class="error">
+                    Address is required
+                  </div>
+                }
+              </label>
+              <label>
+                Phone number
+                <input type="text" formControlName = "phoneNumber" placeholder="Enter your phone number" />
+                @if(phoneNumber.touched && phoneNumber.invalid){
+                  <div
+                    class="error">
+                    Phone number is required in format of 11 digits
+                  </div>
+                }
+              </label>
+              <label>
+                Add profile picture
+              </label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  hidden
+                  #fileInput
+                  (change)="onFileSelected($event)"
+                />
+
+              <div
+                class="add-photo-icon"
+                (click)="fileInput.click()"
+                (dragover)="onDragOver($event)"
+                (drop)="onDrop($event)"
+              >
+              <img src="/icons/add-photo-icon.png" alt="add-photo-icon" />
+              <p>
+                {{ selectedFileName ? selectedFileName : 'Add your image here' }}
+              </p>
+
+              <img *ngIf="previewUrl" [src]="previewUrl" class="preview" />
+            </div>
+             
+              <div class="button-container">
+                <button type = "submit">Register</button>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
+        </form>
     </div>
   </div>
 </body>

@@ -24,7 +24,7 @@ public class User implements UserDetails {
     private String name;
     @Column( nullable = false)
     private String lastName;
-    private String profilePicture;
+    private String profilePicture; //holds the stored image URL, while DTO stores multipart file
     private String phoneNumber;
     @Column(unique = true, nullable = false)
     private String email;
@@ -35,8 +35,8 @@ public class User implements UserDetails {
     private UserRole role;
     private String address;
     private Boolean isBlocked;
-    @OneToOne(mappedBy = "user",cascade = CascadeType.ALL, orphanRemoval = true)
-    ForgotPassword forgotPassword;
+    //@OneToOne(mappedBy = "user",cascade = CascadeType.ALL, orphanRemoval = true)
+    //ForgotPassword forgotPassword;
     @Column(name = "last_password_reset_date")
     private Date lastPasswordResetDate;
     @Column(nullable = false)
@@ -46,7 +46,6 @@ public class User implements UserDetails {
     public User(UserRegisterRequestDTO request) {
         this.address = request.getAddress();
         this.phoneNumber = request.getPhoneNumber();
-        this.profilePicture = request.getProfilePicture();
         this.lastName = request.getLastName();;
         this.name = request.getName();
         this.email = request.getEmail();
@@ -100,13 +99,13 @@ public class User implements UserDetails {
     public void setEmail(String email) {
         this.email = email;
     }
-    public ForgotPassword getForgotPassword() {
+    /*public ForgotPassword getForgotPassword() {
         return forgotPassword;
     }
 
     public void setForgotPassword(ForgotPassword forgotPassword) {
         this.forgotPassword = forgotPassword;
-    }
+    }*/
 
     public Date getLastPasswordResetDate() {
         return lastPasswordResetDate;

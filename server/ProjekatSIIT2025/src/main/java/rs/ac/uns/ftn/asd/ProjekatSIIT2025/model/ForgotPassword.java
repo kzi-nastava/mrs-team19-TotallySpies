@@ -13,8 +13,8 @@ public class ForgotPassword {
     private Integer otp;
     @Column(nullable = false)
     private Date expirationTime;
-    @OneToOne
-    @JoinColumn(name = "user_id", nullable = false, unique = true)
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     public ForgotPassword() {}
