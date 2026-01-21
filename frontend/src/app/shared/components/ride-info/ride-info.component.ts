@@ -10,4 +10,5 @@ import { CommonModule } from '@angular/common';
 })
 export class RideInfoComponent {
   @Input() ride!: Ride;
+  @Input() isUpcoming: boolean = false;
 }
