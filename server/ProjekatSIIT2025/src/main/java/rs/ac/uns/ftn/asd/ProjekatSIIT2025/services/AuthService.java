@@ -14,10 +14,12 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.auth.*;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.ActivationToken;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.Driver;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.ImageMetaData;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.User;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.UserRole;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.ActivationTokenRepository;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.DriverRepository;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.UserRepository;
 
 import java.io.IOException;
@@ -106,6 +108,7 @@ public class AuthService {
                 .build();
         emailService.sendSimpleMessage(mailBody);
     }
+
     @Transactional
     public void activateAccount(String token) {
         ActivationToken activationToken = activationTokenRepository.findByToken(token)
@@ -124,4 +127,36 @@ public class AuthService {
         activationToken.setUsed(true);
         activationTokenRepository.save(activationToken);
     }
+
+    @Transactional
+    public void activateDriver(DriverActivationRequestDTO dto) {
+
+        if (!dto.getPassword().equals(dto.getConfirmPassword())) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST, "Passwords do not match");
+        }
+
+        ActivationToken token = activationTokenRepository
+                .findByToken(dto.getToken())
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST, "Invalid token"));
+
+        if (token.isUsed())
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Token already used");
+
+        if (token.getExpiresAt().isBefore(LocalDateTime.now()))
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Token expired");
+
+        User user = token.getUser();
+
+        String encodedPassword = encoder.encode(dto.getPassword());
+        user.setPassword(encodedPassword);
+        user.setEnabled(true);
+        userRepository.save(user);
+
+        token.setUsed(true);
+        activationTokenRepository.save(token);
+    }
+
+
 }

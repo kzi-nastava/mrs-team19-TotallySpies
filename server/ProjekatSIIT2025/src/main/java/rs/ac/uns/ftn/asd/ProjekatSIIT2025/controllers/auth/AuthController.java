@@ -45,5 +45,12 @@ public class AuthController {
         authService.activateAccount(token);
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping(value = "/activate-driver")
+    public ResponseEntity<Void> activateDriverAccount(@RequestBody DriverActivationRequestDTO requestDTO){
+        authService.activateDriver(requestDTO);
+        return ResponseEntity.ok().build();
+    }
+
 }
 
