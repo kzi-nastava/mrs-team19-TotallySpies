@@ -21,7 +21,7 @@ public class Ride {
     @ManyToOne
     private Driver driver;
 
-    @ManyToMany()
+    @ManyToMany(fetch = FetchType.EAGER)
     private List<Passenger> passengers = new ArrayList<>();
 
     @OneToMany(mappedBy = "ride")
