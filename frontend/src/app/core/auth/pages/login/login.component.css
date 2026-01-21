@@ -99,3 +99,10 @@ body {
   color: #261f32;
   cursor: pointer;
 }
+.error-container{
+  display:flex;
+  justify-content: right;
+}
+.error{
+  color: red;
+}

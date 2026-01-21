@@ -5,6 +5,8 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.User;
+
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import java.security.NoSuchAlgorithmException;
@@ -29,12 +31,13 @@ public class JWTService {
             throw new RuntimeException(e);
         }
     }
-    public String generateToken(String email){
+    public String generateToken(User user){
         Map<String,Object> claims = new HashMap<>();
+        claims.put("role", "ROLE_" + user.getRole().name()); // e.g. ROLE_DRIVER
         return Jwts.builder()
                 .claims()
                 .add(claims)
-                .subject(email)
+                .subject(user.getEmail())
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() +30 * 60 * 1000L)) //expires in 30 minutes
                 .and()
