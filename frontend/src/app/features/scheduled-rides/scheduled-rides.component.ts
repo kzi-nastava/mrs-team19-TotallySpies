@@ -1,47 +1,47 @@
 import { Component } from '@angular/core';
-import { Ride } from '../../shared/models/ride.model';
 import { RideInfoComponent } from '../../shared/components/ride-info/ride-info.component';
 import { PassengerInfoComponent } from '../../shared/components/passenger-info/passenger-info.component';
+import { Ride } from '../../shared/models/ride.model';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-ride-history',
-imports: [CommonModule, RideInfoComponent, PassengerInfoComponent],  templateUrl: './ride-history.component.html',
-  styleUrl: './ride-history.component.css',
+  selector: 'app-scheduled-rides',
+  imports: [RideInfoComponent, PassengerInfoComponent, CommonModule],
+  templateUrl: './scheduled-rides.component.html',
+  styleUrl: './scheduled-rides.component.css',
+  standalone: true,
 })
-
-export class RideHistoryComponent {
-  rides: Ride[] = [
+export class ScheduledRidesComponent {
+rides: Ride[] = [
     {
-      date: '15.12.2025.',
+      date: '25.1.2026.',
       startTime: '1:34PM',
-      endTime: '1:47AM',
+      endTime: '1:47PM',
       price: 590,
       startLocation: 'Micurinova 44',
       endLocation: 'Strazilovska 37',
-      status: 'Cancelled', 
-      cancelledBy: 'Passenger',
+      status: 'Upcoming', 
       passengers: [
         { name: 'Sara Trajkovic', imageUrl: '/images/sara.jpg.avif' },
         { name: 'Marija Lisac', imageUrl: '/images/marija.jpg.avif' },
         { name: 'Balsa Vuletic', imageUrl: '/images/balsa.jpg.avif' }
       ],
-      panicPressed: true,
-      isUpcoming: false,
+      panicPressed: false,
+      isUpcoming: true,
     },
     {
-      date: '16.12.2025.',
+      date: '27.1.2026.',
       startTime: '07:54AM',
       endTime: '08:01AM',
       price: 470,
       startLocation: 'Rumenacka 40',
       endLocation: 'Bulevar Oslobodjenja 104',
-      status: 'Finished',
+      status: 'Upcoming',
       passengers: [
         { name: 'Igor Lazic', imageUrl: '/images/igor.jpg.avif' }
       ],
       panicPressed: false,
-      isUpcoming: false,
+      isUpcoming: true,
     }
   ];
 }

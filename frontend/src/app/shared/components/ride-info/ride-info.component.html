@@ -21,7 +21,7 @@
     <div class="status-container">
       <div class="price-tag">{{ ride.price }} din</div>
       
-      <div class="status-alerts">
+      <div class="status-alerts" *ngIf="!ride.isUpcoming">
         <div class="alert cancelled" *ngIf="ride.status === 'Cancelled'">
           <span>Cancelled by {{ ride.cancelledBy === 'Driver' ? 'Driver' : 'Passenger' }}</span>
         </div>

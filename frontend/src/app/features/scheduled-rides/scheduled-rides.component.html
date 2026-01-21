@@ -1,0 +1,14 @@
+<div class="scheduled-container">
+    <h2>My Upcoming Rides</h2>
+    <div class="ride-card-container" *ngFor="let ride of rides">
+        
+        <div class="left-section">
+            <app-ride-info [ride]="ride" [isUpcoming]="ride.isUpcoming"></app-ride-info>
+            <button class="start-btn">Start</button>
+        </div>
+
+        <div class="right-section">
+        <app-passenger-info [passengers]="ride.passengers"></app-passenger-info>        </div>
+        
+    </div>
+</div>
