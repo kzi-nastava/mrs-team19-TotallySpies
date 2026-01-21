@@ -1,19 +1,12 @@
 package rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.users;
 
 public class UserProfileResponseDTO {
-    private Long id;
     private String name;
     private String lastName;
     private String email;
+    private String phoneNumber;
+    private String address;
     private String profilePicture;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getLastName() {
         return lastName;
@@ -45,5 +38,21 @@ public class UserProfileResponseDTO {
 
     public void setProfilePicture(String profilePicture) {
         this.profilePicture = profilePicture;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 }

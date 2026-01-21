@@ -1,6 +1,5 @@
 .ride-card {
   border-radius: 15px;
-  padding: 20px;
   color: white;
   margin-bottom: 20px;
 }
@@ -24,10 +23,15 @@
 }
 
 .price-tag {
-  font-size: 1.2rem;
+  position: absolute;
+  top: 1.5rem;
+  top: 32%;
+  left: 45%;
+  transform: translateX(-50%);
+  color: white;
   font-weight: bold;
   font-style: italic;
-  margin-bottom: 15px;
+  font-size: 1.4rem;
 }
 
 .status-alerts {

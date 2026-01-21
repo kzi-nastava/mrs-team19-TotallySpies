@@ -10,8 +10,9 @@ export interface Ride {
   price: number;
   startLocation: string;
   endLocation: string;
-  status: 'Finished' | 'Cancelled';
+  status: 'Finished' | 'Cancelled' | 'Upcoming' | 'Active';
   cancelledBy?: 'Driver' | 'Passenger';
   passengers: Passenger[];
   panicPressed: boolean;
+  isUpcoming: boolean;
 }
