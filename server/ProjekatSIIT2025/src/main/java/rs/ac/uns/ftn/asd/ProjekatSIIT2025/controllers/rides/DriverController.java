@@ -1,11 +1,21 @@
 package rs.ac.uns.ftn.asd.ProjekatSIIT2025.controllers.rides;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.DriverRideHistoryResponseDTO;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.VehicleDisplayResponseDTO;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.users.DriverActivityResponseDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.users.DriverProfileResponseDTO;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.users.VehicleInfoResponseDTO;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.Driver;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.Vehicle;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.services.DriverActivityService;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.services.DriverService;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -14,6 +24,11 @@ import java.util.List;
 @RestController
 @RequestMapping("api/v1/drivers")
 public class DriverController {
+    @Autowired
+    DriverActivityService driverActivityService;
+
+    @Autowired
+    DriverService driverService;
 
     @GetMapping(value = "/{id}/ride")
     public ResponseEntity<List<DriverRideHistoryResponseDTO>> getDriverRideHistory(
@@ -35,6 +50,22 @@ public class DriverController {
         history.add(h1);
         
         return new ResponseEntity<>(history, HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasRole('DRIVER')")
+    @GetMapping(value = "/activity")
+    public ResponseEntity<DriverActivityResponseDTO> getActivity(Authentication auth){
+        String email = auth.getName();
+        DriverActivityResponseDTO dto = driverActivityService.getActivityMinutesLast24h(email);
+        return ResponseEntity.ok(dto);
+    }
+
+    @PreAuthorize("hasRole('DRIVER')")
+    @GetMapping("/vehicle-info")
+    public ResponseEntity<VehicleInfoResponseDTO> getVehicleInfo(Authentication auth) {
+        String email = auth.getName();
+        VehicleInfoResponseDTO dto = driverService.getVehicleInfo(email);
+        return ResponseEntity.ok(dto);
     }
 
     @GetMapping(value = "/{id}")
