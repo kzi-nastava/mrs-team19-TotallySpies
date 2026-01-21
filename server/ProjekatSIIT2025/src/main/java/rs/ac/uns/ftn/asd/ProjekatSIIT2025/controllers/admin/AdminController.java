@@ -1,27 +1,49 @@
 package rs.ac.uns.ftn.asd.ProjekatSIIT2025.controllers.admin;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.RidePreviewResponseDTO;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.users.DriverRegisterRequestDTO;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.users.UserImageUpdateDTO;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.users.UserProfileResponseDTO;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.users.UserProfileUpdateRequestDTO;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.users.*;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.services.ProfileChangeService;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/api/v1/admin", produces = MediaType.APPLICATION_JSON_VALUE)
 public class AdminController {
+    @Autowired
+    ProfileChangeService profileChangeService;
 
-    @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping(value = "/profile-change-requests")
+    public List<ProfileChangeRequestDTO> getPendingRequests(){
+        return profileChangeService.getPendingRequests();
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping(value = "/profile-change-requests/{id}/approve")
+    public ResponseEntity<Void> approve(@PathVariable Long id){
+        profileChangeService.approveRequest(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping(value = "/profile-change-requests/{id}/reject")
+    public ResponseEntity<Void> reject(@PathVariable Long id){
+        profileChangeService.rejectRequest(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    /* @GetMapping("/{id}")
     public ResponseEntity<UserProfileResponseDTO> getAdminProfile(@PathVariable Long id) {
         UserProfileResponseDTO dto = new UserProfileResponseDTO();
-        dto.setId(id);
         dto.setName("Admin123");
         dto.setLastName("Administrator");
         dto.setEmail("admin@system.com");
@@ -49,13 +71,12 @@ public class AdminController {
     @PostMapping(value = "/drivers", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserProfileResponseDTO> createDriver(@RequestBody DriverRegisterRequestDTO request) {
         UserProfileResponseDTO response = new UserProfileResponseDTO();
-        response.setId(55L);
         response.setEmail(request.getEmail());
         response.setName(request.getName());
         response.setLastName(request.getLastName());
 
         return new ResponseEntity<>(response, HttpStatus.CREATED);
-    }
+    }*/
 
     @GetMapping(value = "/users/{id}",consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ArrayList<RidePreviewResponseDTO>> getAll(@PathVariable Long id){

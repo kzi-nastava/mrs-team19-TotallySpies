@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.users.UserImageUpdateDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.users.UserProfileResponseDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.users.UserProfileUpdateRequestDTO;
@@ -26,6 +27,9 @@ public class UserService implements UserDetailsService {
 
     @Autowired
     ProfileChangeService profileChangeService;
+
+    @Autowired
+    private FileStorageService fileStorageService;
 
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 
@@ -65,7 +69,7 @@ public class UserService implements UserDetailsService {
         dto.setEmail(user.getEmail());
         dto.setPhoneNumber(user.getPhoneNumber());
         dto.setAddress(user.getAddress());
-        dto.setProfilePicture(user.getProfilePicture() != null ? user.getProfilePicture() : "default.png");
+        dto.setProfilePicture(user.getProfilePicture() != null ? user.getProfilePicture() : "default-profile-image.png");
 
         return dto;
     }
@@ -137,5 +141,25 @@ public class UserService implements UserDetailsService {
 
         user.setProfilePicture(request.getImageUrl());
         userRepository.save(user);
+    }
+
+    public void updateProfileImage(String email, MultipartFile image) {
+        User user = userRepository.findByEmail(email);
+        if (user == null) {
+            throw new UsernameNotFoundException("User not found");
+        }
+
+        if (image == null || image.isEmpty()) {
+            return;
+        }
+
+        String imagePath = fileStorageService.storeProfileImage(image, user.getId());
+
+        if (user.getRole() != UserRole.DRIVER) {
+            user.setProfilePicture(imagePath);
+            userRepository.save(user);
+        } else {
+            profileChangeService.createChangeRequest(user, ProfileField.IMAGE, user.getProfilePicture(), imagePath);
+        }
     }
 }

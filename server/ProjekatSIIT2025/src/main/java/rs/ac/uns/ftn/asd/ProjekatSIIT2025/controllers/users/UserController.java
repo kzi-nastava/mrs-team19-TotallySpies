@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.users.UserImageUpdateDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.users.UserProfileResponseDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.users.UserProfileUpdateRequestDTO;
@@ -31,10 +32,10 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/profile/image")
-    public ResponseEntity<Void> updateProfileImage(@RequestBody @Valid UserImageUpdateDTO request, Authentication auth) {
-        String email = auth.getName();
-        userService.updateProfilePicture(email, request);
+
+    @PutMapping(value = "/profile/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Void> uploadImage(@RequestParam("image") MultipartFile image, Authentication auth) {
+        userService.updateProfileImage(auth.getName(), image);
         return ResponseEntity.noContent().build();
     }
 }
