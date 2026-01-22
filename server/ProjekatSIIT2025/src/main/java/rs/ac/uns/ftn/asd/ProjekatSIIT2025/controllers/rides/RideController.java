@@ -16,19 +16,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.InconsistencyReportRequestDTO;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.RideFinishResponseDTO;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.RideStartResponseDTO;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.VehicleDisplayResponseDTO;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.*;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.RideStatus;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.services.RideService;
 
 @RestController
 @RequestMapping("api/v1/rides")
 public class RideController {
+
     @Autowired
-    private RideService rideService;
-    
+    RideService rideService;
+
     @GetMapping(value = "/{id}/location", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<VehicleDisplayResponseDTO> getRideLocation(@PathVariable Long id) {
         VehicleDisplayResponseDTO response = new VehicleDisplayResponseDTO();
@@ -67,5 +65,10 @@ public class RideController {
         response.setStatus("STARTED");
         response.setMessage("Ride has successfully started.");
         return ResponseEntity.ok(response);
+    }
+    @PutMapping("/cancel-ride")
+    public ResponseEntity<String> cancelRide(@RequestBody CancelRideDTO request){
+        rideService.cancelRide(request);
+        return ResponseEntity.ok("Ride cancelled!");
     }
 }

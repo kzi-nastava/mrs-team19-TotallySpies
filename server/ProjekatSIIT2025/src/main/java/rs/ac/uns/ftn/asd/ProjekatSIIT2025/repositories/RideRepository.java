@@ -6,9 +6,11 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import org.springframework.stereotype.Repository;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.Ride;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.RideStatus;
 
+@Repository
 public interface RideRepository extends JpaRepository<Ride, Long> {
     Optional<Ride> findFirstByDriverIdAndStatusOrderByStartTimeAsc(Long driverId, RideStatus scheduled);
     List<Ride> findByDriverIdAndStatus(Long driverId, RideStatus status);
