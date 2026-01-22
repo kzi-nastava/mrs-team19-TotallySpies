@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,10 +21,13 @@ import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.RideFinishResponseDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.RideStartResponseDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.VehicleDisplayResponseDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.RideStatus;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.services.RideService;
 
 @RestController
 @RequestMapping("api/v1/rides")
 public class RideController {
+    @Autowired
+    private RideService rideService;
     
     @GetMapping(value = "/{id}/location", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<VehicleDisplayResponseDTO> getRideLocation(@PathVariable Long id) {
@@ -46,24 +50,13 @@ public class RideController {
 
     @PutMapping(value = "/{id}/end", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<RideFinishResponseDTO> finishRide(@PathVariable Long id) {
-        RideFinishResponseDTO response = new RideFinishResponseDTO();
-        response.setRideId(id);
-        response.setFinishTime(LocalDateTime.now());
-        response.setStatus(RideStatus.COMPLETED);
-        response.setTotalPrice(350.00);
+        RideFinishResponseDTO response = rideService.finishRide(id);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping(value = "/scheduled", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<RideFinishResponseDTO>> getFutureRides() {
-        List<RideFinishResponseDTO> futureRides = new ArrayList<>();
-        
-        RideFinishResponseDTO ride = new RideFinishResponseDTO();
-        ride.setFinishTime(LocalDateTime.now());
-        ride.setRideId(55L);
-        ride.setStatus(RideStatus.SCHEDULED);
-        ride.setTotalPrice(450.00);
-        futureRides.add(ride);
+        List<RideFinishResponseDTO> futureRides = rideService.findScheduledRides();
         return new ResponseEntity<>(futureRides, HttpStatus.OK);
     }
 
