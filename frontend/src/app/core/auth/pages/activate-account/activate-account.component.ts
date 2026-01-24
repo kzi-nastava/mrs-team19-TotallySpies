@@ -42,7 +42,7 @@ export class ActivateAccountComponent {
           verticalPosition: 'top',
           panelClass: ['confirm-snackbar'],
         });
-        setTimeout(() => this.router.navigate(['login']), 1000);
+        setTimeout(() => this.router.navigate(['login']), 2000);
       },
       error: (err) => {
         this.status = 'error';
