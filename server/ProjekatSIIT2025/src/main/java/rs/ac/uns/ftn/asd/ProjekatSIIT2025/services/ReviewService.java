@@ -2,7 +2,6 @@ package rs.ac.uns.ftn.asd.ProjekatSIIT2025.services;
 
 import java.time.LocalDateTime;
 
-import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;

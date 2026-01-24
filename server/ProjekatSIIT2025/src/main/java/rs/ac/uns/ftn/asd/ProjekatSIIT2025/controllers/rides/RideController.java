@@ -48,24 +48,13 @@ public class RideController {
 
     @PutMapping(value = "/{id}/end", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<RideFinishResponseDTO> finishRide(@PathVariable Long id) {
-        RideFinishResponseDTO response = new RideFinishResponseDTO();
-        response.setRideId(id);
-        response.setFinishTime(LocalDateTime.now());
-        response.setStatus(RideStatus.COMPLETED);
-        response.setTotalPrice(350.00);
+        RideFinishResponseDTO response = rideService.finishRide(id);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping(value = "/scheduled", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<RideFinishResponseDTO>> getFutureRides() {
-        List<RideFinishResponseDTO> futureRides = new ArrayList<>();
-        
-        RideFinishResponseDTO ride = new RideFinishResponseDTO();
-        ride.setFinishTime(LocalDateTime.now());
-        ride.setRideId(55L);
-        ride.setStatus(RideStatus.SCHEDULED);
-        ride.setTotalPrice(450.00);
-        futureRides.add(ride);
+        List<RideFinishResponseDTO> futureRides = rideService.findScheduledRides();
         return new ResponseEntity<>(futureRides, HttpStatus.OK);
     }
 

@@ -9,6 +9,7 @@ public class RideFinishResponseDTO {
     private Double totalPrice;
     private LocalDateTime finishTime;
     private RideStatus status;
+    private Long nextRideId;
 
     public RideFinishResponseDTO() {
     }
@@ -43,6 +44,14 @@ public class RideFinishResponseDTO {
 
     public void setStatus(RideStatus status) {
         this.status = status;
+    }
+
+    public Long getNextRideId() {
+        return nextRideId;
+    }
+
+    public void setNextRideId(Long nextRideId) {
+        this.nextRideId = nextRideId;
     }
     
 }
