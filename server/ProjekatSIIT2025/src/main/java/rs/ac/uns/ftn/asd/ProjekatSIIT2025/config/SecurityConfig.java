@@ -44,7 +44,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(request -> request
                     .requestMatchers("/api/v1/auth/register", "/api/v1/auth/login",
                             "/api/v1/forgot-password/**","/api/v1/auth/activate", "/api/v1/reviews/**" ,"/api/v1/auth/activate-driver", "/api/v1/rides/**")
-                    .permitAll()
+              .permitAll()
                     .anyRequest().authenticated()
                     )
                 //enables rest api access

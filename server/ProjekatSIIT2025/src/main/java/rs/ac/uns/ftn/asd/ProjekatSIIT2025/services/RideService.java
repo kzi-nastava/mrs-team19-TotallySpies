@@ -20,10 +20,16 @@ import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.RideStatus;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.DriverRepository;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.RideRepository;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.CancelRideDTO;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.PanicNotificationDTO;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.*;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.PanicNotificationRepository;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.RideCancellation;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.User;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.RideCancellationRepository;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.RideRepository;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.UserRepository;
+
+import java.time.LocalDateTime;
 
 @Service
 public class RideService {
@@ -35,6 +41,9 @@ public class RideService {
     private EmailService emailService;
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    PanicNotificationRepository panicNotificationRepository;
+
     @Autowired
     RideCancellationRepository rideCancellationRepository;
 
@@ -136,5 +145,26 @@ public class RideService {
             rideRepository.save(ride);
         }
 
+    }
+
+    public void handlePanicNotification(PanicNotificationDTO dto){
+        //administrators get notification
+        Ride ride = rideRepository.findById(dto.getRideId())
+                .orElseThrow(() ->
+                        new ResponseStatusException(HttpStatus.NOT_FOUND, "Ride not found!")
+                );
+        User user = userRepository.findById(dto.getUserId())
+                .orElseThrow(() ->
+                        new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found!")
+                );
+        if(dto.getTime() == null){
+            LocalDateTime currentTime = LocalDateTime.now();
+        }
+        if(dto.getReason() == null){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Panic reason can not be null!");
+        }
+        PanicNotification panicNotification = new PanicNotification(user,
+                ride, dto.getTime(), dto.getReason());
+        panicNotificationRepository.save(panicNotification);
     }
 }

@@ -6,10 +6,13 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.PanicNotificationDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.RidePreviewResponseDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.users.*;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.Driver;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.PanicNotification;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.services.DriverService;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.services.PanicNotificationService;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.services.ProfileChangeService;
 
 import java.time.LocalDateTime;
@@ -25,6 +28,9 @@ public class AdminController {
 
     @Autowired
     DriverService driverService;
+
+    @Autowired
+    PanicNotificationService panicNotificationService;
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping(value = "/profile-change-requests")
@@ -133,5 +139,14 @@ public class AdminController {
 
         return new ResponseEntity<ArrayList<RidePreviewResponseDTO>>(rides, HttpStatus.OK);
     }
+
+    @GetMapping("/panic-notifications")
+    public ResponseEntity<List<PanicNotification>> getPanicNotifications() {
+        List<PanicNotification> panicNotifications =
+                panicNotificationService.getPanicNotifications();
+
+        return ResponseEntity.ok(panicNotifications);
+    }
+
 
 }
