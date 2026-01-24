@@ -76,4 +76,10 @@ public class RideController {
         rideService.handlePanicNotification(request);
         return ResponseEntity.ok("PANIC button activated!");
     }
+    @PutMapping("/stop-ride")
+    public ResponseEntity<String> panic(@RequestBody StopRideDTO request){
+        rideService.stopRide(request);
+        return ResponseEntity.ok("Ride stopped!");
+    }
+
 }

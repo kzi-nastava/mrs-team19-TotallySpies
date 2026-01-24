@@ -1,5 +1,6 @@
 package rs.ac.uns.ftn.asd.ProjekatSIIT2025.services;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -14,6 +15,7 @@ import org.springframework.web.server.ResponseStatusException;
 import jakarta.transaction.Transactional;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.auth.MailBody;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.RideFinishResponseDTO;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.StopRideDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.Passenger;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.Ride;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.RideStatus;
@@ -120,7 +122,6 @@ public class RideService {
 
     
     public void cancelRide(CancelRideDTO dto){
-        //check if ride is not started yet
         Ride ride = rideRepository.findById(dto.getRideId())
                 .orElseThrow(() ->
                         new ResponseStatusException(HttpStatus.NOT_FOUND, "Ride not found!")
@@ -129,11 +130,25 @@ public class RideService {
                 .orElseThrow(() ->
                         new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found!")
                 );
+        if (user instanceof Passenger){
+            //passenger can cancel a ride 10 minutes before the ride
+            Duration untilRideStart = Duration.between(LocalDateTime.now(), ride.getStartTime());
+            if(untilRideStart.isNegative()){
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ride already started");
+            }
+            if (untilRideStart.toMinutes() < 10) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Passenger can cancel only at least 10 minutes before the ride");
+            }
+        }
+        else{
+            if (!ride.getDriver().getId().equals(user.getId())) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Driver not assigned to this ride");
+            }
+        }
         if (dto.getRejectionReason() == null)
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ride cancellation reason can not be null!");
         if(dto.getTime() == null)
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Time of ride rejection reason can not be null!");
-
         if(ride.getStatus() == RideStatus.ACTIVE){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ride has already started!");
         }
@@ -144,9 +159,7 @@ public class RideService {
             ride.setRideCancellation(rideCancellation);
             rideRepository.save(ride);
         }
-
     }
-
     public void handlePanicNotification(PanicNotificationDTO dto){
         //administrators get notification
         Ride ride = rideRepository.findById(dto.getRideId())
@@ -158,7 +171,7 @@ public class RideService {
                         new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found!")
                 );
         if(dto.getTime() == null){
-            LocalDateTime currentTime = LocalDateTime.now();
+            dto.setTime(LocalDateTime.now());
         }
         if(dto.getReason() == null){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Panic reason can not be null!");
@@ -166,5 +179,31 @@ public class RideService {
         PanicNotification panicNotification = new PanicNotification(user,
                 ride, dto.getTime(), dto.getReason());
         panicNotificationRepository.save(panicNotification);
+        ride.setPanic(true);
+        rideRepository.save(ride);
+    }
+
+    public void stopRide(StopRideDTO dto){
+        Ride ride = rideRepository.findById(dto.getRideId())
+                .orElseThrow(() ->
+                        new ResponseStatusException(HttpStatus.NOT_FOUND, "Ride not found!")
+                );
+        User user = userRepository.findById(dto.getUserId())
+                .orElseThrow(() ->
+                        new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found!")
+                );
+        if(dto.getNewEndTime() == null){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "End time can not be null!");
+        }
+        ride.setEndTime(dto.getNewEndTime());
+        ride.setTotalPrice(dto.getNewTotalPrice());
+        ride.setStatus(RideStatus.STOPPED);
+        List<Path> paths = ride.getPaths();
+        if(paths == null || paths.isEmpty()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ride has no paths");
+        }
+        paths.get(paths.size() -  1).setDestinationAddress(dto.getNewDestinationAddress());
+        ride.setPaths(paths);
+        rideRepository.save(ride);
     }
 }

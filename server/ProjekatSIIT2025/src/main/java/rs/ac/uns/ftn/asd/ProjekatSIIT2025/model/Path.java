@@ -14,7 +14,6 @@ public class Path {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "start_location_id", nullable = false)
     private Location startingAddress;
-
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "dest_location_id", nullable = false)
     private Location destinationAddress;
