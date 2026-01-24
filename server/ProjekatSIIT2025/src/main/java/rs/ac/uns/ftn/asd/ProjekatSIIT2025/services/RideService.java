@@ -147,7 +147,7 @@ public class RideService {
 
     }
 
-    public void handlePanicButton(PanicNotificationDTO dto){
+    public void handlePanicNotification(PanicNotificationDTO dto){
         //administrators get notification
         Ride ride = rideRepository.findById(dto.getRideId())
                 .orElseThrow(() ->

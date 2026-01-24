@@ -141,8 +141,12 @@ public class AdminController {
     }
 
     @GetMapping("/panic-notifications")
-    public ResponseEntity<List<PanicNotificationDTO> getPanicNotifications()>{
-        List<PanicNotificationDTO> panicNotifications = new List.of(panicNotificationService.getPanicNotifications()) ;
-        return new ResponseEntity<ArrayList<RidePreviewResponseDTO>>(panicNotifications, HttpStatus.OK);
+    public ResponseEntity<List<PanicNotification>> getPanicNotifications() {
+        List<PanicNotification> panicNotifications =
+                panicNotificationService.getPanicNotifications();
+
+        return ResponseEntity.ok(panicNotifications);
     }
+
+
 }
