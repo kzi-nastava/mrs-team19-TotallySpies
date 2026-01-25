@@ -14,8 +14,7 @@ public class Vehicle {
     private String licensePlate;
     private int passengerCapacity;
     private boolean babyTransport;
-    private boolean petTransport; 
-    private boolean isBusy;
+    private boolean petTransport;
     private double currentLat;
     private double currentLng;
 
@@ -76,14 +75,6 @@ public class Vehicle {
 
     public void setPetTransport(boolean petTransport) {
         this.petTransport = petTransport;
-    }
-
-    public boolean isBusy() {
-        return isBusy;
-    }
-
-    public void setBusy(boolean isBusy) {
-        this.isBusy = isBusy;
     }
 
     public double getCurrentLat() {

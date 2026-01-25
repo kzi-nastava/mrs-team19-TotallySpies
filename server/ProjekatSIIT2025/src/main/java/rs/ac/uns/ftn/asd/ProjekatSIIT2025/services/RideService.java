@@ -1,6 +1,7 @@
 package rs.ac.uns.ftn.asd.ProjekatSIIT2025.services;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -12,10 +13,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import jakarta.transaction.Transactional;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.LocationDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.auth.MailBody;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.RideFinishResponseDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.Passenger;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.Ride;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.RideStatus;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.DriverRepository;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.RideRepository;
@@ -26,10 +27,7 @@ import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.PanicNotificationReposito
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.RideCancellation;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.User;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.RideCancellationRepository;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.RideRepository;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.UserRepository;
-
-import java.time.LocalDateTime;
 
 @Service
 public class RideService {
@@ -53,7 +51,7 @@ public class RideService {
 
         // update ride
         ride.setStatus(RideStatus.COMPLETED);
-        ride.setEndTime(LocalDateTime.now());
+        ride.setFinishedAt(LocalDateTime.now());
         rideRepository.save(ride);
 
         // send email to the passengers
@@ -72,22 +70,22 @@ public class RideService {
         }
 
         // now we find the next ride
-        Optional<Ride> nextRide = rideRepository.findFirstByDriverIdAndStatusOrderByStartTimeAsc(ride.getDriver().getId(), RideStatus.SCHEDULED);
+        /*Optional<Ride> nextRide = rideRepository.findFirstByDriverIdAndStatusOrderByStartedAtAsc(ride.getDriver().getId(), RideStatus.SCHEDULED);
         Long nextRideId = null;
         if (nextRide.isPresent()) {
             nextRideId = nextRide.get().getId();
         } else {
             ride.getDriver().setFree(true);
             driverRepository.save(ride.getDriver());
-        }
+        }*/
 
         //map into dto
         RideFinishResponseDTO response = new RideFinishResponseDTO();
         response.setRideId(ride.getId());
-        response.setFinishTime(ride.getEndTime());
+        response.setFinishTime(ride.getFinishedAt());
         response.setStatus(ride.getStatus());
         response.setTotalPrice(ride.getTotalPrice());
-        response.setNextRideId(nextRideId);
+        //response.setNextRideId(nextRideId);
 
         return response;
     }
@@ -95,20 +93,20 @@ public class RideService {
     public List<RideFinishResponseDTO> findScheduledRides() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         Long driverId = driverRepository.findByEmail(email).getId();
-        List<Ride> rides = rideRepository.findByDriverIdAndStatus(driverId, RideStatus.SCHEDULED);
+        List<Ride> rideElenas = rideRepository.findByDriverIdAndStatus(driverId, RideStatus.SCHEDULED);
 
-        return rides.stream().map(r -> {
+        return rideElenas.stream().map(r -> {
             RideFinishResponseDTO dto = new RideFinishResponseDTO();
             dto.setRideId(r.getId());
             dto.setStatus(r.getStatus());
             dto.setTotalPrice(r.getTotalPrice());
-            dto.setFinishTime(r.getEndTime()); 
+            dto.setFinishTime(r.getFinishedAt());
 
             // we look for ride starting after this one (r.getStartTime())
-            Optional<Ride> next = rideRepository.findFirstByDriverIdAndStatusAndStartTimeAfterOrderByStartTimeAsc(
+            Optional<Ride> next = rideRepository.findFirstByDriverIdAndStatusAndStartedAtAfterOrderByStartedAtAsc(
                 driverId, 
                 RideStatus.SCHEDULED, 
-                r.getStartTime()
+                r.getStartedAt()
             );
             
             next.ifPresent(nextRide -> dto.setNextRideId(nextRide.getId()));
@@ -121,7 +119,7 @@ public class RideService {
     
     public void cancelRide(CancelRideDTO dto){
         //check if ride is not started yet
-        Ride ride = rideRepository.findById(dto.getRideId())
+        Ride rideElena = rideRepository.findById(dto.getRideId())
                 .orElseThrow(() ->
                         new ResponseStatusException(HttpStatus.NOT_FOUND, "Ride not found!")
                 );
@@ -134,22 +132,22 @@ public class RideService {
         if(dto.getTime() == null)
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Time of ride rejection reason can not be null!");
 
-        if(ride.getStatus() == RideStatus.ACTIVE){
+        if(rideElena.getStatus() == RideStatus.ACTIVE){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ride has already started!");
         }
         else{
-            ride.setStatus(RideStatus.CANCELLED);
-            RideCancellation rideCancellation = new RideCancellation(user,ride,dto.getRejectionReason(), dto.getTime());
+            rideElena.setStatus(RideStatus.CANCELLED);
+            RideCancellation rideCancellation = new RideCancellation(user, rideElena,dto.getRejectionReason(), dto.getTime());
             rideCancellationRepository.save(rideCancellation);
-            ride.setRideCancellation(rideCancellation);
-            rideRepository.save(ride);
+            rideElena.setRideCancellation(rideCancellation);
+            rideRepository.save(rideElena);
         }
 
     }
 
     public void handlePanicNotification(PanicNotificationDTO dto){
         //administrators get notification
-        Ride ride = rideRepository.findById(dto.getRideId())
+        Ride rideElena = rideRepository.findById(dto.getRideId())
                 .orElseThrow(() ->
                         new ResponseStatusException(HttpStatus.NOT_FOUND, "Ride not found!")
                 );
@@ -164,7 +162,8 @@ public class RideService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Panic reason can not be null!");
         }
         PanicNotification panicNotification = new PanicNotification(user,
-                ride, dto.getTime(), dto.getReason());
+                rideElena, dto.getTime(), dto.getReason());
         panicNotificationRepository.save(panicNotification);
     }
+
 }

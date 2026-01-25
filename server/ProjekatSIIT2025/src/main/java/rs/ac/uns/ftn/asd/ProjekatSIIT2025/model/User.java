@@ -35,6 +35,7 @@ public class User implements UserDetails {
     private UserRole role;
     private String address;
     private Boolean isBlocked;
+    private String  blockReason;
     //@OneToOne(mappedBy = "user",cascade = CascadeType.ALL, orphanRemoval = true)
     //ForgotPassword forgotPassword;
     @Column(name = "last_password_reset_date")

@@ -62,4 +62,6 @@ public class PanicNotification {
         this.time = time;
         this.reason = reason;
     }
+
+    public PanicNotification(){}
 }
