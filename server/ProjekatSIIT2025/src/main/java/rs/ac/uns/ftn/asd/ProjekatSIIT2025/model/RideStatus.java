@@ -5,5 +5,7 @@ public enum RideStatus {
     CANCELLED,
     ACTIVE,
     SCHEDULED,
-    STOPPED
+    STOPPED,
+    PENDING,
+    REJECTED//dodati statuse za odbijene, prihvacene, zatrazene
 }

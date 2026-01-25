@@ -106,7 +106,6 @@ public class DriverService {
         vehicle.setLicensePlate(dto.getLicensePlate());
         vehicle.setPassengerCapacity(dto.getSeats());
         vehicle.setPetTransport(dto.isPetFriendly());
-        vehicle.setBusy(false);
         vehicleRepository.save(vehicle);
 
         // 2. kreiraj user/driver

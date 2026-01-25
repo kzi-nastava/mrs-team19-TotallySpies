@@ -1,4 +1,4 @@
-package rs.ac.uns.ftn.asd.ProjekatSIIT2025.controllers.rides;
+package rs.ac.uns.ftn.asd.ProjekatSIIT2025.controllers.drivers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -8,12 +8,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.DriverRideHistoryResponseDTO;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.VehicleDisplayResponseDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.users.DriverActivityResponseDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.users.DriverProfileResponseDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.users.VehicleInfoResponseDTO;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.Driver;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.Vehicle;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.services.DriverActivityService;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.services.DriverService;
 

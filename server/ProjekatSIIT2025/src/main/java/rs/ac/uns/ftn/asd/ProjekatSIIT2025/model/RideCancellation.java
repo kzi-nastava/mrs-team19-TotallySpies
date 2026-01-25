@@ -9,7 +9,7 @@ public class RideCancellation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @OneToOne
+    @ManyToOne
     private User user;
     @OneToOne
     private Ride ride;
@@ -21,6 +21,10 @@ public class RideCancellation {
         this.ride = ride;
         this.cancellationReason = cancellationReason;
         this.time = time;
+    }
+
+    public RideCancellation() {
+
     }
 
     public Long getId() {
