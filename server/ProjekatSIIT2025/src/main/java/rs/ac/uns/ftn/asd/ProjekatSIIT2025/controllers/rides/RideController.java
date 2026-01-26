@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -56,14 +57,14 @@ public class RideController {
         return new ResponseEntity<>(futureRides, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('DRIVER')")
     @PutMapping("/{rideId}/start")
-    public ResponseEntity<RideStartResponseDTO> startRide(@PathVariable Long rideId) {
-        RideStartResponseDTO response = new RideStartResponseDTO();
-        response.setRideId(rideId);
-        response.setStatus("STARTED");
-        response.setMessage("Ride has successfully started.");
-        return ResponseEntity.ok(response);
+    public ResponseEntity<String> startRide(@PathVariable Long rideId, Authentication auth) {
+        String email = auth.getName();
+        rideService.startRide(rideId, email);
+        return ResponseEntity.ok("Ride successfully started!");
     }
+
     @PutMapping("/cancel-ride")
     public ResponseEntity<String> cancelRide(@RequestBody CancelRideDTO request){
         rideService.cancelRide(request);
