@@ -17,6 +17,8 @@ public class Ride {
     @ManyToMany
     private List<Passenger> passengers;
 
+    private boolean panic;
+
     @OneToMany(mappedBy = "ride", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<RideStop> stops;
 
@@ -68,6 +70,14 @@ public class Ride {
 
     public void setPassengers(List<Passenger> passengers) {
         this.passengers = passengers;
+    }
+
+    public boolean isPanic() {
+        return panic;
+    }
+
+    public void setPanic(boolean panic) {
+        this.panic = panic;
     }
 
     public List<RideStop> getStops() {

@@ -1,6 +1,6 @@
 package rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides;
 
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.Location;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.RideStop;
 
 import java.time.LocalDateTime;
 
@@ -9,14 +9,14 @@ public class StopRideDTO {
     private Long rideId;
     private LocalDateTime newEndTime;
     private double newTotalPrice;
-    private Location newDestinationAddress;
+    private RideStop newDestination;
 
-    public StopRideDTO(Long userId, Long rideId, LocalDateTime newEndTime, double newTotalPrice, Location newDestinationAddress) {
+    public StopRideDTO(Long userId, Long rideId, LocalDateTime newEndTime, double newTotalPrice, RideStop newDestination) {
         this.userId = userId;
         this.rideId = rideId;
         this.newEndTime = newEndTime;
         this.newTotalPrice = newTotalPrice;
-        this.newDestinationAddress = newDestinationAddress;
+        this.newDestination = newDestination;
     }
 
     public Long getUserId() {
@@ -51,11 +51,11 @@ public class StopRideDTO {
         this.newTotalPrice = newTotalPrice;
     }
 
-    public Location getNewDestinationAddress() {
-        return newDestinationAddress;
+    public RideStop getNewDestination() {
+        return newDestination;
     }
 
-    public void setNewDestinationAddress(Location newDestinationAddress) {
-        this.newDestinationAddress = newDestinationAddress;
+    public void setNewDestination(RideStop newDestination) {
+        this.newDestination = newDestination;
     }
 }
