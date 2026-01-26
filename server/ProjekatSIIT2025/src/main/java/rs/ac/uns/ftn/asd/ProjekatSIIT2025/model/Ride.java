@@ -17,7 +17,7 @@ public class Ride {
     @ManyToMany
     private List<Passenger> passengers;
 
-    @OneToMany(mappedBy = "ride", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "ride", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<RideStop> stops;
 
     @Enumerated(EnumType.STRING)
