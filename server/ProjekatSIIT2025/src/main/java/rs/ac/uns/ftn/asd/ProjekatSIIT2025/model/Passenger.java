@@ -10,7 +10,7 @@ import java.util.List;
 
 @Entity
 public class Passenger extends User {
-    @ManyToMany(cascade = {CascadeType.ALL}, mappedBy = "passengers")
+    @ManyToMany(mappedBy = "passengers")
     private List<Ride> rides = new ArrayList<>();
 
     @OneToMany(cascade = {CascadeType.ALL})

@@ -1,14 +1,11 @@
 package rs.ac.uns.ftn.asd.ProjekatSIIT2025.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 
 @Entity
 public class RideStop {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String address;     // "Bulevar kralja Aleksandra 73"
@@ -16,9 +13,10 @@ public class RideStop {
     private double longitude;
 
     private int orderIndex;     // 0=start, n=destination
+
     @ManyToOne
     private Ride ride;
-    
+
     public RideStop(Long id, String address, double latitude, double longitude, int orderIndex, Ride ride) {
         this.id = id;
         this.address = address;
@@ -79,5 +77,5 @@ public class RideStop {
         this.ride = ride;
     }
 
-    
+
 }
