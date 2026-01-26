@@ -1,5 +1,6 @@
     package rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories;
 
+    import io.jsonwebtoken.security.Jwks;
     import jakarta.transaction.Transactional;
     import org.springframework.data.jpa.repository.JpaRepository;
     import org.springframework.data.jpa.repository.Modifying;

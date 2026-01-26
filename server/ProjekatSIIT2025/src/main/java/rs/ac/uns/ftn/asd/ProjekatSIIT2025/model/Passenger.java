@@ -14,14 +14,14 @@ public class Passenger extends User {
     private List<Ride> rides = new ArrayList<>();
 
     @OneToMany(cascade = {CascadeType.ALL})
-    private List<Path> favouritePaths = new ArrayList<>();
+    private List<Ride> favouriteRides = new ArrayList<>();
 
     public Passenger() {
     }
 
-    public Passenger(ArrayList<Ride> rides, ArrayList<Path> favouritePaths) {
+    public Passenger(ArrayList<Ride> rides, ArrayList<Ride> favouritePaths) {
         this.rides = rides;
-        this.favouritePaths = favouritePaths;
+        this.favouriteRides = favouritePaths;
     }
 
     public List<Ride> getRides() {
@@ -32,11 +32,11 @@ public class Passenger extends User {
         this.rides = rides;
     }
 
-    public List<Path> getFavouritePaths() {
-        return favouritePaths;
+    public List<Ride> getFavouritePaths() {
+        return favouriteRides;
     }
 
-    public void setFavouritePaths(List<Path> favouritePaths) {
-        this.favouritePaths = favouritePaths;
+    public void setFavouritePaths(List<Ride> favouritePaths) {
+        this.favouriteRides = favouritePaths;
     }
 }

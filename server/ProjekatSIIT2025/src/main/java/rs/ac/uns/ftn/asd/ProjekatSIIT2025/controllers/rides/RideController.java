@@ -1,7 +1,5 @@
 package rs.ac.uns.ftn.asd.ProjekatSIIT2025.controllers.rides;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.*;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.RideStatus;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.services.RideService;
 
 @RestController
@@ -28,22 +25,22 @@ public class RideController {
     RideService rideService;
 
     @GetMapping(value = "/{id}/location", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<VehicleDisplayResponseDTO> getRideLocation(@PathVariable Long id) {
-        VehicleDisplayResponseDTO response = new VehicleDisplayResponseDTO();
-        response.setId(id); 
-        response.setCurrentLat(45.2396);
-        response.setCurrentLng(19.8227);
-        response.setBusy(true);
-
+    public ResponseEntity<RideTrackingDTO> getRideLocation(@PathVariable Long id) {
+        RideTrackingDTO response = rideService.getRideTrackingInfo(id);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PostMapping(value = "/{id}/consistency-report", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/{id}/inconsistency-report", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> reportInconsistency(
             @PathVariable Long id, 
             @RequestBody InconsistencyReportRequestDTO request) {
+                boolean isReported = rideService.reportInconsistency(id, request);
                 
-        return new ResponseEntity<>("Consistency report sent successfully.", HttpStatus.CREATED);
+                if (isReported) {
+                    return new ResponseEntity<>("Consistency report sent successfully.", HttpStatus.CREATED);
+                } else {
+                    return new ResponseEntity<>("Failed to send consistency report.", HttpStatus.INTERNAL_SERVER_ERROR);
+                }
     }
 
     @PutMapping(value = "/{id}/end", produces = MediaType.APPLICATION_JSON_VALUE)

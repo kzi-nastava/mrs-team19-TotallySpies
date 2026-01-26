@@ -12,9 +12,6 @@ public class Driver extends User {
     @Column(nullable = false)
     private boolean isActive;
 
-    @Column(nullable = false)
-    private boolean isFree;
-
     @OneToOne(cascade = CascadeType.ALL, optional = false)
     @JoinColumn(name = "vehicle_id", nullable = false)
     private Vehicle vehicle;
@@ -28,14 +25,6 @@ public class Driver extends User {
 
     public void setActive(boolean active) {
         this.isActive = active;
-    }
-
-    public boolean isFree() {
-        return isFree;
-    }
-
-    public void setFree(boolean isFree) {
-        this.isFree = isFree;
     }
 
     public Vehicle getVehicle() {

@@ -35,7 +35,7 @@ public class ReviewService {
 
         Ride ride = rideRepository.findById(rideId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "ride is not found"));
         
-        validateReviewTime(ride.getEndTime());
+        validateReviewTime(ride.getFinishedAt());
 
         boolean participated = ride.getPassengers().stream().anyMatch(p -> p.getId().equals(passenger.getId()));
         if (!participated) {

@@ -43,7 +43,8 @@ public class SecurityConfig {
                 //no one will be able to access any page without authentication except register and login pages
                 .authorizeHttpRequests(request -> request
                     .requestMatchers("/api/v1/auth/register", "/api/v1/auth/login",
-                            "/api/v1/forgot-password/**","/api/v1/auth/activate", "/api/v1/reviews/**" ,"/api/v1/auth/activate-driver", "/api/v1/rides/**")
+                            "/api/v1/forgot-password/**","/api/v1/auth/activate", "/api/v1/reviews/**" ,"/api/v1/auth/activate-driver",
+                            "/api/v1/rides/**", "/error", "/api/v1/rides/{id}/location", "/api/v1/rides/{id}/inconsistency-report", "/error", "/api/v1/vehicles")
               .permitAll()
                     .anyRequest().authenticated()
                     )

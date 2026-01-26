@@ -3,74 +3,48 @@ package rs.ac.uns.ftn.asd.ProjekatSIIT2025.model;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 public class Ride {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
     private Long id;
-
-    private LocalDateTime startTime;
-
-    private LocalDateTime endTime;
-
-    private double totalPrice;
 
     @ManyToOne
     private Driver driver;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    private List<Passenger> passengers = new ArrayList<>();
+    @ManyToMany
+    private List<Passenger> passengers;
 
-    @OneToMany(mappedBy = "ride")
-    private List<Path> paths;
-
-    @OneToMany(mappedBy = "ride")
-    private List<Review> reviews;
-
-    @OneToMany(mappedBy = "ride")
-    private List<Report> reports;
+    @OneToMany(mappedBy = "ride", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<RideStop> stops;
 
     @Enumerated(EnumType.STRING)
     private RideStatus status;
 
-    @OneToOne()
-    private RideCancellation rideCancellation;
-
-    private boolean panic;
+    private double distanceKm;
+    private double totalPrice; //cijena_po_tipu + kilometri * 120
 
     private boolean babiesTransport;
-
     private boolean petsTransport;
 
     @Enumerated(EnumType.STRING)
     private VehicleType vehicleType;
 
-    public Ride() {
-    }
+    private LocalDateTime createdAt;
+    private LocalDateTime scheduledFor;
+    private LocalDateTime startedAt;
+    private LocalDateTime finishedAt;
 
-    public Ride(Long id, LocalDateTime startTime, LocalDateTime endTime, double totalPrice, Driver driver,
-                List<Passenger> passengers, List<Path> paths, List<Review> reviews, RideStatus status,
-                RideCancellation rideCancellation, boolean panic, boolean babiesTransport, boolean petsTransport,
-                VehicleType vehicleType, List<Report> reports) {
-        this.id = id;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.totalPrice = totalPrice;
-        this.driver = driver;
-        this.passengers = passengers;
-        this.paths = paths;
-        this.reviews = reviews;
-        this.status = status;
-        this.rideCancellation = rideCancellation;
-        this.panic = panic;
-        this.babiesTransport = babiesTransport;
-        this.petsTransport = petsTransport;
-        this.vehicleType = vehicleType;
-        this.reports = reports;
-    }
+    @OneToOne
+    private RideCancellation rideCancellation;
+
+    @OneToMany
+    private List<Report> reports;
+
+    @OneToMany
+    private List<Review> reviews;
 
     public Long getId() {
         return id;
@@ -78,30 +52,6 @@ public class Ride {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public LocalDateTime getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(LocalDateTime startTime) {
-        this.startTime = startTime;
-    }
-
-    public LocalDateTime getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(LocalDateTime endTime) {
-        this.endTime = endTime;
-    }
-
-    public double getTotalPrice() {
-        return totalPrice;
-    }
-
-    public void setTotalPrice(double totalPrice) {
-        this.totalPrice = totalPrice;
     }
 
     public Driver getDriver() {
@@ -120,20 +70,12 @@ public class Ride {
         this.passengers = passengers;
     }
 
-    public List<Path> getPaths() {
-        return paths;
+    public List<RideStop> getStops() {
+        return stops;
     }
 
-    public void setPaths(List<Path> paths) {
-        this.paths = paths;
-    }
-
-    public List<Review> getReviews() {
-        return reviews;
-    }
-
-    public void setReviews(List<Review> reviews) {
-        this.reviews = reviews;
+    public void setStops(List<RideStop> stops) {
+        this.stops = stops;
     }
 
     public RideStatus getStatus() {
@@ -144,20 +86,20 @@ public class Ride {
         this.status = status;
     }
 
-    public RideCancellation getRideCancellation() {
-        return rideCancellation;
+    public double getDistanceKm() {
+        return distanceKm;
     }
 
-    public void setRideCancellation(RideCancellation rideCancellation) {
-        this.rideCancellation = rideCancellation;
+    public void setDistanceKm(double distanceKm) {
+        this.distanceKm = distanceKm;
     }
 
-    public boolean isPanic() {
-        return panic;
+    public double getTotalPrice() {
+        return totalPrice;
     }
 
-    public void setPanic(boolean panic) {
-        this.panic = panic;
+    public void setTotalPrice(double totalPrice) {
+        this.totalPrice = totalPrice;
     }
 
     public boolean isBabiesTransport() {
@@ -184,6 +126,46 @@ public class Ride {
         this.vehicleType = vehicleType;
     }
 
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getScheduledFor() {
+        return scheduledFor;
+    }
+
+    public void setScheduledFor(LocalDateTime scheduledFor) {
+        this.scheduledFor = scheduledFor;
+    }
+
+    public LocalDateTime getStartedAt() {
+        return startedAt;
+    }
+
+    public void setStartedAt(LocalDateTime startedAt) {
+        this.startedAt = startedAt;
+    }
+
+    public LocalDateTime getFinishedAt() {
+        return finishedAt;
+    }
+
+    public void setFinishedAt(LocalDateTime finishedAt) {
+        this.finishedAt = finishedAt;
+    }
+
+    public RideCancellation getRideCancellation() {
+        return rideCancellation;
+    }
+
+    public void setRideCancellation(RideCancellation rideCancellation) {
+        this.rideCancellation = rideCancellation;
+    }
+
     public List<Report> getReports() {
         return reports;
     }
@@ -191,5 +173,12 @@ public class Ride {
     public void setReports(List<Report> reports) {
         this.reports = reports;
     }
-}
 
+    public List<Review> getReviews() {
+        return reviews;
+    }
+
+    public void setReviews(List<Review> reviews) {
+        this.reviews = reviews;
+    }
+}

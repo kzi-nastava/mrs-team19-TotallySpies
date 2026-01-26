@@ -7,9 +7,11 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.auth.ChangePasswordRequestDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.users.UserImageUpdateDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.users.UserProfileResponseDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.users.UserProfileUpdateRequestDTO;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.services.AuthService;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.services.UserService;
 
 @RestController
@@ -17,6 +19,9 @@ import rs.ac.uns.ftn.asd.ProjekatSIIT2025.services.UserService;
 public class UserController {
     @Autowired
     UserService userService;
+
+    @Autowired
+    AuthService authService;
 
     @GetMapping("/profile")
     public ResponseEntity<UserProfileResponseDTO> getUserProfile(Authentication auth) {
@@ -37,5 +42,12 @@ public class UserController {
     public ResponseEntity<Void> uploadImage(@RequestParam("image") MultipartFile image, Authentication auth) {
         userService.updateProfileImage(auth.getName(), image);
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/change-password")
+    public ResponseEntity<Void> changePassword(@Valid @RequestBody ChangePasswordRequestDTO requestDTO, Authentication auth) {
+        String email = auth.getName();
+        authService.changePassword(requestDTO, email);
+        return ResponseEntity.ok().build();
     }
 }

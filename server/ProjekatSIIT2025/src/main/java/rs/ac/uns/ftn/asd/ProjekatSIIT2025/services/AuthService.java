@@ -23,6 +23,7 @@ import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.DriverRepository;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.UserRepository;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.UUID;
@@ -158,5 +159,30 @@ public class AuthService {
         activationTokenRepository.save(token);
     }
 
+    @Transactional
+    public void changePassword(ChangePasswordRequestDTO dto, String email) {
 
+        User user = userRepository.findByEmail(email);
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+        }
+
+        if (!dto.getNewPassword().equals(dto.getConfirmNewPassword())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "New passwords do not match");
+        }
+
+        if (!encoder.matches(dto.getCurrentPassword(), user.getPassword())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Current password is incorrect");
+        }
+
+        if (encoder.matches(dto.getNewPassword(), user.getPassword())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "New password must be different from old password");
+        }
+
+        String encoded = encoder.encode(dto.getNewPassword());
+        user.setPassword(encoded);
+        user.setLastPasswordResetDate(Date.from(Instant.now()));
+
+        userRepository.save(user);
+    }
 }
