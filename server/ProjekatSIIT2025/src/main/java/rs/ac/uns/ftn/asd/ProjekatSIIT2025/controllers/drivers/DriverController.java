@@ -13,6 +13,7 @@ import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.users.DriverProfileResponseDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.users.VehicleInfoResponseDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.services.DriverActivityService;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.services.DriverService;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.services.RideService;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -27,6 +28,10 @@ public class DriverController {
     @Autowired
     DriverService driverService;
 
+    @Autowired
+    RideService rideService;
+
+    @PreAuthorize("hasRole('DRIVER')")
     @GetMapping(value = "/{id}/ride")
     public ResponseEntity<List<DriverRideHistoryResponseDTO>> getDriverRideHistory(
             @PathVariable Long id,
@@ -35,16 +40,7 @@ public class DriverController {
         
         System.out.println("Filters from: " + from + ", to: " + to);
 
-        List<DriverRideHistoryResponseDTO> history = new ArrayList<>();
-        
-        DriverRideHistoryResponseDTO h1 = new DriverRideHistoryResponseDTO();
-        h1.setId(101L);
-        h1.setStartTime(LocalDateTime.now().minusDays(2));
-        h1.setEndTime(LocalDateTime.now().minusDays(2).plusMinutes(30));
-        h1.setPrice(850.0);
-        h1.setPassengerEmail("passenger@gmail.com");
-        
-        history.add(h1);
+        List<DriverRideHistoryResponseDTO> history = rideService.getDriverHistory(id, from, to);
         
         return new ResponseEntity<>(history, HttpStatus.OK);
     }

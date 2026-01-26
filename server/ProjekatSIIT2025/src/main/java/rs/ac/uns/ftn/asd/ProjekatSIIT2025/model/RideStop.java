@@ -17,6 +17,18 @@ public class RideStop {
     @ManyToOne
     private Ride ride;
 
+    public RideStop(Long id, String address, double latitude, double longitude, int orderIndex, Ride ride) {
+        this.id = id;
+        this.address = address;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.orderIndex = orderIndex;
+        this.ride = ride;
+    }
+
+    public RideStop() {
+    }
+
     public Long getId() {
         return id;
     }
@@ -33,20 +45,20 @@ public class RideStop {
         this.address = address;
     }
 
-    public double getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
-    }
-
     public double getLatitude() {
         return latitude;
     }
 
     public void setLatitude(double latitude) {
         this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
     }
 
     public int getOrderIndex() {
@@ -64,4 +76,6 @@ public class RideStop {
     public void setRide(Ride ride) {
         this.ride = ride;
     }
+
+
 }

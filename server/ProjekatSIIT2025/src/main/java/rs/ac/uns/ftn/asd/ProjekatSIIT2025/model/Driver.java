@@ -39,8 +39,8 @@ public class Driver extends User {
         return rides;
     }
 
-    public void setRides(List<Ride> rideElenas) {
-        this.rides = rideElenas;
+    public void setRides(List<Ride> rides) {
+        this.rides = rides;
     }
 }
 
