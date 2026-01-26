@@ -5,6 +5,14 @@ public class RideStopDTO {
     private double lat;
     private double lng;
 
+    public RideStopDTO(double latitude, double longitude, String address) {
+        this.address = address;
+        this.lat = latitude;
+        this.lng = longitude;
+    }
+
+    public RideStopDTO() {}
+
     public double getLng() {
         return lng;
     }

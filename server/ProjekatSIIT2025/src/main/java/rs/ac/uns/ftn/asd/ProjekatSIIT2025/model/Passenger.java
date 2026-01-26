@@ -32,11 +32,11 @@ public class Passenger extends User {
         this.rides = rides;
     }
 
-    public List<Ride> getFavouritePaths() {
+    public List<Ride> getFavouriteRides() {
         return favouriteRides;
     }
 
-    public void setFavouritePaths(List<Ride> favouritePaths) {
+    public void setFavouriteRides(List<Ride> favouritePaths) {
         this.favouriteRides = favouritePaths;
     }
 }
