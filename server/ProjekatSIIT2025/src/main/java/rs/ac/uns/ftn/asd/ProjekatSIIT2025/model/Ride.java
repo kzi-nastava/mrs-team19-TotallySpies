@@ -8,7 +8,7 @@ import java.util.List;
 @Entity
 public class Ride {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
@@ -17,13 +17,14 @@ public class Ride {
     @ManyToMany
     private List<Passenger> passengers;
 
-    @OneToMany(mappedBy = "ride", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "ride",fetch = FetchType.EAGER,  cascade = CascadeType.ALL)
     private List<RideStop> stops;
 
     @Enumerated(EnumType.STRING)
     private RideStatus status;
 
     private double distanceKm;
+    private double estimatedTime;
     private double totalPrice; //cijena_po_tipu + kilometri * 120
 
     private boolean babiesTransport;
@@ -180,5 +181,13 @@ public class Ride {
 
     public void setReviews(List<Review> reviews) {
         this.reviews = reviews;
+    }
+
+    public double getEstimatedTime() {
+        return estimatedTime;
+    }
+
+    public void setEstimatedTime(double estimatedTime) {
+        this.estimatedTime = estimatedTime;
     }
 }
