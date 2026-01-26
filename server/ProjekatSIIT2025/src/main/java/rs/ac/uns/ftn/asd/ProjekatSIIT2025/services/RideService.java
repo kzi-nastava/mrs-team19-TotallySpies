@@ -132,7 +132,7 @@ public class RideService {
                 );
         if (user instanceof Passenger){
             //passenger can cancel a ride 10 minutes before the ride
-            Duration untilRideStart = Duration.between(LocalDateTime.now(), ride.getStartTime());
+            Duration untilRideStart = Duration.between(LocalDateTime.now(), ride.getStartedAt());
             if(untilRideStart.isNegative()){
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ride already started");
             }
@@ -162,7 +162,7 @@ public class RideService {
     }
     public void handlePanicNotification(PanicNotificationDTO dto){
         //administrators get notification
-        Ride rideElena = rideRepository.findById(dto.getRideId())
+        Ride ride = rideRepository.findById(dto.getRideId())
                 .orElseThrow(() ->
                         new ResponseStatusException(HttpStatus.NOT_FOUND, "Ride not found!")
                 );
@@ -177,12 +177,13 @@ public class RideService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Panic reason can not be null!");
         }
         PanicNotification panicNotification = new PanicNotification(user,
-                rideElena, dto.getTime(), dto.getReason());
+                ride, dto.getTime(), dto.getReason());
         panicNotificationRepository.save(panicNotification);
         ride.setPanic(true);
         rideRepository.save(ride);
     }
 
+    @Transactional
     public void stopRide(StopRideDTO dto){
         Ride ride = rideRepository.findById(dto.getRideId())
                 .orElseThrow(() ->
@@ -195,16 +196,21 @@ public class RideService {
         if(dto.getNewEndTime() == null){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "End time can not be null!");
         }
-        ride.setEndTime(dto.getNewEndTime());
+        ride.setFinishedAt(dto.getNewEndTime());
         ride.setTotalPrice(dto.getNewTotalPrice());
         ride.setStatus(RideStatus.STOPPED);
-        List<Path> paths = ride.getPaths();
-        if(paths == null || paths.isEmpty()){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ride has no paths");
+        List<RideStop> rideStops = ride.getStops();
+        if(rideStops == null || rideStops.isEmpty()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ride has no stops");
         }
-        paths.get(paths.size() -  1).setDestinationAddress(dto.getNewDestinationAddress());
-        ride.setPaths(paths);
-        rideRepository.save(ride);
+        RideStop removedStop = rideStops.remove(rideStops.size() - 1);
+        removedStop.setRide(null);
+        RideStop newStop = dto.getNewDestination();
+        newStop.setRide(ride);
+        newStop.setOrderIndex(rideStops.size());
+        rideStops.add(newStop);
+        //rideRepository.save(ride); not needed because JPA transcational
+        //hibernate will automatically detect changes and persist them when the transaction commits
     }
 
     public int getETA(double currentLat, double currentLng, double destLat, double destLng) {
