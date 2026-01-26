@@ -379,15 +379,19 @@ public class RideService {
         ride.setCreatedAt(LocalDateTime.now());
 
         // Stops
-        List<RideStop> stops = dto.getLocations().stream()
-                .map(loc -> {
-                    RideStop rs = new RideStop();
-                    rs.setAddress(loc.getAddress());
-                    rs.setLatitude(loc.getLat());
-                    rs.setLongitude(loc.getLng());
-                    rs.setRide(ride);
-                    return rs;
-                }).toList();
+        List<RideStop> stops = new ArrayList<>();
+        for (int i = 0; i < dto.getLocations().size(); i++) {
+            RideStopDTO loc = dto.getLocations().get(i);
+
+            RideStop rs = new RideStop();
+            rs.setAddress(loc.getAddress());
+            rs.setOrderIndex(i);
+            rs.setLatitude(loc.getLat());
+            rs.setLongitude(loc.getLng());
+            rs.setRide(ride);
+
+            stops.add(rs);
+        }
 
         ride.setStops(stops);
 
