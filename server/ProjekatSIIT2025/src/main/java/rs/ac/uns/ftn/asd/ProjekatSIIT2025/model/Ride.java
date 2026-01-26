@@ -14,7 +14,7 @@ public class Ride {
     @ManyToOne
     private Driver driver;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     private List<Passenger> passengers;
 
     @OneToMany(mappedBy = "ride", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
@@ -37,7 +37,7 @@ public class Ride {
     private LocalDateTime startedAt;
     private LocalDateTime finishedAt;
 
-    @OneToOne
+    @OneToOne(mappedBy = "ride", cascade = CascadeType.ALL)
     private RideCancellation rideCancellation;
 
     @OneToMany
@@ -45,6 +45,9 @@ public class Ride {
 
     @OneToMany
     private List<Review> reviews;
+    
+    @OneToOne(mappedBy = "ride", cascade = CascadeType.ALL)
+    private PanicNotification panicNotification;
 
     public Long getId() {
         return id;
@@ -180,5 +183,13 @@ public class Ride {
 
     public void setReviews(List<Review> reviews) {
         this.reviews = reviews;
+    }
+
+    public PanicNotification getPanicNotification() {
+        return panicNotification;
+    }
+
+    public void setPanicNotification(PanicNotification panicNotification) {
+        this.panicNotification = panicNotification;
     }
 }

@@ -10,6 +10,5 @@ import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.Vehicle;
 
 @Repository
 public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
-    @Query("SELECT v FROM Vehicle v JOIN Driver d ON v.id = d.vehicle.id WHERE d.isActive = true")
-    List<Vehicle> findAllActiveVehicles();
+    
 }

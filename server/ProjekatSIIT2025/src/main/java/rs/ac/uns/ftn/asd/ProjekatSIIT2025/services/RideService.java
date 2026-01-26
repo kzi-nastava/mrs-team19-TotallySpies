@@ -1,14 +1,19 @@
 package rs.ac.uns.ftn.asd.ProjekatSIIT2025.services;
 
+import java.time.DateTimeException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -19,6 +24,7 @@ import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.RideTrackingDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.DriverRepository;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.RideRepository;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.CancelRideDTO;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.DriverRideHistoryResponseDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.InconsistencyReportRequestDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.PanicNotificationDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.*;
@@ -245,5 +251,62 @@ public class RideService {
         rideRepository.save(ride);
 
         return true;
+    }
+
+    @Transactional
+    public List<DriverRideHistoryResponseDTO> getDriverHistory(Long id, String from, String to) {
+        //  if sent, transform String dates into LocalDateTime
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDateTime fromDate;
+        LocalDateTime toDate;
+        try {
+        if (from != null) {
+            fromDate = LocalDate.parse(from, formatter).atStartOfDay();
+        } else {
+            fromDate = LocalDateTime.of(2020,1 ,1 ,0, 0, 0);
+        }
+        if (to != null) {
+            toDate = LocalDate.parse(to, formatter).atTime(23, 59, 59);
+        } else {
+            toDate =  LocalDateTime.now();
+        }
+        } catch (DateTimeException e){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "format of date must be yyyy-MM-dd");
+        }
+
+        List<Ride> rides = rideRepository.findAllByDriverIdAndStartedAtBetween(id, fromDate, toDate);
+
+        return rides.stream().map(ride -> {
+            DriverRideHistoryResponseDTO dto = new DriverRideHistoryResponseDTO();
+            dto.setId(ride.getId());
+            dto.setStartTime(ride.getStartedAt());
+            dto.setEndTime(ride.getFinishedAt());
+            dto.setPrice(ride.getTotalPrice());
+            dto.setPassengers(ride.getPassengers().stream().map(p -> p.getName() + " " + p.getLastName()).collect(Collectors.toList()));
+            if (!ride.getStops().isEmpty()) {
+                dto.setStartLocation(ride.getStops().stream()
+                    .min(Comparator.comparingInt(RideStop::getOrderIndex)).get().getAddress());
+                dto.setEndLocation(ride.getStops().stream()
+                    .max(Comparator.comparingInt(RideStop::getOrderIndex)).get().getAddress());
+            }
+
+            if (ride.getRideCancellation() != null) {
+                dto.setCancelled(true);
+                dto.setCancelledBy(ride.getRideCancellation().getUser().getEmail());
+                dto.setCancellReason(ride.getRideCancellation().getCancellationReason());
+            } else {
+                dto.setCancelled(false);
+            }
+
+            if (ride.getPanicNotification() != null) {
+                dto.setPanicPressed(true);
+                dto.setPanicReason(ride.getPanicNotification().getReason());
+            } else {
+                dto.setPanicPressed(false);
+            }
+
+            return dto;
+
+        }).collect(Collectors.toList());
     }
 }
