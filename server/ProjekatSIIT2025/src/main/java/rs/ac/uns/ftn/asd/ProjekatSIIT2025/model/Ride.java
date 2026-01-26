@@ -8,13 +8,13 @@ import java.util.List;
 @Entity
 public class Ride {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
     private Driver driver;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     private List<Passenger> passengers;
 
     private boolean panic;
@@ -26,6 +26,7 @@ public class Ride {
     private RideStatus status;
 
     private double distanceKm;
+    private double estimatedTime;
     private double totalPrice; //cijena_po_tipu + kilometri * 120
 
     private boolean babiesTransport;
@@ -39,7 +40,7 @@ public class Ride {
     private LocalDateTime startedAt;
     private LocalDateTime finishedAt;
 
-    @OneToOne
+    @OneToOne(mappedBy = "ride", cascade = CascadeType.ALL)
     private RideCancellation rideCancellation;
 
     @OneToMany
@@ -47,6 +48,9 @@ public class Ride {
 
     @OneToMany
     private List<Review> reviews;
+
+    @OneToOne(mappedBy = "ride", cascade = CascadeType.ALL)
+    private PanicNotification panicNotification;
 
     public Long getId() {
         return id;
@@ -190,5 +194,21 @@ public class Ride {
 
     public void setReviews(List<Review> reviews) {
         this.reviews = reviews;
+    }
+
+    public double getEstimatedTime() {
+        return estimatedTime;
+    }
+
+    public void setEstimatedTime(double estimatedTime) {
+        this.estimatedTime = estimatedTime;
+    }
+
+    public PanicNotification getPanicNotification() {
+        return panicNotification;
+    }
+
+    public void setPanicNotification(PanicNotification panicNotification) {
+        this.panicNotification = panicNotification;
     }
 }

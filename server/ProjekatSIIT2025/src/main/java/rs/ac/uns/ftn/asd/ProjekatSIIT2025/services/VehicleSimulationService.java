@@ -20,7 +20,7 @@ public class VehicleSimulationService {
     @Autowired
     private VehicleRepository vehicleRepository;
 
-    @Scheduled(fixedRate = 2000)
+    @Scheduled(fixedRate = 7000)
     @Transactional
     public void simulateMovement() {
         List<Driver> drivers = driverRepository.findByIsActiveTrue();

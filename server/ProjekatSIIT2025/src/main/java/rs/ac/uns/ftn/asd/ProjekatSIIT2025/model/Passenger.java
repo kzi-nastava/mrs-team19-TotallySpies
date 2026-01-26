@@ -10,7 +10,7 @@ import java.util.List;
 
 @Entity
 public class Passenger extends User {
-    @ManyToMany(cascade = {CascadeType.ALL}, mappedBy = "passengers")
+    @ManyToMany(mappedBy = "passengers")
     private List<Ride> rides = new ArrayList<>();
 
     @OneToMany(cascade = {CascadeType.ALL})
@@ -32,11 +32,11 @@ public class Passenger extends User {
         this.rides = rides;
     }
 
-    public List<Ride> getFavouritePaths() {
+    public List<Ride> getFavouriteRides() {
         return favouriteRides;
     }
 
-    public void setFavouritePaths(List<Ride> favouritePaths) {
+    public void setFavouriteRides(List<Ride> favouritePaths) {
         this.favouriteRides = favouritePaths;
     }
 }
