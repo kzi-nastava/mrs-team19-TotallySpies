@@ -583,4 +583,27 @@ public class RideService {
         return totalMinutesIfAssigned <= 480;
     }
 
+    public void startRide(Long rideId, String email) {
+        Ride ride = rideRepository.findById(rideId)
+                .orElseThrow(() ->
+                        new ResponseStatusException(HttpStatus.NOT_FOUND, "Ride not found!")
+                );
+
+        Driver driver = driverRepository.findByEmail(email);
+        if (driver == null){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Passenger not found!");
+        }
+
+        if (!ride.getDriver().getId().equals(driver.getId())){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This driver is not assigned to this ride!");
+        }
+
+        if (ride.getStatus() != RideStatus.SCHEDULED) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ride cannot be started. Status: " + ride.getStatus());
+        }
+
+        ride.setStatus(RideStatus.ACTIVE);
+        ride.setStartedAt(LocalDateTime.now());
+        rideRepository.save(ride);
+    }
 }
