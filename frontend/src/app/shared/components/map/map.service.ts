@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { environment } from '../../../../env/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -20,4 +21,9 @@ export class MapService {
       `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&<params>`
     );
   }
+
+  getAllVehiclePositions(): Observable<any[]> {
+ 
+  return this.http.get<any[]>(`${environment.apiHost}/vehicles/active`);
+}
 }
