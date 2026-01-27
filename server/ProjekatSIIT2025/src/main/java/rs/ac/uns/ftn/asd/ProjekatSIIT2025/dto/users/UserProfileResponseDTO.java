@@ -8,6 +8,15 @@ public class UserProfileResponseDTO {
     private String address;
     private String profilePicture;
 
+    public UserProfileResponseDTO(String name, String lastName, String profilePicture) {
+        this.name = name;
+        this.lastName = lastName;
+        this.profilePicture = profilePicture;
+    }
+
+    public UserProfileResponseDTO() {
+    }
+
     public String getLastName() {
         return lastName;
     }
