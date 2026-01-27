@@ -1,8 +1,14 @@
-<div class="ride-card">
+<div class="ride-card" *ngIf="ride">
   <div class="ride-details-section">
     <div class="route-info">
       <h3>Ride details</h3>
-      <p class="time-label">{{ ride.date }} {{ ride.startTime }} till {{ ride.endTime }}</p>
+      
+      <p class="time-label" *ngIf="isDTO(ride)">
+        {{ ride.displayTime | date:'dd.MM.yyyy. HH:mm' }}
+      </p>
+      <p class="time-label" *ngIf="!isDTO(ride)">
+        {{ ride.date }} {{ ride.startTime }} till {{ ride.endTime }}
+      </p>
       
       <div class="route-container">
         <div class="visual-track">
@@ -19,20 +25,26 @@
     </div>
 
     <div class="status-container">
-      <div class="price-tag">{{ ride.price }} din</div>
-      
-      <div class="status-alerts" *ngIf="!ride.isUpcoming">
-        <div class="alert cancelled" *ngIf="ride.status === 'Cancelled'">
-          <span>Cancelled by {{ ride.cancelledBy === 'Driver' ? 'Driver' : 'Passenger' }}</span>
-        </div>
-
-        <div class="alert panic" *ngIf="ride.panicPressed">
-          <span>Panic button pressed</span>
-        </div>
-        
-        <div class="alert finished" *ngIf="ride.status === 'Finished'">
-          <span>Finished</span>
-          <span class="check-icon">✓</span>
-        </div>
+      <div class="price-tag">
+        {{ isDTO(ride) ? ride.totalPrice : ride.price }} din
       </div>
-    </div> </div> </div>
+      
+      <div class="status-alerts">
+        <ng-container *ngIf="isDTO(ride)">
+            <div class="alert finished" *ngIf="ride.status === 'COMPLETED'">
+                <span>Finished ✓</span>
+            </div>
+            <div class="alert active" *ngIf="ride.status === 'ACTIVE'">
+                <span>In Progress...</span>
+            </div>
+        </ng-container>
+
+        <ng-container *ngIf="!isDTO(ride)">
+            <div class="alert finished" *ngIf="ride.status === 'Finished'">
+                <span>Finished ✓</span>
+            </div>
+            </ng-container>
+      </div>
+    </div>
+  </div>
+</div>
