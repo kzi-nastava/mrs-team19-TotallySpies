@@ -50,3 +50,20 @@ h2 {
     background-color: #b3a1ff;
     transform: translateY(-2px);
 }
+
+.end-btn {
+    padding: 8px 20px;
+    background-color: #ff5e5e;
+    color: white;
+    border: none;
+    border-radius: 0.6rem;
+    cursor: pointer;
+    font-weight: 600;
+    margin-top: 10px;
+    transition: all 0.2s ease;
+}
+
+.end-btn:hover {
+    background-color: #e04a4a;
+    transform: scale(1.05);
+}

@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { ReportDialogComponent } from '../../report-dialog/report-dialog.component';
-import { ReviewDialogComponent } from '../../review-dialog/review-dialog.component';
+import { ReportDialogComponent } from '../report-dialog/report-dialog.component';
+import { ReviewDialogComponent } from '../review-dialog/review-dialog.component';
 
 @Component({
   selector: 'app-driver-info',
