@@ -1,6 +1,5 @@
 package rs.ac.uns.ftn.asd.ProjekatSIIT2025.controllers.rides;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.http.MediaType;
@@ -20,7 +19,7 @@ public class VehicleDisplayController {
     @Autowired
     private MapService mapService;
     
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/active", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<VehicleDisplayResponseDTO>> getAllVehicles(){
         return new ResponseEntity<>(mapService.getActiveVehicles(), HttpStatus.OK);
     }

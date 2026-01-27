@@ -167,8 +167,8 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   }
 
   private startPollingPositions(): void {
-    // Polling: every 3 seconds ask server for updated postions
-    this.pollingSubscription = interval(3000)
+    
+    this.pollingSubscription = interval(10000)
       .pipe(
         startWith(0),
         switchMap(() => this.mapService.getAllVehiclePositions())
@@ -176,6 +176,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       .subscribe({
         next: (vehicles: any[]) => {
           this.updateVehicleMarkers(vehicles);
+          console.log("nema")
         },
         error: (err) => console.error('error with getting a position:', err)
       });

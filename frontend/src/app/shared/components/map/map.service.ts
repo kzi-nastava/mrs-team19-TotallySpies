@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../env/environment';
@@ -23,7 +23,8 @@ export class MapService {
   }
 
   getAllVehiclePositions(): Observable<any[]> {
- 
-  return this.http.get<any[]>(`${environment.apiHost}/vehicles/active`);
-}
+    return this.http.get<any[]>(`${environment.apiHost}/vehicles/active`, {
+      headers: new HttpHeaders({ 'skip': 'true' })
+    }); // skip because we dont need token
+  } 
 }
