@@ -10,6 +10,12 @@
                     >
                 Start
             </button>
+
+            <button *ngIf ="ride.status === 'SCHEDULED'"
+                class = "cancel-btn"
+                (click) = "openCancelDialog(ride.rideId)">
+                Cancel
+            </button>
             
             <button *ngIf="ride.status === 'ACTIVE'" 
                     class="end-btn" 

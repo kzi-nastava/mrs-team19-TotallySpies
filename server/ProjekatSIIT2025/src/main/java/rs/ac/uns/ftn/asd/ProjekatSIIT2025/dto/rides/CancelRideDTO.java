@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 
 public class CancelRideDTO {
     private Long rideId;
-    private Long userId;
     private String rejectionReason;
     private LocalDateTime time;
 
@@ -14,14 +13,6 @@ public class CancelRideDTO {
 
     public void setRideId(Long rideId) {
         this.rideId = rideId;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
     }
 
     public String getRejectionReason() {
