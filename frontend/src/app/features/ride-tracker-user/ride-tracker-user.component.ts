@@ -7,6 +7,7 @@ import { interval, Subscription, switchMap } from 'rxjs';
 import { RideTrackingDTO } from '../../shared/models/ride.model';
 import { RideService } from '../../shared/services/ride.service';
 import { ActivatedRoute } from '@angular/router';
+import { PanicRideDTO } from '../../shared/models/panic-ride.model';
 
 @Component({
   selector: 'app-ride-tracker-user',
@@ -44,7 +45,7 @@ export class RideTrackerUserComponent implements OnInit, OnDestroy {
       this.rideId = Number(idParam);
     } else {
       console.warn('ID nije u URL-u, koristim testni ID 2');
-      this.rideId = 2;
+      this.rideId = 1;
     }
     
     this.loadInitialData();
@@ -125,4 +126,33 @@ export class RideTrackerUserComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.stopTracking();
   }
+
+  panicRide(panicRideDTO : PanicRideDTO) {
+    this.rideService.panicRide(panicRideDTO).subscribe({
+      next: (data) => {
+        alert('PANIC sent successfully.');
+      },
+      // error: (err) => {
+      //   console.error(err);
+      //   alert('Failed to cancel ride.');
+      // }
+    });
+    }
+  openPanicDialog(rideId: number) {
+      const reason = prompt('Enter PANIC reason:');
+  
+      if (!reason || reason.trim().length === 0) {
+        alert('Panic reason is required.');
+        return;
+      }
+      const cancelRideDTO : PanicRideDTO = {
+        rideId : rideId,
+        reason : reason,
+        time : new Date().toISOString()
+      };
+  
+      this.panicRide(cancelRideDTO);
+    }
+  
+
 }
