@@ -22,6 +22,14 @@ export class RideService {
     return this.http.get<RideTrackingDTO>(`${environment.apiHost}/rides/${rideId}/location`);
   }
 
+    checkRideAccess(rideId: number): Observable<boolean> {
+    return this.http.get<boolean>(`${environment.apiHost}/rides/${rideId}/access`);
+  }
+
+    getRideData(rideId: number): Observable<RideTrackingDTO> {
+    return this.http.get<RideTrackingDTO>(`${environment.apiHost}/rides/${rideId}`);
+  }
+
   reportInconsistency(rideId: number, request: any): Observable<any> {
     return this.http.post(`${environment.apiHost}/rides/${rideId}/inconsistency-report`, request, { responseType: 'text' });
   }

@@ -19,102 +19,107 @@ export class RideTrackerUserComponent implements OnInit, OnDestroy {
   rideId: number = 123;
   minutesRemaining: number = 0;
   currentVehicleLocation: { lat: number; lng: number } = { lat: 0, lng: 0 };
-  pickupAddress: string = 'Micurinova 38, Novi Sad'; 
-  destinationAddress: string = 'Bulevar Oslobodjenja 104, Novi Sad';
+  pickupAddress: string = '';
+  destinationAddress: string = '';
   progress: number = 100;
   currentDriver = {
-    driverName: 'Dimitrije Antić', 
-    carModel: 'Subaru XV',
+    driverName: '', 
+    carModel: '',
     rating: 4.9,
     profileImageUrl: 'icons/person.png',
     isFinished: false
   };
+  rideStatus: string = '';
 
   constructor(
-  private rideService: RideService,
-  private route: ActivatedRoute,
-  private cdr: ChangeDetectorRef
-) {}
+    private rideService: RideService,
+    private route: ActivatedRoute,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit() {
-  const idParam = this.route.snapshot.paramMap.get('id');
-  
-  if (idParam) {
-    this.rideId = Number(idParam);
-  } else {
-    console.warn('ID nije u URL-u, koristim testni ID 2');
-    this.rideId = 2;
+    const idParam = this.route.snapshot.paramMap.get('id');
+    
+    if (idParam) {
+      this.rideId = Number(idParam);
+    } else {
+      console.warn('ID nije u URL-u, koristim testni ID 2');
+      this.rideId = 2;
+    }
+    
+    this.loadInitialData();
   }
-  
-  this.loadInitialData();
-  this.startTracking();
-}
 
   loadInitialData() {
-  this.rideService.getRideLocation(this.rideId).subscribe(data => {
-    this.updateFields(data);
-  });
+    this.rideService.getRideLocation(this.rideId).subscribe({
+      next: (data: RideTrackingDTO) => {
+        this.updateFields(data);
+        
+        if (data.status === 'ACTIVE') {
+          this.startTracking();
+        }
+      },
+      error: (err) => {
+        console.error('Greška pri učitavanju vožnje:', err);
+      }
+    });
   }
 
   updateFields(data: RideTrackingDTO) {
-  if (!data) return; 
+    if (!data) return; 
 
-  this.minutesRemaining = data.eta;
-  this.currentVehicleLocation = { lat: data.vehicleLat, lng: data.vehicleLng };
-  this.pickupAddress = data.pickupAddress || 'no address';
-  this.destinationAddress = data.destinationAddress || 'no address';
-  
-  this.currentDriver.driverName = data.driverName;
-  this.currentDriver.carModel = data.carModel;
-  this.currentDriver.profileImageUrl = data.profilePicture;
-
-  this.progress = data.eta > 0 ? (100 - (data.eta * 2)) : 100; 
-  if (this.progress < 0) this.progress = 5;
-
-  if (data.status === 'COMPLETED') {
-    this.currentDriver = { 
-      ...this.currentDriver, 
-      isFinished: true 
-    };
+    this.rideStatus = data.status;
+    this.minutesRemaining = data.eta;
+    this.currentVehicleLocation = { lat: data.vehicleLat, lng: data.vehicleLng };
+    this.pickupAddress = data.pickupAddress || 'Adresa nije dostupna';
+    this.destinationAddress = data.destinationAddress || 'Adresa nije dostupna';
     
-    this.minutesRemaining = 0;
-    this.progress = 100;
-    this.stopTracking();
+    const isCompleted = data.status === 'COMPLETED' || data.status === 'STOPPED';
+    
+    this.currentDriver = {
+      driverName: data.driverName,
+      carModel: data.carModel,
+      rating: 4.9,
+      profileImageUrl: data.profilePicture,
+      isFinished: isCompleted
+    };
+
+    if (data.status === 'ACTIVE') {
+      this.progress = data.eta > 0 ? (100 - (data.eta * 2)) : 100; 
+      if (this.progress < 0) this.progress = 5;
+    } else {
+      this.progress = 100;
+      this.minutesRemaining = 0;
+    }
+
+    this.cdr.detectChanges();
   }
 
-  this.cdr.detectChanges();
-}
-
   startTracking() {
-  this.trackingSub = interval(5000).pipe(
-    switchMap(() => this.rideService.getRideLocation(this.rideId))
-  ).subscribe({
-    next: (data: RideTrackingDTO) => {
-      this.minutesRemaining = data.eta;
-      this.currentVehicleLocation = { lat: data.vehicleLat, lng: data.vehicleLng };
-      this.pickupAddress = data.pickupAddress || this.pickupAddress;
-      this.destinationAddress = data.destinationAddress || this.destinationAddress;
-      
-      this.currentDriver = {
-        ...this.currentDriver,
-        driverName: data.driverName,
-        carModel: data.carModel,
-        profileImageUrl: data.profilePicture,
-        isFinished: data.status === 'COMPLETED'
-      };
-      
-      if (data.status === 'COMPLETED') {
+    if (this.trackingSub) {
+      return;
+    }
+    
+    this.trackingSub = interval(5000).pipe(
+      switchMap(() => this.rideService.getRideLocation(this.rideId))
+    ).subscribe({
+      next: (data: RideTrackingDTO) => {
+        this.updateFields(data);
+        
+        if (data.status === 'COMPLETED' || data.status === 'STOPPED') {
+          this.stopTracking();
+        }
+      },
+      error: (err) => {
+        console.error('Tracking error:', err);
         this.stopTracking();
       }
-      
-      this.cdr.detectChanges(); 
-    },
-    error: (err) => console.error('Tracking error:', err)
-  });
-}
+    });
+  }
 
   stopTracking() {
     this.trackingSub?.unsubscribe();
+    this.trackingSub = undefined;
   }
 
   ngOnDestroy() {
