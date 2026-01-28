@@ -279,7 +279,12 @@ public class RideService {
             vehicle.getCurrentLat(),
             vehicle.getCurrentLng(),
             eta,
-            ride.getStatus().toString());
+            ride.getStatus().toString(),
+            ride.getDriver().getName(),
+            vehicle.getModel(),
+            ride.getDriver().getProfilePicture(),
+            ride.getStops().get(0).getAddress(),
+            ride.getStops().get(ride.getStops().size() - 1).getAddress());
     }
 
     @Transactional

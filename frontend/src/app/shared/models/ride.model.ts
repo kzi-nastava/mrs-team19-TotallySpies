@@ -31,3 +31,24 @@ export interface Ride {
   panicPressed: boolean;
   isUpcoming: boolean;
 }
+export interface ReviewRequestDTO {
+  rating: number;
+  comment: string;
+}
+
+export interface RideTrackingDTO {
+  driverName: string;
+  carModel: string;
+  profilePicture: string;
+  rideId: number;
+  vehicleLat: number;
+  vehicleLng: number;
+  eta: number;
+  status: 'ACTIVE' | 'SCHEDULED' | 'COMPLETED' | 'STOPPED';
+  pickupAddress: string;
+  destinationAddress: string;
+}
+
+export interface InconsistencyReportRequestDTO {
+  description: string;
+}
