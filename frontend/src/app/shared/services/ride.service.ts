@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { RideFinishResponseDTO } from '../models/ride.model';
+import { InconsistencyReportRequestDTO, RideFinishResponseDTO, RideTrackingDTO } from '../models/ride.model';
 import { environment } from '../../../env/environment';
 import { CancelRideDTO } from '../models/cancel-ride.model';
 
@@ -17,6 +17,22 @@ export class RideService {
 
   finishRide(id: number): Observable<RideFinishResponseDTO> {
     return this.http.put<RideFinishResponseDTO>(`${environment.apiHost}/rides/${id}/end`, {});
+  }
+
+  getRideLocation(rideId: number): Observable<RideTrackingDTO> {
+    return this.http.get<RideTrackingDTO>(`${environment.apiHost}/rides/${rideId}/location`);
+  }
+
+    checkRideAccess(rideId: number): Observable<boolean> {
+    return this.http.get<boolean>(`${environment.apiHost}/rides/${rideId}/access`);
+  }
+
+    getRideData(rideId: number): Observable<RideTrackingDTO> {
+    return this.http.get<RideTrackingDTO>(`${environment.apiHost}/rides/${rideId}`);
+  }
+
+  reportInconsistency(rideId: number, request: any): Observable<any> {
+    return this.http.post(`${environment.apiHost}/rides/${rideId}/inconsistency-report`, request, { responseType: 'text' });
   }
 
   cancelRide(dto : CancelRideDTO){

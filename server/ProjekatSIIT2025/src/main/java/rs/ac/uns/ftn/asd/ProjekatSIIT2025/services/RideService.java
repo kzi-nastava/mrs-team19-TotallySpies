@@ -254,33 +254,49 @@ public class RideService {
 
     @Transactional
     public RideTrackingDTO getRideTrackingInfo(Long rideId) {
-        Ride ride = rideRepository.findById(rideId).orElse(null);
-        if (ride == null || ride.getDriver() == null) return null;
+    Ride ride = rideRepository.findById(rideId).orElse(null);
+    if (ride == null || ride.getDriver() == null) return null;
 
-        if (ride.getStatus() != RideStatus.ACTIVE) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ride is not active.");
-        }
+    Vehicle vehicle = ride.getDriver().getVehicle();
+    RideStop destination = ride.getStops().stream()
+        .max(Comparator.comparingInt(RideStop::getOrderIndex))
+        .orElse(ride.getStops().get(ride.getStops().size() - 1));
 
-        Vehicle vehicle = ride.getDriver().getVehicle();
-
-        RideStop destination = ride.getStops().stream()
-            .max(Comparator.comparingInt(RideStop::getOrderIndex))
-            .orElse(ride.getStops().get(ride.getStops().size() - 1));
-
-        int eta = getETA(
+    int eta = 0;
+    double vehicleLat = 0;
+    double vehicleLng = 0;
+    
+    if (ride.getStatus() == RideStatus.ACTIVE) {
+        eta = getETA(
             vehicle.getCurrentLat(),
             vehicle.getCurrentLng(),
             destination.getLatitude(),
             destination.getLongitude()
         );
-
-        return new RideTrackingDTO(
-            vehicle.getId(),
-            vehicle.getCurrentLat(),
-            vehicle.getCurrentLng(),
-            eta,
-            ride.getStatus().toString());
+        vehicleLat = vehicle.getCurrentLat();
+        vehicleLng = vehicle.getCurrentLng();
+    } else if (ride.getStatus() == RideStatus.COMPLETED || ride.getStatus() == RideStatus.STOPPED) {
+        vehicleLat = destination.getLatitude();
+        vehicleLng = destination.getLongitude();
+        eta = 0; 
+    } else if (ride.getStatus() == RideStatus.SCHEDULED) {
+        RideStop start = ride.getStops().get(0);
+        vehicleLat = start.getLatitude();
+        vehicleLng = start.getLongitude();
     }
+
+    return new RideTrackingDTO(
+        vehicle.getId(),
+        vehicleLat,
+        vehicleLng,
+        eta,
+        ride.getStatus().toString(),
+        ride.getDriver().getName(),
+        vehicle.getModel(),
+        ride.getDriver().getProfilePicture(),
+        ride.getStops().get(0).getAddress(),
+        ride.getStops().get(ride.getStops().size() - 1).getAddress());
+}
 
     @Transactional
     public boolean reportInconsistency(Long id, InconsistencyReportRequestDTO request) {

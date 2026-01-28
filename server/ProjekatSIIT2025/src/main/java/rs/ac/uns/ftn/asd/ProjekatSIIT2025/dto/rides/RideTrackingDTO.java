@@ -6,14 +6,50 @@ public class RideTrackingDTO {
     private double vehicleLng;
     private int eta; 
     private String status;
-    
-    public RideTrackingDTO(Long rideId, double vehicleLat, double vehicleLng, int eta, String status) {
+    private String driverName;
+    private String carModel;
+    private String profilePicture;
+    private String pickupAddress;
+    private String destinationAddress;
+
+    public RideTrackingDTO(Long rideId, double vehicleLat, double vehicleLng, int eta, String status, String driverName,
+            String carModel, String profilePicture, String pickupAddress, String destinationAddress) {
         this.rideId = rideId;
         this.vehicleLat = vehicleLat;
         this.vehicleLng = vehicleLng;
         this.eta = eta;
         this.status = status;
+        this.driverName = driverName;
+        this.carModel = carModel;
+        this.profilePicture = profilePicture;
+        this.pickupAddress = pickupAddress;
+        this.destinationAddress = destinationAddress;
     }
+
+    
+
+    public String getPickupAddress() {
+        return pickupAddress;
+    }
+
+
+    public void setPickupAddress(String pickupAddress) {
+        this.pickupAddress = pickupAddress;
+    }
+
+
+
+    public String getDestinationAddress() {
+        return destinationAddress;
+    }
+
+
+
+    public void setDestinationAddress(String destinationAddress) {
+        this.destinationAddress = destinationAddress;
+    }
+
+
 
     public RideTrackingDTO() {
     }
@@ -56,6 +92,30 @@ public class RideTrackingDTO {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getDriverName() {
+        return driverName;
+    }
+
+    public void setDriverName(String driverName) {
+        this.driverName = driverName;
+    }
+
+    public String getCarModel() {
+        return carModel;
+    }
+
+    public void setCarModel(String carModel) {
+        this.carModel = carModel;
+    }
+
+    public String getProfilePicture() {
+        return profilePicture;
+    }
+
+    public void setProfilePicture(String profilePicture) {
+        this.profilePicture = profilePicture;
     }
 
     
