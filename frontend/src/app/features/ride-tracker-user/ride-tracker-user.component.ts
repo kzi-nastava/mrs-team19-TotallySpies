@@ -45,7 +45,7 @@ export class RideTrackerUserComponent implements OnInit, OnDestroy {
       this.rideId = Number(idParam);
     } else {
       console.warn('ID nije u URL-u, koristim testni ID 2');
-      this.rideId = 1;
+      this.rideId = 2;
     }
     
     this.loadInitialData();
