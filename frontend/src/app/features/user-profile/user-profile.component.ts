@@ -18,7 +18,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 @Component({
   selector: 'app-user-profile',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule,  MatSnackBarModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, MatSnackBarModule],
   templateUrl: './user-profile.component.html',
   styleUrls: ['./user-profile.component.css'],
 })
@@ -84,9 +84,9 @@ export class UserProfileComponent {
       this.user = profile;
       this.profileForm.patchValue(profile);
       this.updateProfileImageUrl();
-      this.cdr.detectChanges();
-    });
 
+    });
+    this.cdr.detectChanges();
     // Specifični podaci
     if (this.userRole === 'ROLE_ADMIN') {
       this.adminService.getPendingRequests().subscribe(res => this.pendingRequests = res);
@@ -117,14 +117,24 @@ export class UserProfileComponent {
   }
 
   updateProfileImageUrl() {
+    const defaultUrl = `http://localhost:8080/api/v1/users/image/default-profile-image.jpg`;
+
     if (!this.user.profilePicture) {
-      this.profileImageUrl =
-        `http://localhost:8080/api/v1/users/image/default-profile-image.jpg`;
-    } else {
-      const fileName = this.user.profilePicture.split('/').pop();
-      this.profileImageUrl =
-        `http://localhost:8080/api/v1/users/image/${fileName}`;
+      this.profileImageUrl = defaultUrl;
+      return;
     }
+
+    const pic = this.user.profilePicture.trim().toLowerCase();
+
+    // ako backend vraća "[null]", "null" ili prazan string
+    if (!pic || pic === 'null' || pic === '[null]') {
+      this.profileImageUrl = defaultUrl;
+      return;
+    }
+
+    const fileName = this.user.profilePicture.split('/').pop();
+    this.profileImageUrl =
+      `http://localhost:8080/api/v1/users/image/${fileName}`;
   }
 
   saveProfile() {
@@ -163,29 +173,29 @@ export class UserProfileComponent {
         //alert('Zahtev je uspešno prihvaćen.');
         // Povuci ponovo sve pending zahteve
         this.snackBar.open(
-            'Request approved successfully!',
-            'OK',
-            {
-              duration: 4000,
-              panelClass: ['confirm-snackbar'],
-              horizontalPosition: 'center',
-              verticalPosition: 'top'
-            }
-          );
+          'Request approved successfully!',
+          'OK',
+          {
+            duration: 4000,
+            panelClass: ['confirm-snackbar'],
+            horizontalPosition: 'center',
+            verticalPosition: 'top'
+          }
+        );
         this.loadPendingRequests();
       },
       error: () => {
         //alert('Došlo je do greške prilikom prihvatanja zahteva.');
         this.snackBar.open(
-            'Failed to approve request.',
-            'OK',
-            {
-              duration: 4000,
-              panelClass: ['error-snackbar'],
-              horizontalPosition: 'center',
-              verticalPosition: 'top'
-            }
-          );
+          'Failed to approve request.',
+          'OK',
+          {
+            duration: 4000,
+            panelClass: ['error-snackbar'],
+            horizontalPosition: 'center',
+            verticalPosition: 'top'
+          }
+        );
       }
     });
   }
@@ -196,54 +206,54 @@ export class UserProfileComponent {
         //alert('Zahtev je odbijen.');
         // Povuci ponovo sve pending zahteve
         this.snackBar.open(
-            'Request rejected successfully',
-            'OK',
-            {
-              duration: 4000,
-              panelClass: ['confirm-snackbar'],
-              horizontalPosition: 'center',
-              verticalPosition: 'top'
-            }
-          );
+          'Request rejected successfully',
+          'OK',
+          {
+            duration: 4000,
+            panelClass: ['confirm-snackbar'],
+            horizontalPosition: 'center',
+            verticalPosition: 'top'
+          }
+        );
         this.loadPendingRequests();
       },
       error: () => {
         //alert('Došlo je do greške prilikom odbijanja zahteva.');
-         this.snackBar.open(
-            'Failed to reject request.',
-            'OK',
-            {
-              duration: 4000,
-              panelClass: ['error-snackbar'],
-              horizontalPosition: 'center',
-              verticalPosition: 'top'
-            }
-          );
+        this.snackBar.open(
+          'Failed to reject request.',
+          'OK',
+          {
+            duration: 4000,
+            panelClass: ['error-snackbar'],
+            horizontalPosition: 'center',
+            verticalPosition: 'top'
+          }
+        );
       }
     });
   }
 
   formatMinutes(totalMinutes?: number): string {
-  if (!totalMinutes || totalMinutes <= 0) {
-    return '0h 0min';
+    if (!totalMinutes || totalMinutes <= 0) {
+      return '0h 0min';
+    }
+
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+
+    return `${hours}h ${minutes}min`;
   }
 
-  const hours = Math.floor(totalMinutes / 60);
-  const minutes = totalMinutes % 60;
-
-  return `${hours}h ${minutes}min`;
-}
-
-isImageField(field: string): boolean {
-  return field === 'IMAGE';
-}
-
-getImageUrl(newValue: string): string {
-  if (!newValue) {
-    return 'http://localhost:8080/api/v1/users/image/default-profile-image.jpg';
+  isImageField(field: string): boolean {
+    return field === 'IMAGE';
   }
 
-  const fileName = newValue.split('/').pop();
-  return `http://localhost:8080/api/v1/users/image/${fileName}`;
-}
+  getImageUrl(newValue: string): string {
+    if (!newValue) {
+      return 'http://localhost:8080/api/v1/users/image/default-profile-image.jpg';
+    }
+
+    const fileName = newValue.split('/').pop();
+    return `http://localhost:8080/api/v1/users/image/${fileName}`;
+  }
 }
