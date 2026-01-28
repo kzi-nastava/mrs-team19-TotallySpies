@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { InconsistencyReportRequestDTO, RideFinishResponseDTO, RideTrackingDTO } from '../models/ride.model';
 import { environment } from '../../../env/environment';
+import { CancelRideDTO } from '../models/cancel-ride.model';
 
 @Injectable({
   providedIn: 'root',
@@ -32,5 +33,9 @@ export class RideService {
 
   reportInconsistency(rideId: number, request: any): Observable<any> {
     return this.http.post(`${environment.apiHost}/rides/${rideId}/inconsistency-report`, request, { responseType: 'text' });
+  }
+
+  cancelRide(dto : CancelRideDTO){
+    return this.http.put<string>(`${environment.apiHost}/rides/cancel-ride`, dto);
   }
 }

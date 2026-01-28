@@ -1,14 +1,249 @@
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import {
+  UserProfileResponseDTO,
+  UserProfileUpdateRequestDTO,
+  ProfileChangeRequestDTO,
+  DriverActivityResponseDTO,
+  VehicleInfoResponseDTO
+} from '../../shared/models/users/user.model';
+import { UserService } from '../../shared/services/user.service';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { RouterModule } from '@angular/router';
+import { AdminService } from '../../shared/services/admin.service';
+import { DriverService } from '../../shared/services/driver.service';
+import { AuthService } from '../../core/auth/services/auth.service';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-user-profile',
-  standalone: true,  
-  imports: [CommonModule],
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, RouterModule,  MatSnackBarModule],
   templateUrl: './user-profile.component.html',
   styleUrls: ['./user-profile.component.css'],
 })
 export class UserProfileComponent {
+  profileForm!: FormGroup;
   editingField: string | null = null;
-  showPassword: boolean = false;
+  userRole: string = ''; // 'ROLE_ADMIN', 'ROLE_DRIVER', 'ROLE_USER'
+  activeTab: string = 'approvals';
+
+  profileImageUrl: string = '';
+
+  user: UserProfileResponseDTO = {
+    name: '',
+    lastName: '',
+    email: '',
+    phoneNumber: '',
+    address: '',
+    profilePicture: ''
+  };
+
+  // Admin podaci
+  pendingRequests: ProfileChangeRequestDTO[] = [];
+  driversList: any[] = [];  // Za admin tabele
+  usersList: any[] = [];
+
+  // Driver podaci
+  driverActivity?: DriverActivityResponseDTO;
+  vehicleInfo?: VehicleInfoResponseDTO;
+  driverNotes: any[] = []; // Prazna lista, da HTML ne puca
+
+  constructor(
+    private userService: UserService,
+    private adminService: AdminService,
+    private driverService: DriverService,
+    private authService: AuthService,
+    private cdr: ChangeDetectorRef,
+    private snackBar: MatSnackBar
+  ) { }
+
+  ngOnInit() {
+    this.initForm();
+    this.userRole = this.authService.getRole();
+    console.log('Trenutna rola ulogovanog korisnika je:', this.userRole);
+    this.loadDataByRole();
+
+    if (this.userRole === 'ROLE_ADMIN' && this.activeTab === 'approvals') {
+      this.loadPendingRequests();
+    }
+  }
+
+  initForm() {
+    this.profileForm = new FormGroup({
+      name: new FormControl('', [Validators.required]),
+      lastName: new FormControl('', [Validators.required]),
+      phoneNumber: new FormControl(''),
+      address: new FormControl('')
+    });
+  }
+
+  loadDataByRole() {
+    // Osnovni profil za sve
+    this.userService.getProfile().subscribe(profile => {
+      this.user = profile;
+      this.profileForm.patchValue(profile);
+      this.updateProfileImageUrl();
+      this.cdr.detectChanges();
+    });
+
+    // Specifični podaci
+    if (this.userRole === 'ROLE_ADMIN') {
+      this.adminService.getPendingRequests().subscribe(res => this.pendingRequests = res);
+      this.loadPendingRequests();
+      //this.adminService.getDriversList().subscribe(res => this.driversList = res);
+      //this.adminService.getUsersList().subscribe(res => this.usersList = res);
+    } else if (this.userRole === 'ROLE_DRIVER') {
+      this.driverService.getVehicleInfo().subscribe(res => {
+        this.vehicleInfo = res;
+        this.cdr.detectChanges();
+      });
+      this.driverService.getActivity().subscribe(res => {
+        this.driverActivity = res;
+        console.log(this.driverActivity.minutesLast24h)
+        this.cdr.detectChanges();
+      });
+      // driverNotes ostaje prazna lista
+      this.driverNotes = [];
+      this.cdr.detectChanges();
+    }
+  }
+
+  loadPendingRequests() {
+    this.adminService.getPendingRequests().subscribe(res => {
+      this.pendingRequests = res;
+      this.cdr.detectChanges();
+    });
+  }
+
+  updateProfileImageUrl() {
+    if (!this.user.profilePicture) {
+      this.profileImageUrl =
+        `http://localhost:8080/api/v1/users/image/default-profile-image.jpg`;
+    } else {
+      const fileName = this.user.profilePicture.split('/').pop();
+      this.profileImageUrl =
+        `http://localhost:8080/api/v1/users/image/${fileName}`;
+    }
+  }
+
+  saveProfile() {
+    if (this.profileForm.valid) {
+      const request: UserProfileUpdateRequestDTO = this.profileForm.value;
+
+      this.userService.updateProfile(request).subscribe({
+        next: () => {
+          this.editingField = null;
+          this.loadDataByRole();
+          this.cdr.detectChanges();
+        },
+        error: () => {
+          this.editingField = null;
+        }
+      });
+    }
+  }
+
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      this.userService.uploadProfileImage(file).subscribe({
+        next: () => {
+          this.loadDataByRole();
+        },
+        error: (err) => console.error('Upload failed', err)
+      });
+    }
+  }
+
+  // Admin akcije
+  approveReq(id: number) {
+    this.adminService.approveRequest(id).subscribe({
+      next: () => {
+        //alert('Zahtev je uspešno prihvaćen.');
+        // Povuci ponovo sve pending zahteve
+        this.snackBar.open(
+            'Request approved successfully!',
+            'OK',
+            {
+              duration: 4000,
+              panelClass: ['confirm-snackbar'],
+              horizontalPosition: 'center',
+              verticalPosition: 'top'
+            }
+          );
+        this.loadPendingRequests();
+      },
+      error: () => {
+        //alert('Došlo je do greške prilikom prihvatanja zahteva.');
+        this.snackBar.open(
+            'Failed to approve request.',
+            'OK',
+            {
+              duration: 4000,
+              panelClass: ['error-snackbar'],
+              horizontalPosition: 'center',
+              verticalPosition: 'top'
+            }
+          );
+      }
+    });
+  }
+
+  rejectReq(id: number) {
+    this.adminService.rejectRequest(id).subscribe({
+      next: () => {
+        //alert('Zahtev je odbijen.');
+        // Povuci ponovo sve pending zahteve
+        this.snackBar.open(
+            'Request rejected successfully',
+            'OK',
+            {
+              duration: 4000,
+              panelClass: ['confirm-snackbar'],
+              horizontalPosition: 'center',
+              verticalPosition: 'top'
+            }
+          );
+        this.loadPendingRequests();
+      },
+      error: () => {
+        //alert('Došlo je do greške prilikom odbijanja zahteva.');
+         this.snackBar.open(
+            'Failed to reject request.',
+            'OK',
+            {
+              duration: 4000,
+              panelClass: ['error-snackbar'],
+              horizontalPosition: 'center',
+              verticalPosition: 'top'
+            }
+          );
+      }
+    });
+  }
+
+  formatMinutes(totalMinutes?: number): string {
+  if (!totalMinutes || totalMinutes <= 0) {
+    return '0h 0min';
+  }
+
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+
+  return `${hours}h ${minutes}min`;
+}
+
+isImageField(field: string): boolean {
+  return field === 'IMAGE';
+}
+
+getImageUrl(newValue: string): string {
+  if (!newValue) {
+    return 'http://localhost:8080/api/v1/users/image/default-profile-image.jpg';
+  }
+
+  const fileName = newValue.split('/').pop();
+  return `http://localhost:8080/api/v1/users/image/${fileName}`;
+}
 }

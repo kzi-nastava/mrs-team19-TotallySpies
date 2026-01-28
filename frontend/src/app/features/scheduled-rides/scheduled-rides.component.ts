@@ -4,6 +4,7 @@ import { PassengerInfoComponent } from '../../shared/components/passenger-info/p
 import { RideFinishResponseDTO } from '../../shared/models/ride.model';
 import { CommonModule } from '@angular/common';
 import { RideService } from '../../shared/services/ride.service';
+import { CancelRideDTO } from '../../shared/models/cancel-ride.model';
 
 @Component({
   selector: 'app-scheduled-rides',
@@ -44,6 +45,35 @@ formatDate(dateString: string): string {
       alert("Ride finished! Email sent.");
       this.loadRides();
     });
+  }
+
+  cancelRide(cancelRideDTO : CancelRideDTO) {
+  this.rideService.cancelRide(cancelRideDTO).subscribe({
+    next: () => {
+      alert('Ride cancelled successfully.');
+      this.loadRides();
+    },
+    error: (err) => {
+      console.error(err);
+      alert('Failed to cancel ride.');
+    }
+  });
+  }
+
+  openCancelDialog(rideId: number) {
+    const reason = prompt('Enter cancel reason:');
+
+    if (!reason || reason.trim().length === 0) {
+      alert('Cancel reason is required.');
+      return;
+    }
+    const cancelRideDTO : CancelRideDTO = {
+      rideId : rideId,
+      rejectionReason : reason,
+      time : new Date().toISOString()
+    };
+
+    this.cancelRide(cancelRideDTO);
   }
 
 }

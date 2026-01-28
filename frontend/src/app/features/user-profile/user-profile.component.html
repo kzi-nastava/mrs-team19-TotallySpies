@@ -1,101 +1,225 @@
 <div class="profile-page">
-  <div class="profile-card">
 
+  <!-- LEFT PANEL: PROFILE CARD -->
+  <div class="profile-card left-panel" *ngIf="profileForm">
     <div class="avatar-wrapper">
-      <img src="https://i.pravatar.cc/300?img=5" alt="Avatar" class="avatar" />
-      <button class="avatar-add">+</button>
+      <img [src]="profileImageUrl" alt="Avatar" class="avatar" />
+      <input type="file" id="avatarInput" hidden (change)="onFileSelected($event)" />
+      <label for="avatarInput" class="avatar-add">+</label>
     </div>
 
-    <div class="field">
-      <label>Name</label>
-      <div class="field-row">
-        <input value="Elena" [readonly]="editingField !== 'name'" [class.editing]="editingField === 'name'" />
+    <form [formGroup]="profileForm">
 
-        <button *ngIf="editingField !== 'name'" class="icon-btn" (click)="editingField = 'name'">
-          <img src="/icons/edit-icon.png" alt="Edit" class="icon-img" />
-        </button>
-
-        <button *ngIf="editingField === 'name'" class="icon-btn" (click)="editingField = null">
-          <img src="/icons/check-icon.png" alt="Edit" class="icon-img" />
-        </button>
+      <!-- NAME -->
+      <div class="field">
+        <label>Name</label>
+        <div class="field-row">
+          <input formControlName="name" [readonly]="editingField !== 'name'" />
+          <button *ngIf="editingField !== 'name'" type="button" class="icon-btn" (click)="editingField = 'name'">
+            <img src="/icons/edit-icon.png" class="icon-img" />
+          </button>
+          <button *ngIf="editingField === 'name'" type="button" class="icon-btn" (click)="saveProfile()">
+            <img src="/icons/check-icon.png" class="icon-img" />
+          </button>
+        </div>
       </div>
-    </div>
 
-    <div class="field">
-      <label>Surname</label>
-      <div class="field-row">
-        <input value="Vukovic" [readonly]="editingField !== 'surname'" [class.editing]="editingField === 'surname'" />
-
-        <button *ngIf="editingField !== 'surname'" class="icon-btn" (click)="editingField = 'surname'">
-          <img src="/icons/edit-icon.png" alt="Edit" class="icon-img" />
-        </button>
-
-        <button *ngIf="editingField === 'surname'" class="icon-btn" (click)="editingField = null">
-          <img src="/icons/check-icon.png" alt="Edit" class="icon-img" />
-        </button>
+      <!-- LAST NAME -->
+      <div class="field">
+        <label>Last Name</label>
+        <div class="field-row">
+          <input formControlName="lastName" [readonly]="editingField !== 'lastName'" />
+          <button *ngIf="editingField !== 'lastName'" type="button" class="icon-btn"
+            (click)="editingField = 'lastName'">
+            <img src="/icons/edit-icon.png" class="icon-img" />
+          </button>
+          <button *ngIf="editingField === 'lastName'" type="button" class="icon-btn" (click)="saveProfile()">
+            <img src="/icons/check-icon.png" class="icon-img" />
+          </button>
+        </div>
       </div>
-    </div>
 
-    <div class="field">
-      <label>Email</label>
-      <div class="field-row">
-        <input value="elenavukovic@gmail.com" [readonly]="editingField !== 'email'"
-          [class.editing]="editingField === 'email'" />
-
-        <button *ngIf="editingField !== 'email'" class="icon-btn" (click)="editingField = 'email'">
-          <img src="/icons/edit-icon.png" alt="Edit" class="icon-img" />
-        </button>
-
-        <button *ngIf="editingField === 'email'" class="icon-btn" (click)="editingField = null">
-          <img src="/icons/check-icon.png" alt="Edit" class="icon-img" />
-        </button>
+      <!-- EMAIL -->
+      <div class="field">
+        <label>Email</label>
+        <div class="field-row">
+          <input [value]="user.email" readonly />
+        </div>
       </div>
-    </div>
 
-    <div class="field">
-      <label>Password</label>
-
-      <div class="field-row">
-        <input [type]="showPassword ? 'text' : 'password'" value="password123" readonly />
-
-        <button class="icon-btn" (click)="showPassword = !showPassword">
-          <img src="/icons/eye-icon.png" alt="Edit" class="icon-img" />
-        </button>
+      <!-- PHONE NUMBER -->
+      <div class="field">
+        <label>Phone Number</label>
+        <div class="field-row">
+          <input formControlName="phoneNumber" [readonly]="editingField !== 'phoneNumber'" />
+          <button *ngIf="editingField !== 'phoneNumber'" type="button" class="icon-btn"
+            (click)="editingField = 'phoneNumber'">
+            <img src="/icons/edit-icon.png" class="icon-img" />
+          </button>
+          <button *ngIf="editingField === 'phoneNumber'" type="button" class="icon-btn" (click)="saveProfile()">
+            <img src="/icons/check-icon.png" class="icon-img" />
+          </button>
+        </div>
       </div>
-    </div>
 
-    <div class="field">
-      <label>Phone number</label>
-      <div class="field-row">
-        <input value="+381 123 1234" [readonly]="editingField !== 'phone'" [class.editing]="editingField === 'phone'" />
-
-        <button *ngIf="editingField !== 'phone'" class="icon-btn" (click)="editingField = 'phone'">
-          <img src="/icons/edit-icon.png" alt="Edit" class="icon-img" />
-        </button>
-
-        <button *ngIf="editingField === 'phone'" class="icon-btn" (click)="editingField = null">
-          <img src="/icons/check-icon.png" alt="Edit" class="icon-img" />
-        </button>
+      <!-- ADDRESS -->
+      <div class="field">
+        <label>Address</label>
+        <div class="field-row">
+          <input formControlName="address" [readonly]="editingField !== 'address'" />
+          <button *ngIf="editingField !== 'address'" type="button" class="icon-btn" (click)="editingField = 'address'">
+            <img src="/icons/edit-icon.png" class="icon-img" />
+          </button>
+          <button *ngIf="editingField === 'address'" type="button" class="icon-btn" (click)="saveProfile()">
+            <img src="/icons/check-icon.png" class="icon-img" />
+          </button>
+        </div>
       </div>
+
+    </form>
+
+    <div class="bottom-actions">
+      <button class="change-password-btn" routerLink="/change-old-password">Change password</button>
     </div>
-
-    <div class="field">
-      <label>Address</label>
-      <div class="field-row">
-        <input value="Narodnog fronta 24, Novi Sad" [readonly]="editingField !== 'address'"
-          [class.editing]="editingField === 'address'" />
-
-        <button *ngIf="editingField !== 'address'" class="icon-btn" (click)="editingField = 'address'">
-          <img src="/icons/edit-icon.png" alt="Edit" class="icon-img" />
-        </button>
-
-        <button *ngIf="editingField === 'address'" class="icon-btn" (click)="editingField = null">
-          <img src="/icons/check-icon.png" alt="Edit" class="icon-img" />
-        </button>
-      </div>
-    </div>
-
-    <button class="change-password-btn">
-      Change password
-    </button>
   </div>
+
+  <!-- RIGHT PANEL: DRIVER -->
+  <div class="right-panel driver-panel" *ngIf="userRole === 'ROLE_DRIVER'">
+    <div class="info-card timer-card">
+      <span class="timer-label">Active for:</span>
+      <span class="timer-value">
+        {{ formatMinutes(driverActivity?.minutesLast24h) }}
+      </span>
+    </div>
+
+    <div class="info-card" *ngIf="vehicleInfo">
+      <h3>Vehicle Information</h3>
+      <div class="vehicle-grid">
+        <div class="v-item"><label>Model</label>
+          <div class="v-value">{{ vehicleInfo.model }}</div>
+        </div>
+        <div class="v-item"><label>Type</label>
+          <div class="v-value">{{ vehicleInfo.vehicleType }}</div>
+        </div>
+        <div class="v-item"><label>Plate</label>
+          <div class="v-value">{{ vehicleInfo.licensePlate }}</div>
+        </div>
+        <div class="v-item"><label>Seats</label>
+          <div class="v-value">{{ vehicleInfo.passengerCapacity }}</div>
+        </div>
+        <div class="v-item"><label>Baby Transport</label>
+          <div class="v-value">{{ vehicleInfo?.babyTransport ? 'Yes' : 'No' }}</div>
+        </div>
+        <div class="v-item"><label>Pet Transport</label>
+          <div class="v-value">{{ vehicleInfo?.petTransport ? 'Yes' : 'No' }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="notes-section">
+      <h3>Driver Notes</h3>
+      <div class="notes-container">
+        <div class="note-card" *ngFor="let note of driverNotes">
+          <p>{{ note.text }}</p>
+        </div>
+        <div *ngIf="driverNotes.length === 0" class="note-card empty">No active notes.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL: ADMIN -->
+  <div class="right-panel admin-panel dashboard-card" *ngIf="userRole === 'ROLE_ADMIN'">
+    <div class="dashboard-header">
+      <h2>Admin Dashboard</h2>
+      <button class="add-btn" routerLink="/driver-registration">+ Add Driver</button>
+    </div>
+
+    <div class="tabs-nav">
+      <button class="tab-item" [class.active]="activeTab === 'approvals'"
+        (click)="activeTab = 'approvals'">Approvals</button>
+      <button class="tab-item" [class.active]="activeTab === 'drivers'" (click)="activeTab = 'drivers'">Drivers</button>
+      <button class="tab-item" [class.active]="activeTab === 'users'" (click)="activeTab = 'users'">Users</button>
+    </div>
+
+    <!-- TAB CONTENT: APPROVALS -->
+    <div class="table-container" *ngIf="activeTab === 'approvals'">
+      <table class="custom-table">
+        <thead>
+          <tr>
+            <th>User</th>
+            <th>Field</th>
+            <th>New Value</th>
+            <th style="text-align: right;">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let req of pendingRequests">
+            <td>{{ req.userEmail }}</td>
+            <td>{{ req.field }}</td>
+            <td><ng-container *ngIf="isImageField(req.field); else textValue">
+                <img [src]="getImageUrl(req.newValue)" alt="Profile change" class="preview-image" />
+              </ng-container>
+
+              <!-- Ako nije slika -->
+              <ng-template #textValue>
+                {{ req.newValue }}
+              </ng-template>
+            </td>
+            <td style="text-align: right;">
+              <button class="approve-btn" (click)="approveReq(req.id)">✔</button>
+              <button class="reject-btn" (click)="rejectReq(req.id)">✘</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <p *ngIf="pendingRequests.length === 0" style="padding: 20px; text-align: center;">No pending requests.</p>
+    </div>
+
+    <!-- TAB CONTENT: DRIVERS -->
+    <div class="table-container" *ngIf="activeTab === 'drivers'">
+      <table class="custom-table">
+        <thead>
+          <tr>
+            <th>Email</th>
+            <th>Driver</th>
+            <th>Status</th>
+            <th>Change Status</th>
+            <th style="text-align: right;">Block</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let driver of driversList">
+            <td>{{ driver.email }}</td>
+            <td>{{ driver.name }}</td>
+            <!--<td><span class="badge" [ngClass]="getStatusClass(driver.status)">{{ driver.status }}</span></td>-->
+            <td><span class="badge">Active</span></td>
+            <td><button class="change-status-btn">CHANGE</button></td>
+            <td style="text-align: right;"><button class="block-btn"><img src="icons/block-icon.png" /></button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- TAB CONTENT: USERS -->
+    <div class="table-container" *ngIf="activeTab === 'users'">
+      <table class="custom-table">
+        <thead>
+          <tr>
+            <th>Email</th>
+            <th>User</th>
+            <th style="text-align: right;">Block</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let user of usersList">
+            <td>{{ user.email }}</td>
+            <td>{{ user.name }}</td>
+            <td style="text-align: right;"><button class="block-btn"><img src="icons/block-icon.png" /></button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+</div>

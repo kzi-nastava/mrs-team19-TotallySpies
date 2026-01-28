@@ -100,7 +100,7 @@ public class UserService implements UserDetailsService {
     }
 
     public void updateProfileDriver(User user, UserProfileUpdateRequestDTO requestDTO){
-        if (requestDTO.getName() != null){
+        if (!requestDTO.getName().equals(user.getName())){
             profileChangeService.createChangeRequest(
                     user,
                     ProfileField.NAME,
@@ -108,28 +108,28 @@ public class UserService implements UserDetailsService {
                     requestDTO.getName()
             );
         }
-        if (requestDTO.getLastName() != null){
+        if (!requestDTO.getLastName().equals(user.getLastName())){
             profileChangeService.createChangeRequest(
                     user,
                     ProfileField.LAST_NAME,
-                    user.getName(),
-                    requestDTO.getName()
+                    user.getLastName(),
+                    requestDTO.getLastName()
             );
         }
-        if (requestDTO.getPhoneNumber() != null) {
+        if (!requestDTO.getPhoneNumber().equals(user.getPhoneNumber())) {
             profileChangeService.createChangeRequest(
                     user,
                     ProfileField.PHONE,
-                    user.getName(),
-                    requestDTO.getName()
+                    user.getPhoneNumber(),
+                    requestDTO.getPhoneNumber()
             );
         }
-        if (requestDTO.getAddress() != null) {
+        if (!requestDTO.getAddress().equals(user.getAddress())) {
             profileChangeService.createChangeRequest(
                     user,
                     ProfileField.ADDRESS,
-                    user.getName(),
-                    requestDTO.getName()
+                    user.getAddress(),
+                    requestDTO.getAddress()
             );
         }
     }
