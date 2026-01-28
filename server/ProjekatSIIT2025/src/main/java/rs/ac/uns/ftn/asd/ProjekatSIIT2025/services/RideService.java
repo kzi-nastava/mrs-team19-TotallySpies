@@ -6,9 +6,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.time.format.DateTimeFormatter;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
@@ -23,24 +20,11 @@ import jakarta.transaction.Transactional;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.auth.MailBody;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.*;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.users.DriverActivityResponseDTO;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.Passenger;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.RideStatus;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.users.UserProfileResponseDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.*;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.RideFinishResponseDTO;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.StopRideDTO;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.Passenger;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.Ride;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.RideStatus;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.RideTrackingDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.DriverRepository;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.RideRepository;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.CancelRideDTO;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.DriverRideHistoryResponseDTO;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.InconsistencyReportRequestDTO;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.PanicNotificationDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.*;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.RideCancellation;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.User;
 
 import static java.awt.geom.Point2D.distance;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.PanicNotificationRepository;
@@ -113,10 +97,13 @@ public class RideService {
         return response;
     }
 
+    @Transactional
     public List<RideFinishResponseDTO> findScheduledRides() {
+        // the current implementation is to display active ride also so we can finish it thorugh UI
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         Long driverId = driverRepository.findByEmail(email).getId();
-        List<Ride> rides = rideRepository.findByDriverIdAndStatus(driverId, RideStatus.SCHEDULED);
+        List<RideStatus> statuses = List.of(RideStatus.ACTIVE, RideStatus.SCHEDULED);
+        List<Ride> rides = rideRepository.findByDriverIdAndStatusIn(driverId, statuses);
 
         return rides.stream().map(r -> {
             RideFinishResponseDTO dto = new RideFinishResponseDTO();
@@ -124,7 +111,18 @@ public class RideService {
             dto.setStatus(r.getStatus());
             dto.setTotalPrice(r.getTotalPrice());
             dto.setFinishTime(r.getFinishedAt());
+            
+            // if the ride is started show started at, if not, then scheduledFor
+            dto.setDisplayTime(r.getStartedAt() != null ? r.getStartedAt() : r.getScheduledFor());
 
+            if (r.getStops() != null && !r.getStops().isEmpty()) {
+                dto.setStartLocation(r.getStops().get(0).getAddress());
+                dto.setEndLocation(r.getStops().get(r.getStops().size() - 1).getAddress());
+            }
+
+            dto.setPassengers(r.getPassengers().stream()
+                .map(p -> new UserProfileResponseDTO(p.getName(), p.getLastName(), p.getProfilePicture()))
+                .collect(Collectors.toList()));
             // we look for ride starting after this one (r.getStartTime())
             Optional<Ride> next = rideRepository.findFirstByDriverIdAndStatusAndStartedAtAfterOrderByStartedAtAsc(
                 driverId, 
@@ -141,13 +139,13 @@ public class RideService {
 
     
     public void cancelRide(CancelRideDTO dto){
+        String email = SecurityContextHolder.getContext().getAuthentication().getName(); // == user.getEmail()
+        User user = userRepository.findByEmail(email);
+        if(user == null)
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found!");
         Ride ride = rideRepository.findById(dto.getRideId())
                 .orElseThrow(() ->
                         new ResponseStatusException(HttpStatus.NOT_FOUND, "Ride not found!")
-                );
-        User user = userRepository.findById(dto.getUserId())
-                .orElseThrow(() ->
-                        new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found!")
                 );
         if (user instanceof Passenger){
             //passenger can cancel a ride 10 minutes before the ride

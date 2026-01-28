@@ -1,8 +1,10 @@
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { RideInfoComponent } from '../../shared/components/ride-info/ride-info.component';
 import { PassengerInfoComponent } from '../../shared/components/passenger-info/passenger-info.component';
-import { Ride } from '../../shared/models/ride.model';
+import { RideFinishResponseDTO } from '../../shared/models/ride.model';
 import { CommonModule } from '@angular/common';
+import { RideService } from '../../shared/services/ride.service';
+import { CancelRideDTO } from '../../shared/models/cancel-ride.model';
 
 @Component({
   selector: 'app-scheduled-rides',
@@ -11,37 +13,67 @@ import { CommonModule } from '@angular/common';
   styleUrl: './scheduled-rides.component.css',
   standalone: true,
 })
-export class ScheduledRidesComponent {
-rides: Ride[] = [
-    {
-      date: '25.1.2026.',
-      startTime: '1:34PM',
-      endTime: '1:47PM',
-      price: 590,
-      startLocation: 'Micurinova 44',
-      endLocation: 'Strazilovska 37',
-      status: 'Upcoming', 
-      passengers: [
-        { name: 'Sara Trajkovic', imageUrl: '/images/sara.jpg.avif' },
-        { name: 'Marija Lisac', imageUrl: '/images/marija.jpg.avif' },
-        { name: 'Balsa Vuletic', imageUrl: '/images/balsa.jpg.avif' }
-      ],
-      panicPressed: false,
-      isUpcoming: true,
+export class ScheduledRidesComponent implements OnInit{
+  rides: RideFinishResponseDTO[] = [];
+  constructor(private rideService: RideService, 
+    private cdr: ChangeDetectorRef
+  ) {}
+  ngOnInit() {
+    this.loadRides();
+  }
+
+  loadRides() {
+  this.rideService.getRidesForDriver().subscribe({
+    next: (data) => {
+      console.log('Podaci stigli:', data);
+      this.rides = data;
+      this.cdr.detectChanges();
     },
-    {
-      date: '27.1.2026.',
-      startTime: '07:54AM',
-      endTime: '08:01AM',
-      price: 470,
-      startLocation: 'Rumenacka 40',
-      endLocation: 'Bulevar Oslobodjenja 104',
-      status: 'Upcoming',
-      passengers: [
-        { name: 'Igor Lazic', imageUrl: '/images/igor.jpg.avif' }
-      ],
-      panicPressed: false,
-      isUpcoming: true,
+    error: (error) => {
+      console.error('Greška:', error);
     }
-  ];
+  });
+}
+
+formatDate(dateString: string): string {
+  const date = new Date(dateString);
+  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+}
+
+  handleFinish(id: number) {
+    this.rideService.finishRide(id).subscribe(() => {
+      alert("Ride finished! Email sent.");
+      this.loadRides();
+    });
+  }
+
+  cancelRide(cancelRideDTO : CancelRideDTO) {
+  this.rideService.cancelRide(cancelRideDTO).subscribe({
+    next: () => {
+      alert('Ride cancelled successfully.');
+      this.loadRides();
+    },
+    error: (err) => {
+      console.error(err);
+      alert('Failed to cancel ride.');
+    }
+  });
+  }
+
+  openCancelDialog(rideId: number) {
+    const reason = prompt('Enter cancel reason:');
+
+    if (!reason || reason.trim().length === 0) {
+      alert('Cancel reason is required.');
+      return;
+    }
+    const cancelRideDTO : CancelRideDTO = {
+      rideId : rideId,
+      rejectionReason : reason,
+      time : new Date().toISOString()
+    };
+
+    this.cancelRide(cancelRideDTO);
+  }
+
 }

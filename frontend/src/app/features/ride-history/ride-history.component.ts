@@ -11,37 +11,37 @@ imports: [CommonModule, RideInfoComponent, PassengerInfoComponent],  templateUrl
 })
 
 export class RideHistoryComponent {
-  rides: Ride[] = [
-    {
-      date: '15.12.2025.',
-      startTime: '1:34PM',
-      endTime: '1:47AM',
-      price: 590,
-      startLocation: 'Micurinova 44',
-      endLocation: 'Strazilovska 37',
-      status: 'Cancelled', 
-      cancelledBy: 'Passenger',
-      passengers: [
-        { name: 'Sara Trajkovic', imageUrl: '/images/sara.jpg.avif' },
-        { name: 'Marija Lisac', imageUrl: '/images/marija.jpg.avif' },
-        { name: 'Balsa Vuletic', imageUrl: '/images/balsa.jpg.avif' }
-      ],
-      panicPressed: true,
-      isUpcoming: false,
-    },
-    {
-      date: '16.12.2025.',
-      startTime: '07:54AM',
-      endTime: '08:01AM',
-      price: 470,
-      startLocation: 'Rumenacka 40',
-      endLocation: 'Bulevar Oslobodjenja 104',
-      status: 'Finished',
-      passengers: [
-        { name: 'Igor Lazic', imageUrl: '/images/igor.jpg.avif' }
-      ],
-      panicPressed: false,
-      isUpcoming: false,
-    }
-  ];
+  // rides: Ride[] = [
+  //   {
+  //     date: '15.12.2025.',
+  //     startTime: '1:34PM',
+  //     endTime: '1:47AM',
+  //     price: 590,
+  //     startLocation: 'Micurinova 44',
+  //     endLocation: 'Strazilovska 37',
+  //     status: 'Cancelled', 
+  //     cancelledBy: 'Passenger',
+  //     passengers: [
+  //       { name: 'Sara Trajkovic', imageUrl: '/images/sara.jpg.avif' },
+  //       { name: 'Marija Lisac', imageUrl: '/images/marija.jpg.avif' },
+  //       { name: 'Balsa Vuletic', imageUrl: '/images/balsa.jpg.avif' }
+  //     ],
+  //     panicPressed: true,
+  //     isUpcoming: false,
+  //   },
+  //   {
+  //     date: '16.12.2025.',
+  //     startTime: '07:54AM',
+  //     endTime: '08:01AM',
+  //     price: 470,
+  //     startLocation: 'Rumenacka 40',
+  //     endLocation: 'Bulevar Oslobodjenja 104',
+  //     status: 'Finished',
+  //     passengers: [
+  //       { name: 'Igor Lazic', imageUrl: '/images/igor.jpg.avif' }
+  //     ],
+  //     panicPressed: false,
+  //     isUpcoming: false,
+  //   }
+  // ];
 }

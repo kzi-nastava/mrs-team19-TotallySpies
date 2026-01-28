@@ -57,14 +57,14 @@ a.active {
 .login-btn {
   padding: 0.5rem 1.2rem;
   border-radius: 1.2rem;
-  background-color: #463678;
-  color: white;
+  background-color: #6e58c6;
+  color: white; 
   font-weight: 500;
 }
 
 .register-btn {
   padding: 0.5rem 1.2rem;
   border-radius: 1.2rem;
-  border: 1px solid #5b4893;
-  color: #5b4893;
+  border: 1px solid #6e58c6;
+  color: #6e58c6;
 }

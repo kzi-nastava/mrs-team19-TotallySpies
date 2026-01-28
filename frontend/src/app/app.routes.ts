@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { HomeComponent } from './features/home/home.component';
-import { LoginComponent } from './core/auth/pages/login/login.component';
-import { RegisterComponent } from './core/auth/pages/register/register.component';
+import { LoginComponent } from './core/auth/components/login/login.component';
+import { RegisterComponent } from './core/auth/components/register/register.component';
 import { UserProfileComponent } from './features/user-profile/user-profile.component';
 import { DriverProfileComponent } from './features/driver-profile/driver-profile.component';
 import { AdminProfileComponent } from './features/admin-profile/admin-profile.component';
@@ -15,10 +15,10 @@ import { ActivateDriverComponent } from './features/activate-driver/activate-dri
 import { RideTrackerUserComponent } from './features/ride-tracker-user/ride-tracker-user.component';
 import { RideOrderingComponent } from './features/ride-ordering/ride-ordering.component';
 import { ScheduledRidesComponent } from './features/scheduled-rides/scheduled-rides.component';
-import { ForgotPasswordComponent } from './core/auth/pages/forgot-password/forgot-password.component';
-import { VerifyOtpComponent } from './core/auth/pages/verify-otp/verify-otp.component';
-import { ChangePasswordComponent } from './core/auth/pages/change-password/change-password.component';
-import { ActivateAccountComponent } from './core/auth/pages/activate-account/activate-account.component';
+import { ForgotPasswordComponent } from './core/auth/components/forgot-password/forgot-password.component';
+import { VerifyOtpComponent } from './core/auth/components/verify-otp/verify-otp.component';
+import { ChangePasswordComponent } from './core/auth/components/change-password/change-password.component';
+import { ActivateAccountComponent } from './core/auth/components/activate-account/activate-account.component';
 import { ChangeOldPasswordComponent } from './shared/components/change-old-password/change-old-password.component';
 
 export const routes: Routes = [

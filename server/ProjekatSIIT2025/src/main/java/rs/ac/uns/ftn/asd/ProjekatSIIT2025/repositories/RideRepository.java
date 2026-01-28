@@ -16,7 +16,7 @@ import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.RideStatus;
 @Repository
 public interface RideRepository extends JpaRepository<Ride, Long> {
     Optional<Ride> findFirstByDriverIdAndStatusOrderByStartedAtAsc(Long driverId, RideStatus scheduled);
-    List<Ride> findByDriverIdAndStatus(Long driverId, RideStatus status);
+    List<Ride> findByDriverIdAndStatusIn(Long driverId, List<RideStatus> statuses);
     Optional<Ride> findFirstByDriverIdAndStatusAndStartedAtAfterOrderByStartedAtAsc(Long driverId, RideStatus scheduled,
             LocalDateTime startTime);
     List<Ride> findAllByDriverIdAndStartedAtBetween(Long id, LocalDateTime fromDate, LocalDateTime toDate);

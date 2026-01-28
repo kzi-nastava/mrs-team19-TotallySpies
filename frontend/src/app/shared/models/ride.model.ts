@@ -1,6 +1,21 @@
+export interface RideFinishResponseDTO {
+  rideId: number;
+  totalPrice: number;
+  displayTime: string;
+  status: 'ACTIVE' | 'SCHEDULED' | 'COMPLETED';
+  startLocation: string;
+  endLocation: string;
+  passengers: Passenger[];
+  nextRideId?: number | null;
+}
+
 export interface Passenger {
   name: string;
-  imageUrl: string;
+  lastName: string; 
+  profilePicture: string | null;
+  address: string | null;
+  email: string | null;
+  phoneNumber: string | null;
 }
 
 export interface Ride {

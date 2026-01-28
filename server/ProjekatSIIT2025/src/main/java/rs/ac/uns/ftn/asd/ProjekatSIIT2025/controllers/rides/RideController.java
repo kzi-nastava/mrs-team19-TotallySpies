@@ -46,12 +46,14 @@ public class RideController {
     }
 
     @PutMapping(value = "/{id}/end", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('DRIVER')")
     public ResponseEntity<RideFinishResponseDTO> finishRide(@PathVariable Long id) {
         RideFinishResponseDTO response = rideService.finishRide(id);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping(value = "/scheduled", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('DRIVER')")
     public ResponseEntity<List<RideFinishResponseDTO>> getFutureRides() {
         List<RideFinishResponseDTO> futureRides = rideService.findScheduledRides();
         return new ResponseEntity<>(futureRides, HttpStatus.OK);

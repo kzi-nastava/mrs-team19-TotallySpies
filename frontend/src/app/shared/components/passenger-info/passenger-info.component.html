@@ -1,7 +1,7 @@
 <div class="passengers-wrapper">
   <div class="passenger-item" *ngFor="let p of passengers">
     <div class="image-frame">
-      <img [src]="p.imageUrl" alt="{{ p.name }}">
+      <img [src]="p.profilePicture" alt="{{ p.name }}">
     </div>
     <span class="name">{{ p.name }}</span>
   </div>

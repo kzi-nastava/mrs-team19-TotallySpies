@@ -6,10 +6,12 @@ import {
   EventEmitter,
   SimpleChanges,
   OnChanges,
+  OnDestroy,
 } from '@angular/core';
 import * as L from 'leaflet';
 import { MapService } from './map.service';
 import 'leaflet-routing-machine';
+import { interval, Subscription, startWith, switchMap } from 'rxjs'; //for polling
 export type RouteInfo = { distanceKm: number; estimatedTime: number };
 
 @Component({
@@ -18,12 +20,26 @@ export type RouteInfo = { distanceKm: number; estimatedTime: number };
   styleUrls: ['./map.component.css'],
   standalone: true,
 })
-export class MapComponent implements AfterViewInit {
+export class MapComponent implements AfterViewInit, OnDestroy {
   private map!: L.Map;
   private routeControl?: L.Routing.Control;
+  private vehicleMarkers: Map<number, L.Marker> = new Map();
+  private pollingSubscription?: Subscription;
   @Input() pickupAddress = '';
   @Input() destinationAddress = '';
   @Output() routeInfo = new EventEmitter<RouteInfo>();
+
+  private greenIcon = L.icon({
+    iconUrl: 'icons/car-icon-green.png',
+    iconSize: [32, 32],
+    iconAnchor: [16, 16]
+  });
+
+  private redIcon = L.icon({
+    iconUrl: 'icons/car-icon-red.png',
+    iconSize: [32, 32],
+    iconAnchor: [16, 16]
+  });
 
   constructor(private mapService: MapService) {}
 
@@ -127,6 +143,12 @@ export class MapComponent implements AfterViewInit {
 
     this.setRoute();
   }
+
+  ngOnDestroy(): void {
+    this.pollingSubscription?.unsubscribe();
+    // we dont want to use up all resources when he is not on that page
+  }
+
   ngAfterViewInit(): void {
     let DefaultIcon = L.icon({
       iconUrl: 'icons/map-icons/map-marker-icon.png',
@@ -135,6 +157,7 @@ export class MapComponent implements AfterViewInit {
 
     L.Marker.prototype.options.icon = DefaultIcon;
     this.initMap();
+    this.startPollingPositions();
     //this.setRoute();
     // if inputs are already set by the time map is ready, draw route now
     if (this.pickupAddress.trim() && this.destinationAddress.trim()) {
@@ -142,4 +165,39 @@ export class MapComponent implements AfterViewInit {
     }
     //this.registerOnClick();
   }
+
+  private startPollingPositions(): void {
+    
+    this.pollingSubscription = interval(10000)
+      .pipe(
+        startWith(0),
+        switchMap(() => this.mapService.getAllVehiclePositions())
+      )
+      .subscribe({
+        next: (vehicles: any[]) => {
+          this.updateVehicleMarkers(vehicles);
+          console.log("nema")
+        },
+        error: (err) => console.error('error with getting a position:', err)
+      });
+  }
+
+  private updateVehicleMarkers(vehicles: any[]): void {
+  vehicles.forEach(v => {
+    const latLng = L.latLng(v.currentLat, v.currentLng);
+    const iconToUse = v.busy ? this.redIcon : this.greenIcon;
+
+    if (this.vehicleMarkers.has(v.id)) {
+      const marker = this.vehicleMarkers.get(v.id)!;
+      marker.setLatLng(latLng);
+      marker.setIcon(iconToUse); // update icon if the sttaus is updated
+    } else {
+      const marker = L.marker(latLng, { icon: iconToUse })
+        .addTo(this.map)
+        .bindPopup(`vehicle: ${v.id} <br> status: ${v.busy ? 'occupied' : 'free'}`);
+      
+      this.vehicleMarkers.set(v.id, marker);
+    }
+  });
+}
 }
