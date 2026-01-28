@@ -1,8 +1,9 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable,map } from 'rxjs';
 import { environment } from '../../../../env/environment';
 
+export type RouteInfo = { distanceKm: number; estimatedTime: number };
 @Injectable({
   providedIn: 'root',
 })
@@ -27,4 +28,24 @@ export class MapService {
       headers: new HttpHeaders({ 'skip': 'true' })
     }); // skip because we dont need token
   } 
+
+  getRouteInfo(fromLat: number, fromLng: number, toLat: number, toLng: number): Observable<RouteInfo> {
+    const token =
+      'pk.eyJ1IjoidG90YWxseS1zcGllczMzIiwiYSI6ImNtanpxYm54dzV1MTEzZnF4M3c4ejZ0c28ifQ.iwa5IGW8kqTBZtwXvVTQcQ';
+
+    // Mapbox expects lon,lat order
+    const url =
+      `https://api.mapbox.com/directions/v5/mapbox/driving/` +
+      `${fromLng},${fromLat};${toLng},${toLat}` +
+      `?geometries=geojson&overview=false&access_token=${token}`;
+
+    return this.http.get<any>(url).pipe(
+      map((res) => {
+        const route = res?.routes?.[0];
+        const distanceKm = route ? Math.round((route.distance / 1000) * 10) / 10 : 0; // 0.1km precision
+        const estimatedTime = route ? Math.round(route.duration / 60) : 0; // minutes
+        return { distanceKm, estimatedTime };
+      })
+    );
+  }
 }

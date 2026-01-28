@@ -5,28 +5,17 @@ import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.RideStop;
 import java.time.LocalDateTime;
 
 public class StopRideDTO {
-    private Long userId;
     private Long rideId;
     private LocalDateTime newEndTime;
     private double newTotalPrice;
     private RideStop newDestination;
 
-    public StopRideDTO(Long userId, Long rideId, LocalDateTime newEndTime, double newTotalPrice, RideStop newDestination) {
-        this.userId = userId;
+    public StopRideDTO( Long rideId, LocalDateTime newEndTime, double newTotalPrice, RideStop newDestination) {
         this.rideId = rideId;
         this.newEndTime = newEndTime;
         this.newTotalPrice = newTotalPrice;
         this.newDestination = newDestination;
     }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
     public Long getRideId() {
         return rideId;
     }
