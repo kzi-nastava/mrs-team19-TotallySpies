@@ -139,13 +139,13 @@ public class RideService {
 
     
     public void cancelRide(CancelRideDTO dto){
+        String email = SecurityContextHolder.getContext().getAuthentication().getName(); // == user.getEmail()
+        User user = userRepository.findByEmail(email);
+        if(user == null)
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found!");
         Ride ride = rideRepository.findById(dto.getRideId())
                 .orElseThrow(() ->
                         new ResponseStatusException(HttpStatus.NOT_FOUND, "Ride not found!")
-                );
-        User user = userRepository.findById(dto.getUserId())
-                .orElseThrow(() ->
-                        new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found!")
                 );
         if (user instanceof Passenger){
             //passenger can cancel a ride 10 minutes before the ride
