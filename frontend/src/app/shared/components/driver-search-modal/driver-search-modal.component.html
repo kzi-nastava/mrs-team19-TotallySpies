@@ -1,0 +1,39 @@
+<div class="overlay" *ngIf="status !== 'IDLE'">
+    <div class="driver-modal" [ngClass]="{
+         'success': status === 'FOUND',
+         'error': status === 'NOT_FOUND'
+       }">
+
+        <!-- SEARCHING -->
+        <ng-container *ngIf="status === 'SEARCHING'">
+            <h2>Finding a driver...</h2>
+            <p>We're looking for the best available driver near you</p>
+            <div class="spinner"></div>
+            <small>This may take a few moments</small>
+        </ng-container>
+
+        <!-- FOUND -->
+        <ng-container *ngIf="status === 'FOUND'">
+            <h2 class="success-text">Driver found!</h2>
+            <p>Your ride has been successfully assigned</p>
+            <small>Your driver will arrive shortly</small>
+            <button (click)="closeModal()">OK</button>
+        </ng-container>
+
+        <!-- NOT FOUND -->
+        <ng-container *ngIf="status === 'NOT_FOUND'">
+            <h2 class="error-text">No drivers available</h2>
+
+            <p *ngIf="errorMessage; else defaultMsg">
+                {{ errorMessage }}
+            </p>
+
+            <ng-template #defaultMsg>
+                <p>Please try again a bit later.</p>
+            </ng-template>
+
+            <button (click)="closeModal()">Close</button>
+        </ng-container>
+
+    </div>
+</div>

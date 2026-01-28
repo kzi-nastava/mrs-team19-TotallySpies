@@ -89,7 +89,7 @@ public class RideController {
     }
 
 
-    @PostMapping(value = "/create")
+    @PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CreateRideResponseDTO> createRide(@RequestBody CreateRideRequestDTO requestDTO, Authentication auth){
         String email = auth.getName(); //email passengera, odnoson usera, koji je porucio voznju
         CreateRideResponseDTO responseDTO = rideService.createRide(requestDTO, email);

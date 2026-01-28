@@ -1,7 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { InconsistencyReportRequestDTO, RideFinishResponseDTO, RideTrackingDTO } from '../models/ride.model';
+import { CreateRideRequestDTO, CreateRideResponseDTO, RideFinishResponseDTO, RideTrackingDTO } from '../models/ride.model';
+import { InconsistencyReportRequestDTO } from '../models/ride.model';
 import { environment } from '../../../env/environment';
 import { CancelRideDTO } from '../models/cancel-ride.model';
 import { PanicRideDTO } from '../models/panic-ride.model';
@@ -10,7 +11,7 @@ import { PanicRideDTO } from '../models/panic-ride.model';
   providedIn: 'root',
 })
 export class RideService {
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getRidesForDriver(): Observable<RideFinishResponseDTO[]> {
     return this.http.get<RideFinishResponseDTO[]>(`${environment.apiHost}/rides/scheduled`);
@@ -39,7 +40,21 @@ export class RideService {
   cancelRide(dto : CancelRideDTO){
     return this.http.put<string>(`${environment.apiHost}/rides/cancel-ride`, dto);
   }
+
+  createRide(dto: CreateRideRequestDTO): Observable<CreateRideResponseDTO> {
+    return this.http.post<CreateRideResponseDTO>(`${environment.apiHost}/rides/create`, dto, {
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
+
+  startRide(rideId: number) {
+    return this.http.put(`${environment.apiHost}/rides/${rideId}/start`,null,
+      { responseType: 'text' }
+    );
+  }
+
   panicRide(dto : PanicRideDTO){
     return this.http.put<string>(`${environment.apiHost}/rides/panic`, dto);
   }
+  
 }

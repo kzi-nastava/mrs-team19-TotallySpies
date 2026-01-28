@@ -1,0 +1,50 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 15, 40, 0.6);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.driver-modal {
+  background:#2b2440;
+  color: white;
+  padding: 32px;
+  border-radius: 16px;
+  width: 420px;
+  text-align: center;
+  border: 2px solid #6c63ff;
+}
+
+.driver-modal.success {
+  border-color: #7CFF7A;
+}
+
+.driver-modal.error {
+  border-color: #FF6B6B;
+}
+
+.success-text {
+  color: #7CFF7A;
+}
+
+.error-text {
+  color: #FF6B6B;
+}
+
+.spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid rgba(255,255,255,0.2);
+  border-top: 4px solid #6c63ff;
+  border-radius: 50%;
+  margin: 24px auto;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

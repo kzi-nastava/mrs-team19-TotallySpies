@@ -76,4 +76,17 @@ formatDate(dateString: string): string {
     this.cancelRide(cancelRideDTO);
   }
 
+  handleStart(rideId: number) {
+  this.rideService.startRide(rideId).subscribe({
+    next: () => {
+      alert('Ride successfully started!');
+      this.loadRides(); // refresh status
+    },
+    error: (err) => {
+      console.error(err);
+      alert('Failed to start ride.');
+    }
+  });
+}
+
 }

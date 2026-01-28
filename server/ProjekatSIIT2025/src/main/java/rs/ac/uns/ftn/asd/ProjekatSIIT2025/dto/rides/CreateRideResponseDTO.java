@@ -9,9 +9,8 @@ public class CreateRideResponseDTO {
     private String driverEmail;
     private String driverName;
 
-    private double distanceKm;
-    private double estimatedTime;
-    private double minutesUntilArrival;
+    private Double distanceKm;
+    private Double estimatedTime;
 
     private String message;
 
@@ -47,22 +46,6 @@ public class CreateRideResponseDTO {
         this.driverName = driverName;
     }
 
-    public double getDistanceKm() {
-        return distanceKm;
-    }
-
-    public void setDistanceKm(double distanceKm) {
-        this.distanceKm = distanceKm;
-    }
-
-    public double getEstimatedTime() {
-        return estimatedTime;
-    }
-
-    public void setEstimatedTime(double estimatedTime) {
-        this.estimatedTime = estimatedTime;
-    }
-
     public String getMessage() {
         return message;
     }
@@ -71,11 +54,19 @@ public class CreateRideResponseDTO {
         this.message = message;
     }
 
-    public double getMinutesUntilArrival() {
-        return minutesUntilArrival;
+    public Double getDistanceKm() {
+        return distanceKm;
     }
 
-    public void setMinutesUntilArrival(double minutesUntilArrival) {
-        this.minutesUntilArrival = minutesUntilArrival;
+    public void setDistanceKm(Double distanceKm) {
+        this.distanceKm = distanceKm;
+    }
+
+    public Double getEstimatedTime() {
+        return estimatedTime;
+    }
+
+    public void setEstimatedTime(Double estimatedTime) {
+        this.estimatedTime = estimatedTime;
     }
 }

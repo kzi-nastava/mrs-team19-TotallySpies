@@ -1,3 +1,5 @@
+import { ListFormat } from "typescript";
+
 export interface RideFinishResponseDTO {
   rideId: number;
   totalPrice: number;
@@ -31,6 +33,52 @@ export interface Ride {
   panicPressed: boolean;
   isUpcoming: boolean;
 }
+export enum RideStatus {
+    COMPLETED,
+    CANCELLED,
+    ACTIVE,
+    SCHEDULED,
+    STOPPED,
+    PENDING,
+    REJECTED
+}
+
+export enum VehicleType {
+    STANDARD,
+    LUXURIOUS,
+    VAN
+}
+
+export interface CreateRideResponseDTO {
+  rideId: number,
+  status: RideStatus,
+  driverEmail: string,
+  driverName: string,
+  distanceKm: number,
+  estimatedTime: number
+}
+
+export interface RideStopDTO {
+  address: string,
+  lat: number,
+  lng: number
+}
+
+export interface CreateRideRequestDTO {
+  locations: RideStopDTO[],
+  vehicleType: VehicleType,
+  passengerEmails: string[],
+  distanceKm: number,
+  estimatedTime: number,
+  babyTransport: boolean,
+  petTransport: boolean
+}
+
+export interface FavouriteRideDTO {
+  id: number;
+  locations: RideStopDTO[];
+}
+
 export interface ReviewRequestDTO {
   rating: number;
   comment: string;

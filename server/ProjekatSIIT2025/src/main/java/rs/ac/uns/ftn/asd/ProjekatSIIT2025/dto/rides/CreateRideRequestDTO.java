@@ -8,8 +8,8 @@ public class CreateRideRequestDTO {
     private List<RideStopDTO> locations; // lista stanica sa koordinatama
     private List<String> passengerEmails; // emailovi ostalih putnika
     private VehicleType vehicleType;
-    private double distanceKm;
-    private double estimatedTime;
+    private Double distanceKm;
+    private Double estimatedTime;
     private boolean babyTransport;
     private boolean petTransport;
 
@@ -53,19 +53,19 @@ public class CreateRideRequestDTO {
         this.petTransport = petTransport;
     }
 
-    public double getDistanceKm() {
+    public Double getDistanceKm() {
         return distanceKm;
     }
 
-    public void setDistanceKm(double distanceKm) {
+    public void setDistanceKm(Double distanceKm) {
         this.distanceKm = distanceKm;
     }
 
-    public double getEstimatedTime() {
+    public Double getEstimatedTime() {
         return estimatedTime;
     }
 
-    public void setEstimatedTime(double estimatedTime) {
+    public void setEstimatedTime(Double estimatedTime) {
         this.estimatedTime = estimatedTime;
     }
 }

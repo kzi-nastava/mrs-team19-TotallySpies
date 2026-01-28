@@ -2,10 +2,10 @@ package rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides;
 
 public class RideStopDTO {
     private String address;
-    private double lat;
-    private double lng;
+    private Double lat;
+    private Double lng;
 
-    public RideStopDTO(double latitude, double longitude, String address) {
+    public RideStopDTO(Double latitude, Double longitude, String address) {
         this.address = address;
         this.lat = latitude;
         this.lng = longitude;
@@ -13,20 +13,20 @@ public class RideStopDTO {
 
     public RideStopDTO() {}
 
-    public double getLng() {
-        return lng;
-    }
-
-    public void setLng(double lng) {
-        this.lng = lng;
-    }
-
-    public double getLat() {
+    public Double getLat() {
         return lat;
     }
 
-    public void setLat(double lat) {
+    public void setLat(Double lat) {
         this.lat = lat;
+    }
+
+    public Double getLng() {
+        return lng;
+    }
+
+    public void setLng(Double lng) {
+        this.lng = lng;
     }
 
     public String getAddress() {
