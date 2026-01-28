@@ -69,17 +69,19 @@ public class RideController {
         rideService.startRide(rideId, email);
         return ResponseEntity.ok("Ride successfully started!");
     }
-
+    @PreAuthorize("hasRole('DRIVER', 'PASSENGER')")
     @PutMapping("/cancel-ride")
     public ResponseEntity<String> cancelRide(@RequestBody CancelRideDTO request){
         rideService.cancelRide(request);
         return ResponseEntity.ok("Ride cancelled!");
     }
+    @PreAuthorize("hasRole('DRIVER', 'PASSENGER')")
     @PutMapping("/panic")
     public ResponseEntity<String> panic(@RequestBody PanicNotificationDTO request){
         rideService.handlePanicNotification(request);
         return ResponseEntity.ok("PANIC button activated!");
     }
+    @PreAuthorize("hasRole('DRIVER')")
     @PutMapping("/stop-ride")
     public ResponseEntity<String> panic(@RequestBody StopRideDTO request){
         rideService.stopRide(request);

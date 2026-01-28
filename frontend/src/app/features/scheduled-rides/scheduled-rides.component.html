@@ -13,7 +13,7 @@
             </button>
 
             <button *ngIf ="ride.status === 'SCHEDULED'"
-                class = "cancel-btn"
+                class = "start-btn"
                 (click) = "openCancelDialog(ride.rideId)">
                 Cancel
             </button>

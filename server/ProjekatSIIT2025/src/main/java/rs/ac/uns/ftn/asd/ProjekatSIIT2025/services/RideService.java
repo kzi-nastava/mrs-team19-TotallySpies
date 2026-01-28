@@ -184,10 +184,10 @@ public class RideService {
                 .orElseThrow(() ->
                         new ResponseStatusException(HttpStatus.NOT_FOUND, "Ride not found!")
                 );
-        User user = userRepository.findById(dto.getUserId())
-                .orElseThrow(() ->
-                        new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found!")
-                );
+        String email = SecurityContextHolder.getContext().getAuthentication().getName(); // == user.getEmail()
+        User user = userRepository.findByEmail(email);
+        if(user == null)
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found!");
         if(dto.getTime() == null){
             dto.setTime(LocalDateTime.now());
         }

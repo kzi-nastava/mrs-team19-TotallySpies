@@ -49,14 +49,14 @@ formatDate(dateString: string): string {
 
   cancelRide(cancelRideDTO : CancelRideDTO) {
   this.rideService.cancelRide(cancelRideDTO).subscribe({
-    next: () => {
+    next: (data) => {
       alert('Ride cancelled successfully.');
       this.loadRides();
     },
-    error: (err) => {
-      console.error(err);
-      alert('Failed to cancel ride.');
-    }
+    // error: (err) => {
+    //   console.error(err);
+    //   alert('Failed to cancel ride.');
+    // }
   });
   }
 

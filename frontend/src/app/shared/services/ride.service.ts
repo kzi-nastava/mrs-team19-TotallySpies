@@ -5,6 +5,7 @@ import { CreateRideRequestDTO, CreateRideResponseDTO, RideFinishResponseDTO, Rid
 import { InconsistencyReportRequestDTO } from '../models/ride.model';
 import { environment } from '../../../env/environment';
 import { CancelRideDTO } from '../models/cancel-ride.model';
+import { PanicRideDTO } from '../models/panic-ride.model';
 
 @Injectable({
   providedIn: 'root',
@@ -51,4 +52,9 @@ export class RideService {
       { responseType: 'text' }
     );
   }
+
+  panicRide(dto : PanicRideDTO){
+    return this.http.put<string>(`${environment.apiHost}/rides/panic`, dto);
+  }
+  
 }
