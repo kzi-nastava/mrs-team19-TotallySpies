@@ -19,6 +19,7 @@ import { ForgotPasswordComponent } from './core/auth/components/forgot-password/
 import { VerifyOtpComponent } from './core/auth/components/verify-otp/verify-otp.component';
 import { ChangePasswordComponent } from './core/auth/components/change-password/change-password.component';
 import { ActivateAccountComponent } from './core/auth/components/activate-account/activate-account.component';
+import { ChangeOldPasswordComponent } from './shared/components/change-old-password/change-old-password.component';
 
 export const routes: Routes = [
   {
@@ -105,5 +106,8 @@ export const routes: Routes = [
   {
     path: 'scheduled-rides',
     component: ScheduledRidesComponent
+  },
+  { path: 'change-old-password', 
+    component: ChangeOldPasswordComponent 
   }
 ];

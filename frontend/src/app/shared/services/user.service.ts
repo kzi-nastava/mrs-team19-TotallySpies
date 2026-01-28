@@ -1,0 +1,31 @@
+import { HttpClient } from "@angular/common/http";
+import { Injectable } from "@angular/core";
+import { ChangePasswordRequestDTO, UserProfileResponseDTO, UserProfileUpdateRequestDTO } from "../models/users/user.model";
+import { Observable } from "rxjs";
+import { environment } from "../../../env/environment";
+
+@Injectable({ providedIn: 'root' })
+export class UserService {
+
+  private baseUrl = `${environment.apiHost}/users`;
+
+  constructor(private http: HttpClient) {}
+
+  getProfile(): Observable<UserProfileResponseDTO> {
+    return this.http.get<UserProfileResponseDTO>(`${this.baseUrl}/profile`);
+  }
+
+  updateProfile(request: UserProfileUpdateRequestDTO): Observable<void> {
+    return this.http.put<void>(`${this.baseUrl}/profile`, request);
+  }
+
+  changePassword(request: ChangePasswordRequestDTO): Observable<void> {
+    return this.http.put<void>(`${this.baseUrl}/change-password`, request);
+  }
+
+  uploadProfileImage(file: File): Observable<void> {
+    const formData = new FormData();
+    formData.append('image', file);
+    return this.http.put<void>(`${this.baseUrl}/profile/image`, formData);
+  }
+}

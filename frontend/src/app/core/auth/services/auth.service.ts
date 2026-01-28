@@ -8,6 +8,7 @@ import { JwtHelperService } from '@auth0/angular-jwt'; //decodes jwt and checks 
 import { VerifyEmailDTO } from '../model/verify-email.model';
 import { VerifyOtpDTO } from '../model/verify-otp.model';
 import { ChangedPasswordDTO } from '../model/changed-password.model';
+import { DriverActivationRequestDTO } from '../model/activate-driver.model';
 
 @Injectable({  //angular creates one singleton instance of AuthService for whole app
   providedIn: 'root',
@@ -101,4 +102,9 @@ export class AuthService {
   setUser(): void {
     this.user$.next(this.getRole());
   }
+
+  activateDriver(dto: DriverActivationRequestDTO): Observable<void> {
+  const headers = new HttpHeaders({ skip: 'true' }); // da interceptor ne dodaje JWT
+  return this.http.post<void>(`${environment.apiHost}/auth/activate-driver`, dto, { headers });
+}
 }
