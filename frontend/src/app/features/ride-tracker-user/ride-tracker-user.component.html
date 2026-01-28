@@ -8,6 +8,11 @@
       [profileImageUrl]="currentDriver.profileImageUrl"
       [isFinished]="currentDriver.isFinished"
       [rideId]="rideId"></app-driver-info>
+    <button 
+      class="panic-btn"
+      (click)="openPanicDialog(rideId)">
+      PANIC
+    </button>
 
     <div class="timer-section">
       <app-timer-card *ngIf="!currentDriver.isFinished"
