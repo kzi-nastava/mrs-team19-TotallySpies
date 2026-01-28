@@ -1,6 +1,8 @@
-import { Component } from '@angular/core';
-import { MatDialogRef } from '@angular/material/dialog';
+import { Component, Inject } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
+import { RideService } from '../../services/ride.service';
+import { InconsistencyReportRequestDTO } from '../../models/ride.model';
 
 @Component({
   selector: 'app-report-dialog',
@@ -11,21 +13,34 @@ import { FormsModule } from '@angular/forms';
 })
 export class ReportDialogComponent {
   reportText: string = '';
-  constructor(private dialogRef: MatDialogRef<ReportDialogComponent>) {}
-  
+  rideId: number;
+constructor(
+    private dialogRef: MatDialogRef<ReportDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: { rideId: number },
+    private rideService: RideService
+  ) {
+    this.rideId = data.rideId;
+  }  
   close(): void {
     this.dialogRef.close();
   }
 
   submit(): void {
-    if (this.reportText.trim()) {
-      console.log('Report sent:', this.reportText);
-      this.dialogRef.close();
-      alert('Report sent successfully.');
-
+    if (!this.reportText.trim()) {
+      alert('Report needs to have content.');
+      return;
     }
-    else {
-    alert('Report needs to have content.');
+
+    const dto: InconsistencyReportRequestDTO = {
+      description: this.reportText
+    };
+
+    this.rideService.reportInconsistency(this.rideId, dto).subscribe({
+      next: () => {
+        alert('Report sent successfully.');
+        this.dialogRef.close(true);
+      },
+      error: (err:any) => alert('Error sending report: ' + err.error.message)
+    });
   }
-}
 }

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.*;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.Ride;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.services.RideService;
 
 @RestController
@@ -27,12 +28,14 @@ public class RideController {
     RideService rideService;
 
     @GetMapping(value = "/{id}/location", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('PASSENGER')")
     public ResponseEntity<RideTrackingDTO> getRideLocation(@PathVariable Long id) {
         RideTrackingDTO response = rideService.getRideTrackingInfo(id);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PostMapping(value = "/{id}/inconsistency-report", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('PASSENGER')")
     public ResponseEntity<String> reportInconsistency(
             @PathVariable Long id, 
             @RequestBody InconsistencyReportRequestDTO request) {

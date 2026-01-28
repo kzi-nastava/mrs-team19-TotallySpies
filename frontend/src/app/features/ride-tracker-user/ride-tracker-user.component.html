@@ -6,8 +6,8 @@
       [carModel]="currentDriver.carModel" 
       [rating]="currentDriver.rating"
       [profileImageUrl]="currentDriver.profileImageUrl"
-      [isFinished]="currentDriver.isFinished">
-    </app-driver-info>
+      [isFinished]="currentDriver.isFinished"
+      [rideId]="rideId"></app-driver-info>
 
     <div class="timer-section">
       <app-timer-card *ngIf="!currentDriver.isFinished"

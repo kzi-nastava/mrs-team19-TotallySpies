@@ -12,22 +12,26 @@ import { ReviewDialogComponent } from '../review-dialog/review-dialog.component'
   standalone: true,
 })
 export class DriverInfoComponent {
-  @Input() driverName: string = 'Dimitrije Antic';
-  @Input() carModel: string = 'Subaru XV';
-  @Input() rating: number = 5;
-  @Input() profileImageUrl: string = '/images/driver_placeholder.png';
+  @Input() rideId: number = 0;
+  @Input() driverName: string = '';
+  @Input() carModel: string = '';
+  @Input() rating: number = 0;
+  @Input() profileImageUrl: string = '';
   @Input() isFinished: boolean = false;
+
   constructor(private dialog: MatDialog) {}
 
   openReport() {
     this.dialog.open(ReportDialogComponent, {
       width: '25rem',
-      panelClass: 'custom-dialog-container',
-      backdropClass: 'blur-backdrop'
+      data: { rideId: this.rideId }
     });
   }
 
   openReview(type: 'driver' | 'vehicle'): void {
-    this.dialog.open(ReviewDialogComponent, { width: '25rem', data: { type }, panelClass: 'custom-dialog-container', backdropClass: 'blur-backdrop' });
+    this.dialog.open(ReviewDialogComponent, { 
+      width: '25rem', 
+      data: { type, rideId: this.rideId } 
+    });
   }
 }
