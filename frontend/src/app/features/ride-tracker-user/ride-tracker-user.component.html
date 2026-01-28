@@ -13,6 +13,12 @@
       (click)="openPanicDialog(rideId)">
       PANIC
     </button>
+    <button 
+      class="stop-btn"
+      (click)="stopRide()">
+      Stop ride 
+    </button>
+
 
     <div class="timer-section">
       <app-timer-card *ngIf="!currentDriver.isFinished"
@@ -32,7 +38,8 @@
   <div class="map-container">
     <app-map 
       [pickupAddress]="pickupAddress" 
-      [destinationAddress]="destinationAddress">
+      [destinationAddress]="destinationAddress"
+    >
     </app-map>
   </div>
 
