@@ -66,16 +66,17 @@ public class RideService {
 
         // send email to the passengers
         for (Passenger passenger : ride.getPassengers()) {
-            MailBody mailBody = new MailBody(
-                passenger.getEmail(),
-                "Ride Finished - SmartRide",
-                "Dear " + passenger.getName() + ", your ride has successfully finished. " +
-                "Total price: " + ride.getTotalPrice() + " RSD. You can now leave a review on the app!"
-            );
+            MailBody mailBody = MailBody.builder()
+                    .to(passenger.getEmail())
+                    .subject("Ride Finished - SmartRide")
+                    .text("Dear " + passenger.getName() + ", your ride has successfully finished. " +
+                            "Total price: " + ride.getTotalPrice() + " RSD. You can now leave a review on the app!")
+                    .build();
+
             try {
                 emailService.sendSimpleMessage(mailBody);
             } catch (Exception e) {
-                System.err.println("Failed to send email to: " + passenger.getEmail());
+                e.printStackTrace();
             }
         }
 
