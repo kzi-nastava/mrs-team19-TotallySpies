@@ -8,7 +8,6 @@ import { JwtHelperService } from '@auth0/angular-jwt'; //decodes jwt and checks 
 import { VerifyEmailDTO } from '../model/verify-email.model';
 import { VerifyOtpDTO } from '../model/verify-otp.model';
 import { ChangedPasswordDTO } from '../model/changed-password.model';
-import { UserRegisterRequestDTO } from '../model/user-register-request.model';
 
 @Injectable({  //angular creates one singleton instance of AuthService for whole app
   providedIn: 'root',
@@ -19,7 +18,7 @@ export class AuthService {
     skip: 'true',
   });
 
-  user$ = new BehaviorSubject(''); //user stores the current auth state(in this case role)
+  user$ = new BehaviorSubject<string | null>(null); //user stores the current auth state(in this case role)
   //behaviorSubject emits the current value to subscribers, it always remembers latest value
   userState = this.user$.asObservable(); //navbar is subscribed on userState(public observable)
   //  TODO :different navbar for every role
@@ -37,6 +36,10 @@ export class AuthService {
     );
   }
 
+  logout() : void{ //removes jwt from local storage
+    localStorage.removeItem('token');
+    this.user$.next(null);
+  }
   verifyEmail(dto: VerifyEmailDTO): Observable<string> {
     return this.http.post(
       environment.apiHost + '/forgot-password/verify-email',

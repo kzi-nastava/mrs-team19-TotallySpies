@@ -34,6 +34,7 @@ public class AuthController {
         //runs only if no exception was thrown from service
         return ResponseEntity.ok(userTokenStateDTO);
     }
+
     @PostMapping(value = "/register",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> register(@Valid @ModelAttribute UserRegisterRequestDTO request) {
         authService.register(request);

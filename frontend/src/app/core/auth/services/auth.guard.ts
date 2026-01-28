@@ -19,7 +19,7 @@ export class AuthGuard implements CanActivate {
   canActivate(
     route: ActivatedRouteSnapshot,
   ): boolean {
-    const userRole :string = this.authService.user$.getValue();
+    const userRole :string | null = this.authService.user$.getValue();
 
     if (userRole == null) {
       this.router.navigate(['login']);
