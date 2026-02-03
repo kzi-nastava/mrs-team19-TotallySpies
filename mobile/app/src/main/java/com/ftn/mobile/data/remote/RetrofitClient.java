@@ -24,6 +24,7 @@ public class RetrofitClient {
             retrofit = new Retrofit.Builder()
                     .baseUrl(BuildConfig.BASE_URL)
                     .client(client)
+                    //which library is responsible to convert http response (json) to java class
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
         }

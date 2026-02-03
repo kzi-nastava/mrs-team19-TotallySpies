@@ -13,9 +13,9 @@ public class AuthInterceptor implements Interceptor {
 
     @Override
     public Response intercept(Chain chain) throws IOException {
-
+        //every http request goes through interceptor
+        //chain is pipeline that holds current request and the ability to continue the request
         Request original = chain.request();
-
         // get JWT from SharedPreferences
         String token = TokenStorage.get(App.get());
 

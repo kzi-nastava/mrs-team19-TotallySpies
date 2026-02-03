@@ -1,6 +1,7 @@
 package com.ftn.mobile.presentation.view;
 
 import android.os.Bundle;
+import android.util.Patterns;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -17,6 +18,7 @@ import com.ftn.mobile.data.local.TokenStorage;
 import com.ftn.mobile.data.remote.ApiProvider;
 import com.ftn.mobile.data.remote.dto.UserLoginRequestDTO;
 import com.ftn.mobile.data.remote.dto.UserTokenStateDTO;
+import com.ftn.mobile.utils.DialogBox;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -41,14 +43,22 @@ public class Login extends AppCompatActivity {
 
         btnLogin.setOnClickListener(v -> {
             String email = etEmail.getText().toString().trim();
-            String pass = etPassword.getText().toString();
+            String password = etPassword.getText().toString();
 
-            if (email.isEmpty() || pass.isEmpty()) {
-                Toast.makeText(this, "Enter email and password", Toast.LENGTH_SHORT).show();
+            if (email.isEmpty() || password.isEmpty()) {
+                //Toast.makeText(this, "Enter email and password", Toast.LENGTH_SHORT).show();
+                DialogBox.showDialog(Login.this, "Invalid input!", "Please fill all the fields.");
                 return;
             }
-
-            UserLoginRequestDTO req = new UserLoginRequestDTO(email, pass);
+            if(!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
+                DialogBox.showDialog(Login.this, "Invalid input!", "Please enter a valid email address.");
+                return;
+            }
+            if(password.length() < 8){
+                DialogBox.showDialog(Login.this, "Invalid input!", "Password is required in format of at least 8 characters!");
+                return;
+            }
+            UserLoginRequestDTO req = new UserLoginRequestDTO(email, password);
 
             ApiProvider.auth().login(req).enqueue(new Callback<UserTokenStateDTO>() {
                 @Override
@@ -56,21 +66,20 @@ public class Login extends AppCompatActivity {
                     if (response.code() == 200 && response.body() != null) {
                         String token = response.body().getAccessToken();
                         TokenStorage.save(Login.this, token);
-                        Toast.makeText(Login.this, "Login OK", Toast.LENGTH_SHORT).show();
+                        DialogBox.showDialog(Login.this, "Logged in", "Successfully logged!");
                         // startActivity(new Intent(Login.this, HomeActivity.class));
-                        // finish();
                     } else if (response.code() == 401) {
-                        Toast.makeText(Login.this, "Invalid email or password", Toast.LENGTH_SHORT).show();
+                        DialogBox.showDialog(Login.this, "Error", "Invalid email or password");
                     } else if (response.code() == 403) {
-                        Toast.makeText(Login.this, "Account not activated", Toast.LENGTH_SHORT).show();
+                        DialogBox.showDialog(Login.this, "Error", "Account not activated. Check your email.");
                     } else {
-                        Toast.makeText(Login.this, "Login failed: " + response.code(), Toast.LENGTH_SHORT).show();
+                        DialogBox.showDialog(Login.this, "Error", "Login failed.");
                     }
                 }
 
                 @Override
                 public void onFailure(Call<UserTokenStateDTO> call, Throwable t) {
-                    Toast.makeText(Login.this, "Network error: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                    DialogBox.showDialog(Login.this, "Network error", t.getMessage());
                 }
             });
         });
