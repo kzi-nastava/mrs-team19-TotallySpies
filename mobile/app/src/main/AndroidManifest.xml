@@ -2,11 +2,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-permission android:name = "android.permission.INTERNET" />
-    <uses-permission android:name = "android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
     <application
-        android:name = ".App"
-        android:usesCleartextTraffic="true"
+        android:name=".App"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -15,41 +16,42 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Mobile"
-        >
+        android:usesCleartextTraffic="true">
+        <activity
+            android:name=".presentation.view.ChangePasswordActivity"
+            android:exported="false" />
+        <activity
+            android:name=".presentation.view.VerifyOtpActivity"
+            android:exported="false" />
+        <activity
+            android:name=".presentation.view.VerifyEmailActivity"
+            android:exported="false" />
         <activity
             android:name=".presentation.view.DriverHistoryActivity"
             android:exported="false"
-            android:theme="@style/Theme.Mobile">
-
-        </activity>
-
+            android:theme="@style/Theme.Mobile" />
         <activity
-            android:name=".presentation.view.Register"
+            android:name=".presentation.view.RegisterActivity"
             android:exported="true"
-            android:windowSoftInputMode="stateHidden|adjustResize"/>
-
+            android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
-            android:name=".presentation.view.Login"
+            android:name=".presentation.view.LoginActivity"
             android:exported="false" />
-
         <activity
             android:name=".presentation.view.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".presentation.view.ProfileActivity"
             android:exported="false" />
         <activity
             android:name=".presentation.view.AdminListActivity"
             android:exported="false" />
-
     </application>
-    <uses-permission android:name="android.permission.INTERNET"/>
-
 
 </manifest>

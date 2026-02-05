@@ -11,7 +11,7 @@ import androidx.core.view.WindowInsetsCompat;
 import android.net.Uri;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.Toast;
+
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 
@@ -26,7 +26,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class Register extends AppCompatActivity {
+public class RegisterActivity extends AppCompatActivity {
     private Uri selectedImageUri;
     private ImageView imgProfile;
 
@@ -70,24 +70,24 @@ public class Register extends AppCompatActivity {
             if(email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty() || name.isEmpty()
             || lastName.isEmpty() || address.isEmpty() || phoneNumber.isEmpty()){
                 //Toast.makeText(this, "Fill all fields!", Toast.LENGTH_SHORT).show();
-                DialogBox.showDialog(Register.this, "Invalid input", "Please fill all the fields.");
+                DialogBox.showDialog(RegisterActivity.this, "Invalid input", "Please fill all the fields.");
                 return;
             }
             if(!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
-                DialogBox.showDialog(Register.this, "Invalid input!", "Please enter a valid email address.");
+                DialogBox.showDialog(RegisterActivity.this, "Invalid input!", "Please enter a valid email address.");
                 return;
             }
             if(password.length() < 8 || confirmPassword.length() < 8){
-                DialogBox.showDialog(Register.this, "Invalid input!", "Password is required in format of at least 8 characters!");
+                DialogBox.showDialog(RegisterActivity.this, "Invalid input!", "Password is required in format of at least 8 characters!");
                 return;
             }
             if(!password.equals(confirmPassword)){
                 //Toast.makeText(this, "Password and confirmed password must be equal!", Toast.LENGTH_SHORT).show();
-                DialogBox.showDialog(Register.this, "Invalid input", "Password and confirmed password must be equal!");
+                DialogBox.showDialog(RegisterActivity.this, "Invalid input", "Password and confirmed password must be equal!");
                 return;
             }
             if(!phoneNumber.matches("\\d{11}")){
-                DialogBox.showDialog(Register.this, "Invalid input", "Phone number is required in format of 11 digits!");
+                DialogBox.showDialog(RegisterActivity.this, "Invalid input", "Phone number is required in format of 11 digits!");
                 return;
             }
             MultipartBody.Part imagePart = null;
@@ -98,7 +98,7 @@ public class Register extends AppCompatActivity {
             }
             catch(Exception e){
                 //Toast.makeText(this, "Failed to read image: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                DialogBox.showDialog(Register.this, "Failed to read image", e.getMessage());
+                DialogBox.showDialog(RegisterActivity.this, "Failed to read image", e.getMessage());
                 return;
             }
             ApiProvider.auth().register(
@@ -115,8 +115,8 @@ public class Register extends AppCompatActivity {
                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                     if (response.isSuccessful()) {
                         //Toast.makeText(Register.this, "Registered! Check email to activate.", Toast.LENGTH_LONG).show();
-                        DialogBox.showDialog(Register.this,"Successful registration!", "Registered! Check email to activate.");
-                        startActivity(new Intent(Register.this, Login.class));
+                        DialogBox.showDialog(RegisterActivity.this,"Successful registration!", "Registered! Check email to activate.");
+                        startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
                     } else {
                         //Toast.makeText(Register.this, "Register failed: " + response.code(), Toast.LENGTH_LONG).show();
                         String serverMsg = Utils.extractErrorMessage(response);
@@ -124,13 +124,13 @@ public class Register extends AppCompatActivity {
                         if (response.code() == 409) title = "Email already in use";
                         else if (response.code() == 400) title = "Password and confirmed password need to match!";
                         else title = "Registration failed";
-                        DialogBox.showDialog(Register.this, title, serverMsg);
+                        DialogBox.showDialog(RegisterActivity.this, title, serverMsg);
                     }
                 }
                 @Override
                 public void onFailure(Call<ResponseBody> call, Throwable t) {
                     //Toast.makeText(Register.this, "Network error: " + t.getMessage(), Toast.LENGTH_LONG).show();
-                    DialogBox.showDialog(Register.this,"Network error.", t.getMessage());
+                    DialogBox.showDialog(RegisterActivity.this,"Network error.", t.getMessage());
                 }
             });
         });

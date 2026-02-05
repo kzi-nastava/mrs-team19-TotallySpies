@@ -29,9 +29,6 @@ public interface AuthApi {
             @Part MultipartBody.Part profilePicture
     );
 
-
-
-
     /*@POST("api/v1/auth/activate")
     Call<String> activate(@Query String token);*/
 }

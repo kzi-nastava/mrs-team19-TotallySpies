@@ -1,9 +1,11 @@
 package com.ftn.mobile.presentation.view;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Patterns;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -24,7 +26,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class Login extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,22 +42,27 @@ public class Login extends AppCompatActivity {
         EditText etEmail = findViewById(R.id.etEmail);
         EditText etPassword = findViewById(R.id.etPassword);
         Button btnLogin = findViewById(R.id.btnLogin);
+        TextView tvForgotPassword = findViewById(R.id.tvForgotPassword);
+        tvForgotPassword.setOnClickListener(v -> {
+            Intent intent = new Intent(LoginActivity.this, VerifyEmailActivity.class);
+            startActivity(intent);
 
+        });
         btnLogin.setOnClickListener(v -> {
             String email = etEmail.getText().toString().trim();
             String password = etPassword.getText().toString();
 
             if (email.isEmpty() || password.isEmpty()) {
                 //Toast.makeText(this, "Enter email and password", Toast.LENGTH_SHORT).show();
-                DialogBox.showDialog(Login.this, "Invalid input!", "Please fill all the fields.");
+                DialogBox.showDialog(LoginActivity.this, "Invalid input!", "Please fill all the fields.");
                 return;
             }
             if(!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
-                DialogBox.showDialog(Login.this, "Invalid input!", "Please enter a valid email address.");
+                DialogBox.showDialog(LoginActivity.this, "Invalid input!", "Please enter a valid email address.");
                 return;
             }
             if(password.length() < 8){
-                DialogBox.showDialog(Login.this, "Invalid input!", "Password is required in format of at least 8 characters!");
+                DialogBox.showDialog(LoginActivity.this, "Invalid input!", "Password is required in format of at least 8 characters!");
                 return;
             }
             UserLoginRequestDTO req = new UserLoginRequestDTO(email, password);
@@ -65,21 +72,20 @@ public class Login extends AppCompatActivity {
                 public void onResponse(Call<UserTokenStateDTO> call, Response<UserTokenStateDTO> response) {
                     if (response.code() == 200 && response.body() != null) {
                         String token = response.body().getAccessToken();
-                        TokenStorage.save(Login.this, token);
-                        DialogBox.showDialog(Login.this, "Logged in", "Successfully logged!");
+                        TokenStorage.save(LoginActivity.this, token);
+                        DialogBox.showDialog(LoginActivity.this, "Logged in", "Successfully logged!");
                         // startActivity(new Intent(Login.this, HomeActivity.class));
                     } else if (response.code() == 401) {
-                        DialogBox.showDialog(Login.this, "Error", "Invalid email or password");
+                        DialogBox.showDialog(LoginActivity.this, "Error", "Invalid email or password");
                     } else if (response.code() == 403) {
-                        DialogBox.showDialog(Login.this, "Error", "Account not activated. Check your email.");
+                        DialogBox.showDialog(LoginActivity.this, "Error", "Account not activated. Check your email.");
                     } else {
-                        DialogBox.showDialog(Login.this, "Error", "Login failed.");
+                        DialogBox.showDialog(LoginActivity.this, "Error", "Login failed.");
                     }
                 }
-
                 @Override
                 public void onFailure(Call<UserTokenStateDTO> call, Throwable t) {
-                    DialogBox.showDialog(Login.this, "Network error", t.getMessage());
+                    DialogBox.showDialog(LoginActivity.this, "Network error", t.getMessage());
                 }
             });
         });
