@@ -1,17 +1,16 @@
 package com.ftn.mobile.data.model;
 
 public class User {
-    private String name, surname, phoneNumber, address, password, email, profileImageUrl;
+    private String name, lastName, phoneNumber, address, password, email, profileImageUrl;
     private boolean isBlocked;
 
-    public User(String email, String name, String surname, String address, String profileImageUrl, String phoneNumber, String password) {
+    public User(String email, String name, String lastName, String address, String profileImageUrl, String phoneNumber) {
         this.email = email;
         this.name = name;
-        this.surname = surname;
+        this.lastName = lastName;
         this.address = address;
         this.profileImageUrl = profileImageUrl;
         this.phoneNumber = phoneNumber;
-        this.password = password;
     }
 
     public String getName() {
@@ -22,12 +21,12 @@ public class User {
         this.name = name;
     }
 
-    public String getSurname() {
-        return surname;
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setSurname(String surname) {
-        this.surname = surname;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public String getPhoneNumber() {

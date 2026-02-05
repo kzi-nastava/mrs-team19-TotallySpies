@@ -2,8 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
+        android:name=".App"
         android:allowBackup="true"
+        android:usesCleartextTraffic="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
@@ -11,30 +16,29 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Mobile">
+
+        <activity
+            android:name=".presentation.view.EditProfileActivity"
+            android:exported="false" />
         <activity
             android:name=".presentation.view.DriverHistoryActivity"
             android:exported="false"
-            android:theme="@style/Theme.Mobile">
-
-        </activity>
-
+            android:theme="@style/Theme.Mobile"></activity>
         <activity
             android:name=".presentation.view.Register"
             android:exported="true" />
-
         <activity
             android:name=".presentation.view.Login"
             android:exported="false" />
-
         <activity
             android:name=".presentation.view.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".presentation.view.ProfileActivity"
             android:exported="false" />

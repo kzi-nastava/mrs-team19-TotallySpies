@@ -70,13 +70,12 @@
                             app:srcCompat="@drawable/phone_icon" />
 
                         <TextView
-                            android:id="@+id/textView5"
+                            android:id="@+id/tvPhoneNumber"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginLeft="10dp"
+                            android:layout_marginStart="10dp"
                             android:layout_weight="1"
                             android:gravity="center_vertical"
-                            android:text="+381 65 123 1234"
                             android:textColor="#aaffffff"
                             android:textSize="17sp" />
                     </LinearLayout>
@@ -97,55 +96,27 @@
                             app:srcCompat="@drawable/home_icon" />
 
                         <TextView
-                            android:id="@+id/textView6"
+                            android:id="@+id/tvAddress"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginLeft="10dp"
+                            android:layout_marginStart="10dp"
                             android:layout_weight="1"
                             android:gravity="center_vertical"
-                            android:text="Ul. Valentina Vodnika, Novi Sad"
                             android:textColor="#aaffffff"
                             android:textSize="17sp" />
                     </LinearLayout>
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnChangePassword"
+                        style="@style/Widget.MaterialComponents.Button.TextButton"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginBottom="10dp"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
+                        android:layout_gravity="start"
+                        android:layout_weight="1"
+                        android:padding="10dp"
+                        android:text="Change password"
+                        android:textColor="@color/accent" />
 
-                        <ImageView
-                            android:id="@+id/imageView7"
-                            android:layout_width="25dp"
-                            android:layout_height="25dp"
-                            android:layout_weight="0"
-                            app:srcCompat="@drawable/eye_icon" />
-
-                        <TextView
-                            android:id="@+id/textView7"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginLeft="10dp"
-                            android:layout_weight="1"
-                            android:gravity="center_vertical"
-                            android:text="*************"
-                            android:textColor="#aaffffff"
-                            android:textSize="17sp" />
-
-                        <TextView
-                            android:id="@+id/textView8"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="0"
-                            android:clickable="true"
-                            android:focusable="true"
-                            android:text="Change"
-                            android:textColor="@color/accent"
-                            android:textSize="20sp" />
-
-                    </LinearLayout>
                 </LinearLayout>
 
                 <androidx.constraintlayout.widget.ConstraintLayout
@@ -177,7 +148,7 @@
                         app:strokeWidth="1dp" />
 
                     <ImageButton
-                        android:id="@+id/imageButton"
+                        android:id="@+id/updateImageButton"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
                         android:layout_marginTop="-40dp"
@@ -189,33 +160,31 @@
                         app:srcCompat="@drawable/add_circle_icon" />
 
                     <TextView
-                        android:id="@+id/textView"
+                        android:id="@+id/tvNameLastName"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         android:layout_marginBottom="30dp"
-                        android:text="Jovana Aleksic"
                         android:textColor="#ffffff"
                         android:textSize="25sp"
                         android:textStyle="bold"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="@id/imgUser"
                         app:layout_constraintStart_toStartOf="@id/imgUser"
-                        app:layout_constraintTop_toBottomOf="@id/imageButton" />
+                        app:layout_constraintTop_toBottomOf="@id/updateImageButton" />
 
                     <TextView
-                        android:id="@+id/textView4"
+                        android:id="@+id/tvEmail"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="5dp"
                         android:layout_weight="1"
                         android:gravity="center_vertical"
-                        android:text="jovana.aleksic@gmail.com"
                         android:textColor="#aaffffff"
                         android:textSize="17sp"
-                        app:layout_constraintEnd_toEndOf="@+id/textView"
-                        app:layout_constraintStart_toStartOf="@+id/textView"
-                        app:layout_constraintTop_toBottomOf="@+id/textView" />
+                        app:layout_constraintEnd_toEndOf="@+id/tvNameLastName"
+                        app:layout_constraintStart_toStartOf="@+id/tvNameLastName"
+                        app:layout_constraintTop_toBottomOf="@+id/tvNameLastName" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -276,11 +245,11 @@
                             android:textSize="17sp" />
 
                         <TextView
+                            android:id="@+id/tvActiveHours"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="15dp"
                             android:layout_weight="1"
-                            android:text="7h 22min"
                             android:textAlignment="textEnd"
                             android:textColor="#AAFF0303"
                             android:textSize="17sp" />
