@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/verify_otp_scroll_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp"
+        android:background="@drawable/login_bg_gradient">
+
+        <ImageView
+            android:id="@+id/imgIllustration"
+            android:layout_width="match_parent"
+            android:layout_height="220dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/illustration_1_v2"
+            android:contentDescription="@string/login_illustration" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/verify_otp_header"
+            android:textSize="32sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/white"
+            android:layout_marginTop="16dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:textSize = "16sp"
+            android:text="@string/verify_otp_explanation"
+            android:textColor="@color/placeholder" />
+
+        <LinearLayout
+            android:id="@+id/otpContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/otp1"
+                style="@style/OtpEditText" />
+
+            <EditText
+                android:id="@+id/otp2"
+                style="@style/OtpEditText" />
+
+            <EditText
+                android:id="@+id/otp3"
+                style="@style/OtpEditText" />
+
+            <EditText
+                android:id="@+id/otp4"
+                style="@style/OtpEditText" />
+
+            <EditText
+                android:id="@+id/otp5"
+                style="@style/OtpEditText" />
+
+            <EditText
+                android:id="@+id/otp6"
+                style="@style/OtpEditText" />
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btnVerifyOtp"
+            android:layout_width="208dp"
+            android:layout_height="56dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="32dp"
+            android:backgroundTint="@color/accent"
+            android:text= "@string/verify_email"
+            android:textColor="@color/background"
+            android:textSize="16sp" />
+
+    </LinearLayout>
+
+</ScrollView>

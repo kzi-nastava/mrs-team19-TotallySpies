@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/login_scroll_view"
+    android:id="@+id/verify_email_scroll_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true">
@@ -23,7 +23,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/log_in"
+            android:text="@string/forgot_password_header"
             android:textSize="32sp"
             android:textStyle="bold"
             android:textColor="@android:color/white"
@@ -34,11 +34,18 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
             android:textSize = "16sp"
+            android:text="@string/forgot_password_explanation"
+            android:textColor="@color/placeholder" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:textSize = "16sp"
             android:text="@string/email"
-            android:textColor="@android:color/white" />
+            android:textColor="@color/white" />
 
         <EditText
-            android:id="@+id/etEmail"
+            android:id="@+id/etVerifyEmail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:backgroundTint="@android:color/white"
@@ -48,50 +55,14 @@
             android:textColor="@android:color/white"
             android:textColorHint="@color/placeholder"
             android:autofillHints="emailAddress"/>
-
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/password"
-            android:textSize = "16sp"
-            android:textColor="@android:color/white"
-            android:layout_marginTop="24dp" />
-
-        <EditText
-            android:id="@+id/etPassword"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/enter_password"
-            android:inputType="textPassword"
-            android:textSize = "14sp"
-            android:textColor="@android:color/white"
-            android:textColorHint="@color/placeholder"
-            android:backgroundTint="@android:color/white"
-            android:autofillHints="password"/>
-
-
-        <TextView
-            android:id="@+id/tvForgotPassword"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/forgot_password"
-            android:textColor="@android:color/white"
-            android:layout_gravity="end"
-            android:textSize = "14sp"
-            android:layout_marginTop="12dp"
-            android:clickable = "true"
-            android:focusable = "true"/>
-
-
         <Button
-            android:id="@+id/btnLogin"
+            android:id="@+id/btnVerifyEmail"
             android:layout_width="208dp"
             android:layout_height="56dp"
             android:layout_gravity="center"
             android:layout_marginTop="32dp"
             android:backgroundTint="@color/accent"
-            android:text="@string/log_in"
+            android:text= "@string/verify_email"
             android:textColor="@color/background"
             android:textSize="16sp" />
 

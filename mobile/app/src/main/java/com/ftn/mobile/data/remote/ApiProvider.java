@@ -1,13 +1,15 @@
 package com.ftn.mobile.data.remote;
 
-//import com.ftn.mobile.data.remote.api.AuthApi;
+import com.ftn.mobile.data.remote.api.AuthApi;
 
 import com.ftn.mobile.data.remote.api.DriverApi;
 import com.ftn.mobile.data.remote.api.UserApi;
 
 public final class ApiProvider {
     //returns every api needed
-    //private static AuthApi authApi;
+    private static AuthApi authApi;
+
+    private static ForgotPasswordApi forgotPasswordApi;
 
     private static UserApi userApi;
 
@@ -15,12 +17,19 @@ public final class ApiProvider {
 
     private ApiProvider() {}
 
-    /*public static AuthApi auth() {
+    public static AuthApi auth() {
         if (authApi == null) {
             authApi = RetrofitClient.getRetrofit().create(AuthApi.class);
         }
         return authApi;
-    }*/
+
+    }
+    public static ForgotPasswordApi forgotPassword(){
+        if(forgotPasswordApi == null){
+            forgotPasswordApi = RetrofitClient.getRetrofit().create(ForgotPasswordApi.class);
+        }
+        return forgotPasswordApi;
+    }
 
     public static UserApi user() {
         if (userApi == null) {
@@ -36,3 +45,4 @@ public final class ApiProvider {
         return driverApi;
     }
 }
+

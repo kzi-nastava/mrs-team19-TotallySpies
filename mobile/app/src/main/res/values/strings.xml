@@ -63,6 +63,16 @@
         libero vel nunc consequat, quis tincidunt nisl eleifend. Cras bibendum enim a justo luctus
         vestibulum. Fusce dictum libero quis erat maximus, vitae volutpat diam dignissim.
     </string>
+    <string name="choose_picture">Choose picture</string>
+    <string name="forgot_password_header">Forgot password?</string>
+    <string name="forgot_password_explanation">Please enter your email to reset the password, we will sent you a verification code.</string>
+
+    <string name="verify_email">Continue</string>
+    <string name="verify_otp_header">Check your email</string>
+    <string name="verify_otp_explanation">We sent a reset link to you, please enter a 6 digit code that is mentioned in email.</string>
+    <string name="set_a_new_password">Set a new password</string>
+    <string name="change_password_explanation">Please enter your new password and confirm it to complete the reset.</string>
+    <string name="change_password">Change password</string>
 
     <string-array name="mock_departures">
         <item>Bulevar Oslobođenja 123</item>

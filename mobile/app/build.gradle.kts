@@ -34,23 +34,38 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    buildTypes {
-        release {
-            isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
+
+        defaultConfig {
+            applicationId = "com.ftn.mobile"
+            minSdk = 30
+            targetSdk = 36
+            versionCode = 1
+            versionName = "1.0"
+            //ip config
+            val ip = getLocalProperty("ip_address")
+            val baseUrl = "http://$ip:8080/"
+            buildConfigField("String", "BASE_URL", "\"$baseUrl\"")
+            testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        }
+
+        buildTypes {
+            release {
+                isMinifyEnabled = false
+                proguardFiles(
+                    getDefaultProguardFile("proguard-android-optimize.txt"),
+                    "proguard-rules.pro"
+                )
+            }
+        }
+        compileOptions {
+            sourceCompatibility = JavaVersion.VERSION_11
+            targetCompatibility = JavaVersion.VERSION_11
+        }
+        buildFeatures {
+            viewBinding = true
+            buildConfig = true
         }
     }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-    buildFeatures {
-        viewBinding = true
-    }
-}
 
 dependencies {
     // Retrofit

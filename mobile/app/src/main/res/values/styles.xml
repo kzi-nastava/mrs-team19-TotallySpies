@@ -1,3 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="OtpEditText">
+        <item name="android:layout_width">48dp</item>
+        <item name="android:layout_height">56dp</item>
+        <item name="android:layout_margin">6dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:inputType">number</item>
+        <item name="android:maxLength">1</item>
 <?xml version="1.0" encoding="utf-8" ?>
 <resources>
     <style name="FullWidthDialog" parent="Theme.MaterialComponents.Dialog">

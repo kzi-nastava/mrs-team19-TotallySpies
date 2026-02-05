@@ -1,25 +1,34 @@
 package com.ftn.mobile.data.remote;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import com.ftn.mobile.App;
+import com.ftn.mobile.data.local.TokenStorage;
+
 import java.io.IOException;
+
 import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
 
 public class AuthInterceptor implements Interceptor {
+
     @Override
     public Response intercept(Chain chain) throws IOException {
-        SharedPreferences sp = App.get().getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);
-        String token = sp.getString("jwt_token", "");
+        //every http request goes through interceptor
+        //chain is pipeline that holds current request and the ability to continue the request
+        Request original = chain.request();
+        // get JWT from SharedPreferences
+        String token = TokenStorage.get(App.get());
 
-        Request.Builder builder = chain.request().newBuilder();
-
-        if (!token.isEmpty()) {
-            builder.addHeader("Authorization", "Bearer " + token);
+        // if no token (for login/register), proceed normally
+        if (token == null || token.isEmpty()) {
+            return chain.proceed(original);
         }
 
-        return chain.proceed(builder.build());
+        // add Authorization header
+        Request requestWithAuth = original.newBuilder()
+                .header("Authorization", "Bearer " + token)
+                .build();
+
+        return chain.proceed(requestWithAuth);
     }
 }
