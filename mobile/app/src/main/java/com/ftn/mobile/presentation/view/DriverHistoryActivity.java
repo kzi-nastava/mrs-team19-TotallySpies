@@ -1,6 +1,12 @@
 package com.ftn.mobile.presentation.view;
 
+import android.app.DatePickerDialog;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
+import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,73 +19,150 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.ftn.mobile.R;
 import com.ftn.mobile.data.model.Ride;
 import com.ftn.mobile.data.model.RideStatus;
+import com.ftn.mobile.data.remote.ApiProvider;
+import com.ftn.mobile.data.remote.dto.DriverRideHistoryDTO;
 import com.ftn.mobile.presentation.adapter.DriverHistoryAdapter;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+
+import retrofit2.Callback;
+import retrofit2.Call;
+import retrofit2.Response;
 
 public class DriverHistoryActivity extends AppCompatActivity {
     ArrayList<Ride> rideModels = new ArrayList<>();
+    private static final String MOCK_JWT = "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiUk9MRV9EUklWRVIiLCJzdWIiOiJkcml2ZXIxQGdtYWlsLmNvbSIsImlhdCI6MTc3MDIxOTkyNSwiZXhwIjoxNzcwMjIxNzI1fQ.Pk5zOdRS4MhSxp4ICt-ZfkTD8d8Rmfu6L13mZ08I3dE" ;  // until the login on mobile app is implemented,
+                                                // we paste jwt tocken from postman here
+    private static final Long MOCK_DRIVER_ID = 2L; // id driver with that jwt tocken
+    DriverHistoryAdapter adapter;
+    private String selectedFromDate = null;
+    private String selectedToDate = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_driver_history);
+        mockLogin();
         RecyclerView recyclerView = findViewById(R.id.adhRecycleView);
-        setUpRideModels();
-        DriverHistoryAdapter adapter = new DriverHistoryAdapter(this, rideModels);
+        adapter = new DriverHistoryAdapter(this, rideModels);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        Button btnFilter = findViewById(R.id.btnFilterHistory);
+        btnFilter.setOnClickListener(v -> {
+            showDateRangePicker();
+        });
+        loadHistoryFromServer(null, null);
     }
 
-    private void setUpRideModels() {
+    private void showDateRangePicker() {
+        Calendar calendar = Calendar.getInstance();
 
-        String[] departures = getResources().getStringArray(R.array.mock_departures);
-        String[] destinations = getResources().getStringArray(R.array.mock_destinations);
-        String[] prices = getResources().getStringArray(R.array.mock_prices);
-        String[] datesStart = getResources().getStringArray(R.array.mock_dates);
-        String[] datesEnd = getResources().getStringArray(R.array.mock_dates);
-        String[] timesStart = getResources().getStringArray(R.array.mock_times_start);
-        String[] timesEnd = getResources().getStringArray(R.array.mock_times_end);
-        String[] panics = getResources().getStringArray(R.array.mock_panics);
-        String[] statuses = getResources().getStringArray(R.array.mock_statuses);
-        String[] passengers = getResources().getStringArray(R.array.mock_passengers_list);
+        // Dijalog za "OD" datum
+        DatePickerDialog fromDatePicker = new DatePickerDialog(this, (view, year, month, dayOfMonth) -> {
+            selectedFromDate = String.format("%d-%02d-%02d", year, month + 1, dayOfMonth);
 
-        for (int i = 0; i < departures.length; i++) {
-            boolean isPanic = Boolean.parseBoolean(panics[i]);
+            // Odmah otvori dijalog za "DO" datum
+            DatePickerDialog toDatePicker = new DatePickerDialog(this, (view1, year1, month1, dayOfMonth1) -> {
+                selectedToDate = String.format("%d-%02d-%02d", year1, month1 + 1, dayOfMonth1);
 
-            RideStatus status = RideStatus.FINISHED;
-            if (statuses[i].equals("DRIVER_CANCEL")) status = RideStatus.CANCELLED_BY_DRIVER;
-            else if (statuses[i].equals("PASSENGER_CANCEL")) status = RideStatus.CANCELLED_BY_PASSENGER;
+                // Kada imamo oba, pozivamo server
+                loadHistoryFromServer(selectedFromDate, selectedToDate);
 
-            String[] splitPassengers = passengers[i].split(",");
-            List<String> passengerList = new ArrayList<>();
-            List<Integer> passengerImagesList = new ArrayList<>();
+            }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
 
-            for (String p : splitPassengers) {
-                passengerList.add(p.trim());
-                passengerImagesList.add(R.drawable.ic_passenger_placeholder);
+            toDatePicker.setTitle("Select To Date");
+            toDatePicker.show();
+
+        }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+
+        fromDatePicker.setTitle("Select From Date");
+        fromDatePicker.show();
+    }
+
+    private void mockLogin() {
+        SharedPreferences sp = getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putString("jwt_token", MOCK_JWT);
+        editor.putLong("driver_id", MOCK_DRIVER_ID);
+        editor.apply();
+        Log.d("MOCK_LOGIN", "tocken and driver id saved");
+    }
+
+    private void loadHistoryFromServer(String from, String to) {
+        SharedPreferences sp = getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);
+        Long driverId = sp.getLong("driver_id", -1L);
+
+        ApiProvider.driver().getDriverHistory(driverId, from, to).enqueue(new Callback<List<DriverRideHistoryDTO>>() {
+            @Override
+            public void onResponse(Call<List<DriverRideHistoryDTO>> call, Response<List<DriverRideHistoryDTO>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    rideModels.clear();
+                    for (DriverRideHistoryDTO dto : response.body()) {
+                        rideModels.add(mapDtoToModel(dto));
+                    }
+                    adapter.notifyDataSetChanged();
+
+                    if (rideModels.isEmpty()) {
+                        Toast.makeText(DriverHistoryActivity.this, "No rides found for this range", Toast.LENGTH_SHORT).show();
+                    }
+                }
             }
 
-            rideModels.add(new Ride(
-                    departures[i],
-                    destinations[i],
-                    prices[i],
-                    datesStart[i],
-                    datesEnd[i],
-                    timesStart[i],
-                    timesEnd[i],
-                    isPanic,
-                    status,
-                    passengerList,
-                    passengerImagesList
-            ));
+            @Override
+            public void onFailure(Call<List<DriverRideHistoryDTO>> call, Throwable t) {
+                Log.e("API_ERROR", t.getMessage());
+            }
+        });
+    }
+    private Ride mapDtoToModel(DriverRideHistoryDTO dto) {
+        String dateStart = "";
+        String timeStart = "";
+
+        if (dto.getStartTime() != null && dto.getStartTime().contains("T")) {
+            String[] parts = dto.getStartTime().split("T");
+            dateStart = parts[0]; // we get "2026-01-26"
+            timeStart = parts[1].substring(0, 5); // we get "16:55"
         }
 
+        String dateEnd = "";
+        String timeEnd = "";
+        if (dto.getEndTime() != null && dto.getEndTime().contains("T")) {
+            String[] parts = dto.getEndTime().split("T");
+            dateEnd = parts[0];
+            timeEnd = parts[1].substring(0, 5);
+        }
 
+        RideStatus status = RideStatus.FINISHED;
+        if (dto.isCancelled()) {
+            status = RideStatus.CANCELLED_BY_PASSENGER;
+        }
 
+        // for now we have placeholders
+        List<Integer> images = new ArrayList<>();
+        if (dto.getPassengers() != null) {
+            for (int i = 0; i < dto.getPassengers().size(); i++) {
+                images.add(R.drawable.ic_passenger_placeholder);
+            }
+        }
 
+        String startLoc = dto.getStartLocation() != null ? dto.getStartLocation() : "Unknown";
+        String endLoc = dto.getEndLocation() != null ? dto.getEndLocation() : "Unknown";
 
+        return new Ride(
+                startLoc,
+                endLoc,
+                String.valueOf(dto.getPrice()),
+                dateStart,
+                dateEnd,
+                timeStart,
+                timeEnd,
+                dto.isPanicPressed(),
+                status,
+                dto.getPassengers(),
+                images
+        );
     }
 }
