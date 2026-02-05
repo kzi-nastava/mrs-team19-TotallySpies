@@ -1,10 +1,12 @@
 package com.ftn.mobile.data.remote;
 
+import com.ftn.mobile.BuildConfig;
+
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-import com.ftn.mobile.BuildConfig;
+
 public class RetrofitClient {
     //sets the base server address, chooses json converter, adds interceptor, ensures one shared instance
     //for whole app, all api calls go through it

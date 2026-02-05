@@ -10,5 +10,12 @@
         <item name="android:textColor">@android:color/white</item>
         <item name="android:inputType">number</item>
         <item name="android:maxLength">1</item>
+<?xml version="1.0" encoding="utf-8" ?>
+<resources>
+    <style name="FullWidthDialog" parent="Theme.MaterialComponents.Dialog">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowMinWidthMajor">100%</item>
+        <item name="android:windowMinWidthMinor">100%</item>
     </style>
 </resources>

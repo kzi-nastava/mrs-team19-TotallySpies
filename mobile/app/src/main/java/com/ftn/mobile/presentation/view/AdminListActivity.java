@@ -39,19 +39,19 @@ public class AdminListActivity extends AppCompatActivity {
         if ("USERS".equals(type)) {
             title.setText("Manage Users");
             ArrayList<User> users = new ArrayList<>();
-            users.add(new User("jovana@gmail.com", "Jovana", "Aleksic", "Ul. Valentina Vodnika 10, Novi Sad", "","+381 65 123 1234", "12345678"));
-            users.add(new User("marko@gmail.com", "Marko", "Markovic", "Zeleznicka 14, Novi Sad", "","+381 65 123 1234", "12345678"));
-            users.add(new User("jelena@gmail.com", "Jelena", "Markovic", "Strazilovska 14, Novi Sad", "","+381 65 123 1234", "12345678"));
-            users.add(new User("nikola@gmail.com", "Nikola", "Nikolic", "Bul. Oslobodjenja 14, Novi Sad", "","+381 65 123 1234", "12345678"));
+            users.add(new User("jovana@gmail.com", "Jovana", "Aleksic", "Ul. Valentina Vodnika 10, Novi Sad", "","+381 65 123 1234"));
+            users.add(new User("marko@gmail.com", "Marko", "Markovic", "Zeleznicka 14, Novi Sad", "","+381 65 123 1234"));
+            users.add(new User("jelena@gmail.com", "Jelena", "Markovic", "Strazilovska 14, Novi Sad", "","+381 65 123 1234"));
+            users.add(new User("nikola@gmail.com", "Nikola", "Nikolic", "Bul. Oslobodjenja 14, Novi Sad", "","+381 65 123 1234"));
             UserAdapter adapter = new UserAdapter(this, users);
             rv.setAdapter(adapter);
         } else if ("DRIVERS".equals(type)) {
             title.setText("Manage Drivers");
             ArrayList<Driver> drivers = new ArrayList<>();
-            drivers.add(new Driver(new User("jovana@gmail.com", "Jovana", "Aleksic", "Ul. Valentina Vodnika 10, Novi Sad", "","+381 65 123 1234", "12345678"), new CarInfo("Model1", "Standard","NS 123 AA", "4", false, false)));
-            drivers.add(new Driver(new User("marko@gmail.com", "Marko", "Markovic", "Zeleznicka 14, Novi Sad", "","+381 65 123 1234", "12345678"), new CarInfo("Model3", "Standard","NS 456 AA", "4", false, true)));
-            drivers.add(new Driver(new User("jelena@gmail.com", "Jovan", "Jovic", "Ul. Valentina Vodnika 10, Novi Sad", "","+381 65 123 1234", "12345678"), new CarInfo("Model10", "Standard","NS 123 AA", "4", false, false)));
-            drivers.add(new Driver(new User("nikola@gmail.com", "Nikola", "Nikolic", "Bul. Oslobodjenja 14, Novi Sad", "","+381 65 123 1234", "12345678"), new CarInfo("Model5", "Standard","NS 789 AA", "4", true, true)));
+            drivers.add(new Driver(new User("jovana@gmail.com", "Jovana", "Aleksic", "Ul. Valentina Vodnika 10, Novi Sad", "","+381 65 123 1234"), new CarInfo("Model1", "Standard","NS 123 AA", "4", false, false)));
+            drivers.add(new Driver(new User("marko@gmail.com", "Marko", "Markovic", "Zeleznicka 14, Novi Sad", "","+381 65 123 1234"), new CarInfo("Model3", "Standard","NS 456 AA", "4", false, true)));
+            drivers.add(new Driver(new User("jelena@gmail.com", "Jovan", "Jovic", "Ul. Valentina Vodnika 10, Novi Sad", "","+381 65 123 1234"), new CarInfo("Model10", "Standard","NS 123 AA", "4", false, false)));
+            drivers.add(new Driver(new User("nikola@gmail.com", "Nikola", "Nikolic", "Bul. Oslobodjenja 14, Novi Sad", "","+381 65 123 1234"), new CarInfo("Model5", "Standard","NS 789 AA", "4", true, true)));
             DriverAdapter adapter = new DriverAdapter(this, drivers);
             rv.setAdapter(adapter);
         }
