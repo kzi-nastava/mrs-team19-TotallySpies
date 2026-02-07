@@ -20,9 +20,8 @@ public interface DriverApi {
     @GET("api/v1/drivers/vehicle-info")
     Call<VehicleInfoResponseDTO>  getVehicleInfo();
 
-    @GET(value = "api/v1/drivers/{id}/ride")
+    @GET(value = "api/v1/drivers/history")
     Call<List<DriverRideHistoryDTO>> getDriverHistory(
-            @Path("id") Long id,
             @Query("from") String from,
             @Query("to") String to
     );

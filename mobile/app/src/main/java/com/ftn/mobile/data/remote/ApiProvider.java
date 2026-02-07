@@ -3,6 +3,7 @@ package com.ftn.mobile.data.remote;
 import com.ftn.mobile.data.remote.api.AuthApi;
 
 import com.ftn.mobile.data.remote.api.DriverApi;
+import com.ftn.mobile.data.remote.api.ForgotPasswordApi;
 import com.ftn.mobile.data.remote.api.UserApi;
 
 public final class ApiProvider {
