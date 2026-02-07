@@ -70,20 +70,15 @@ public class ForgotPasswordController {
             user = userService.loadUserByUsername(request.getEmail());
         }
         catch(UsernameNotFoundException ex){
-            //return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Email does not exists.");
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Email not found!");
         }
         ForgotPassword forgotPassword = forgotPasswordService.findByOtpAndUser(request.getOtp(), (User) user);
         if(forgotPassword == null){
-            //System.out.println("ne postoji forgotPassword");
-            //return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid OTP");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid OTP");
         }
-        //System.out.println(forgotPassword.getOtp());
         //check if otp expired
         if (forgotPassword.getExpirationTime().before(Date.from(Instant.now()))) {
             forgotPasswordService.deleteById(forgotPassword.getForgotPasswordId());
-            //return new ResponseEntity<>("OTP has expired", HttpStatus.EXPECTATION_FAILED);
             throw new ResponseStatusException(HttpStatus.EXPECTATION_FAILED, "OTP has expired");
         }
         return ResponseEntity.ok("OTP verified!");

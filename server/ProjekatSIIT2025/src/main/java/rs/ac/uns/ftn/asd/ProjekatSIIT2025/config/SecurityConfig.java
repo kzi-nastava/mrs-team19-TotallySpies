@@ -6,6 +6,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -22,6 +23,7 @@ import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity(prePostEnabled = true) //enables preAuthorize in controller methods!!
 public class SecurityConfig {
 
     @Autowired
@@ -36,7 +38,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain (HttpSecurity http){
+    public SecurityFilterChain securityFilterChain (HttpSecurity http) throws Exception {
         //disables csrf checks because jwt does it
         return http.csrf(customizer -> customizer.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
@@ -44,10 +46,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(request -> request
                     .requestMatchers("/api/v1/auth/register", "/api/v1/auth/login",
                             "/api/v1/forgot-password/**","/api/v1/auth/activate","/api/v1/users/image/**", "/api/v1/reviews/**" ,"/api/v1/auth/activate-driver",
-                            "/api/v1/rides/**", "/error", "/api/v1/rides/{id}/location", "/api/v1/rides/{id}/inconsistency-report",
+                             "/error", "/api/v1/rides/{id}/location", "/api/v1/rides/{id}/inconsistency-report",
                             "/error", "/api/v1/vehicles", "/api/v1/drivers/{id}/ride",
                             "/api/v1/forgot-password/**","/api/v1/auth/activate","/api/v1/auth/activate-driver",
-                            "/api/v1/rides/**",
                             "/api/v1/vehicles/active")
               .permitAll()
                     .anyRequest().authenticated()
@@ -62,14 +63,22 @@ public class SecurityConfig {
         //enables default login form
         //.formLogin(Customizer.withDefaults())
     }
-    @Bean
+    /*@Bean
     public AuthenticationProvider authenticationProvider(){
         //using customized user details service, not a default one
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider(userDetailsService);
         //provider.setPasswordEncoder(new BCryptPasswordEncoder(12));
         provider.setPasswordEncoder(passwordEncoder());
+        return provider;*/
+    @Bean
+    public AuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(userDetailsService);
+        provider.setPasswordEncoder(passwordEncoder());
         return provider;
     }
+
+
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception{
         return configuration.getAuthenticationManager();

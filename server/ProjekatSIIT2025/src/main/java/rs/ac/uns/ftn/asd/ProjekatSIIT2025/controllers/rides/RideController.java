@@ -83,7 +83,7 @@ public class RideController {
     }
     @PreAuthorize("hasRole('DRIVER')")
     @PutMapping("/stop-ride")
-    public ResponseEntity<String> panic(@RequestBody StopRideDTO request){
+    public ResponseEntity<String> stopRide(@RequestBody StopRideDTO request){
         rideService.stopRide(request);
         return ResponseEntity.ok("Ride stopped!");
     }
