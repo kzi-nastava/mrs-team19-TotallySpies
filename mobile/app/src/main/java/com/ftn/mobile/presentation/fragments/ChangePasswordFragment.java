@@ -17,7 +17,7 @@ import android.widget.Toast;
 import com.ftn.mobile.R;
 import com.ftn.mobile.data.remote.ApiProvider;
 import com.ftn.mobile.data.remote.dto.ChangePasswordRequestDTO;
-import com.ftn.mobile.presentation.view.Login;
+import com.ftn.mobile.presentation.view.LoginActivity;
 
 public class ChangePasswordFragment extends DialogFragment {
 
@@ -103,7 +103,7 @@ public class ChangePasswordFragment extends DialogFragment {
     private void logoutAndRedirect() {
         //TokenStorage.clear(requireContext());
 
-        Intent intent = new Intent(requireActivity(), Login.class);
+        Intent intent = new Intent(requireActivity(), LoginActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         requireActivity().finish();

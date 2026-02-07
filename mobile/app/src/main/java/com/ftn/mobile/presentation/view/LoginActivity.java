@@ -2,6 +2,7 @@ package com.ftn.mobile.presentation.view;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.Patterns;
 import android.widget.Button;
 import android.widget.EditText;
@@ -21,6 +22,7 @@ import com.ftn.mobile.data.remote.ApiProvider;
 import com.ftn.mobile.data.remote.dto.UserLoginRequestDTO;
 import com.ftn.mobile.data.remote.dto.UserTokenStateDTO;
 import com.ftn.mobile.utils.DialogBox;
+import com.ftn.mobile.data.local.UserRoleManger;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -73,6 +75,7 @@ public class LoginActivity extends AppCompatActivity {
                     if (response.code() == 200 && response.body() != null) {
                         String token = response.body().getAccessToken();
                         TokenStorage.save(LoginActivity.this, token);
+                        UserRoleManger.updateRole(token);
                         DialogBox.showDialog(LoginActivity.this, "Logged in", "Successfully logged!");
                         // startActivity(new Intent(Login.this, HomeActivity.class));
                     } else if (response.code() == 401) {

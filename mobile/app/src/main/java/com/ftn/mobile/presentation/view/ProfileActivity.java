@@ -18,6 +18,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.bumptech.glide.Glide;
 import com.ftn.mobile.BuildConfig;
 import com.ftn.mobile.R;
+import com.ftn.mobile.data.local.UserRoleManger;
 import com.ftn.mobile.data.remote.ApiProvider;
 import com.ftn.mobile.presentation.fragments.CarInfoDialogFragment;
 import com.ftn.mobile.presentation.fragments.ChangePasswordFragment;
@@ -39,9 +40,6 @@ public class ProfileActivity extends AppCompatActivity {
     private static final int PICK_IMAGE_REQUEST = 101;
     private static final int REQUEST_STORAGE_PERMISSION = 102;
 
-    private static final String MOCK_JWT = "MOCK_JWT";
-    private static final String MOCK_ROLE = "ADMIN"; // ili ADMIN za test
-
     private ShapeableImageView imgUser;
     private ImageButton updateImageButton;
     private ProfileViewModel viewModel;
@@ -50,9 +48,6 @@ public class ProfileActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
-
-        // ⬅️ MOCK JWT + ROLE u SharedPreferences
-        mockLogin();
 
         // ViewModel
         viewModel = new ViewModelProvider(this).get(ProfileViewModel.class);
@@ -96,7 +91,6 @@ public class ProfileActivity extends AppCompatActivity {
                     .error(R.mipmap.page_mock)
                     .into(imgUser);
 
-            updateUIForRole();
         });
 
         // OBSERVE DRIVER ACTIVITY
@@ -104,6 +98,12 @@ public class ProfileActivity extends AppCompatActivity {
             if (activity != null) {
                 tvActiveHours.setText(activity);
             }
+        });
+
+        // OBSERVE ROLE
+        UserRoleManger.getRoleLiveData().observe(this, role -> {
+            if (role == null) return;
+            updateUIForRole(role);
         });
 
         // LOAD DATA FROM SERVER
@@ -237,27 +237,23 @@ public class ProfileActivity extends AppCompatActivity {
         }
     }
 
-    private void mockLogin() {
-        SharedPreferences sp = getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sp.edit();
-        editor.putString("jwt_token", MOCK_JWT);
-        editor.putString("role", MOCK_ROLE);
-        editor.apply();
-    }
-
-    private void updateUIForRole() {
-        SharedPreferences sp = getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);
-        String role = sp.getString("role", "USER"); // default je USER
-
+    private void updateUIForRole(String role) {
         View adminPanel = findViewById(R.id.ConstraintLayoutAdminInfo);
         View driverPanel = findViewById(R.id.ConstraintLayoutDriver);
 
-        if ("DRIVER".equals(role)) {
-            // Sakrij cijeli admin panel
-            if (adminPanel != null) adminPanel.setVisibility(View.GONE);
-        } else if ("ADMIN".equals(role)) {
-            // Sakrij druge stvari koje nisu admin
-            if (driverPanel != null) driverPanel.setVisibility(View.GONE);
+        switch (role) {
+            case "ROLE_ADMIN":
+                if (adminPanel != null) adminPanel.setVisibility(View.VISIBLE);
+                if (driverPanel != null) driverPanel.setVisibility(View.GONE);
+                break;
+            case "ROLE_DRIVER":
+                if (adminPanel != null) adminPanel.setVisibility(View.GONE);
+                if (driverPanel != null) driverPanel.setVisibility(View.VISIBLE);
+                break;
+            default: // ROLE_PASSENGER
+                if (adminPanel != null) adminPanel.setVisibility(View.GONE);
+                if (driverPanel != null) driverPanel.setVisibility(View.GONE);
+                break;
         }
     }
 
