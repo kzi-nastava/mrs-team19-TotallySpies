@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -36,7 +37,7 @@ public class ProfileImageManager {
         this.onUploadSuccess = onUploadSuccess;
     }
 
-    // ---------- LOAD IMAGE ----------
+    // LOAD IMAGE
     public void loadImage(String imageUrl) {
         String fullUrl;
         if (imageUrl == null || imageUrl.equals("null") || imageUrl.isEmpty()) {
@@ -48,11 +49,10 @@ public class ProfileImageManager {
 
         Glide.with(activity)
                 .load(fullUrl)
-                .error(R.mipmap.page_mock)
                 .into(imgUser);
     }
 
-    // ---------- PICK ----------
+    // PICK
     public void checkPermissionAndPick() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (activity.checkSelfPermission(android.Manifest.permission.READ_MEDIA_IMAGES)
@@ -84,7 +84,7 @@ public class ProfileImageManager {
         );
     }
 
-    // ---------- HANDLE RESULT ----------
+    // HANDLE RESULT
     public void handleActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK
                 && data != null && data.getData() != null) {
@@ -92,7 +92,7 @@ public class ProfileImageManager {
         }
     }
 
-    // ---------- UPLOAD ----------
+    // UPLOAD
     private void upload(Uri uri) {
         try {
             MultipartBody.Part part =

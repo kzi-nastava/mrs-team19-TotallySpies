@@ -7,6 +7,8 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -25,6 +27,17 @@ public class ProfileActivity extends AppCompatActivity {
     private ProfileViewModel viewModel;
 
     private ProfileImageManager profileImageManager;
+
+    private final ActivityResultLauncher<Intent> editProfileLauncher =
+            registerForActivityResult(
+                    new ActivityResultContracts.StartActivityForResult(),
+                    result -> {
+                        if (result.getResultCode() == RESULT_OK) {
+                            // refresh profila nakon editovanja
+                            viewModel.loadProfile();
+                        }
+                    }
+            );
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,6 +104,13 @@ public class ProfileActivity extends AppCompatActivity {
             });
         }
 
+        if (findViewById(R.id.btnChangeRequests) != null){
+            findViewById(R.id.btnChangeRequests).setOnClickListener(v -> {
+                Intent intent = new Intent(this, AdminProfileChangeRequestsActivity.class);
+                startActivity(intent);
+            });
+        }
+
         // DRIVER CAR INFO
         if (findViewById(R.id.btnCarInfo) != null) {
             findViewById(R.id.btnCarInfo).setOnClickListener(v -> showCarInfoDialog());
@@ -106,7 +126,7 @@ public class ProfileActivity extends AppCompatActivity {
         // EDIT PROFILE
         if (findViewById(R.id.btnEdit) != null) {
             findViewById(R.id.btnEdit).setOnClickListener(v ->
-                    startActivity(new Intent(this, EditProfileActivity.class)));
+                    editProfileLauncher.launch(new Intent(this, EditProfileActivity.class)));
         }
 
         // CHANGE IMAGE
