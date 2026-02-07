@@ -2,12 +2,9 @@
   <div class="ride-details-section">
     <div class="route-info">
       <h3>Ride details</h3>
-      
-      <p class="time-label" *ngIf="isDTO(ride)">
-        {{ ride.displayTime | date:'dd.MM.yyyy. HH:mm' }}
-      </p>
-      <p class="time-label" *ngIf="!isDTO(ride)">
-        {{ ride.date }} {{ ride.startTime }} till {{ ride.endTime }}
+      <p class="time-label">
+        {{ ride.startTime | date:'dd.MM.yyyy. HH:mm' }}
+        <span *ngIf="ride.endTime"> - {{ ride.endTime | date:'HH:mm' }}</span>
       </p>
       
       <div class="route-container">
@@ -16,7 +13,6 @@
           <div class="location-line"></div>
           <img src="/icons/location-icon.png" alt="destination" class="location-icon">
         </div>
-
         <div class="addresses">
           <div class="address-pill">{{ ride.startLocation }}</div>
           <div class="address-pill">{{ ride.endLocation }}</div>
@@ -25,25 +21,22 @@
     </div>
 
     <div class="status-container">
-      <div class="price-tag">
-        {{ isDTO(ride) ? ride.totalPrice : ride.price }} din
-      </div>
+      <div class="price-tag">{{ ride.price }} din</div>
       
       <div class="status-alerts">
-        <ng-container *ngIf="isDTO(ride)">
-            <div class="alert finished" *ngIf="ride.status === 'COMPLETED'">
-                <span>Finished ✓</span>
-            </div>
-            <div class="alert active" *ngIf="ride.status === 'ACTIVE'">
-                <span>In Progress...</span>
-            </div>
-        </ng-container>
+        <div class="alert-tag finished" *ngIf="ride.status === 'COMPLETED'">Finished</div>
+        <div class="alert-tag active" *ngIf="ride.status === 'ACTIVE'">In Progress...</div>
+        <div class="alert-tag scheduled" *ngIf="ride.status === 'SCHEDULED'">Scheduled</div>
+        <div class="alert-tag stopped" *ngIf="ride.status === 'STOPPED'">Stopped</div>
+      </div>
 
-        <ng-container *ngIf="!isDTO(ride)">
-            <div class="alert finished" *ngIf="ride.status === 'Finished'">
-                <span>Finished ✓</span>
-            </div>
-            </ng-container>
+      <div class="alerts-container">
+        <div *ngIf="ride.panicPressed" class="alert panic-alert">
+          <strong>PANIC:</strong> {{ ride.panicReason }}
+        </div>
+        <div *ngIf="ride.cancelled" class="alert cancel-alert">
+          <strong>CANCELLED:</strong> {{ ride.cancellReason }}
+        </div>
       </div>
     </div>
   </div>

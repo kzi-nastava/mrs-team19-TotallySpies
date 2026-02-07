@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../env/environment';
 import { 
   DriverActivityResponseDTO, 
   VehicleInfoResponseDTO, 
-  UserProfileUpdateRequestDTO 
+  UserProfileUpdateRequestDTO,
 } from '../models/users/user.model';
+import {  DriverRideHistoryDTO } from '../models/ride.model'
 
 @Injectable({
   providedIn: 'root'
@@ -30,5 +31,13 @@ export class DriverService {
    */
   getVehicleInfo(): Observable<VehicleInfoResponseDTO> {
     return this.http.get<VehicleInfoResponseDTO>(`${this.baseUrl}/vehicle-info`);
+  }
+
+  getDriverHistory(from?: string, to?: string): Observable<DriverRideHistoryDTO[]> {
+    let params = new HttpParams();
+    if (from) params = params.set('from', from);
+    if (to) params = params.set('to', to);
+
+    return this.http.get<DriverRideHistoryDTO[]>(`${this.baseUrl}/history`, { params });
   }
 }
