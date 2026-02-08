@@ -67,6 +67,7 @@ public class RegisterActivity extends AppCompatActivity {
             String lastName = etLastName.getText().toString().trim();
             String address = etAddress.getText().toString().trim();
             String phoneNumber = etPhoneNumber.getText().toString().trim();
+            String client = "mobile";
             if(email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty() || name.isEmpty()
             || lastName.isEmpty() || address.isEmpty() || phoneNumber.isEmpty()){
                 //Toast.makeText(this, "Fill all fields!", Toast.LENGTH_SHORT).show();
@@ -109,7 +110,8 @@ public class RegisterActivity extends AppCompatActivity {
                     Utils.textPart(lastName),
                     Utils.textPart(address),
                     Utils.textPart(phoneNumber),
-                    imagePart
+                    imagePart,
+                    Utils.textPart(client)
             ).enqueue(new Callback<ResponseBody>() {
                 @Override
                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {

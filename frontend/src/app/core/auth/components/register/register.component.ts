@@ -102,6 +102,7 @@ export class RegisterComponent {
       err?.error?.message ??
       (typeof err?.error === 'string' ? err.error : null) ??
       (err?.status === 409 ? 'Email already in use' : null) ??
+      (err?.status === 404 ? 'Wrong client specified!' : null ) ??
       (err?.status === 400 ? 'Password and confirmed password need to match!' : null) ??
       'Registration failed, image is too big.'
     );
@@ -118,7 +119,8 @@ export class RegisterComponent {
     formData.append('name', this.name.value ?? '');
     formData.append('lastName', this.lastName.value ?? '');
     formData.append('address', this.address.value ?? '');
-    formData.append('phoneNumber', this.phoneNumber.value ?? '');
+    formData.append('phoneNumber', this.phoneNumber.value ?? '')
+    formData.append('client', 'web'); //for activation link
 
     // attach file if selected
     if (this.selectedFile) {

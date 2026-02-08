@@ -41,8 +41,8 @@ public class AuthController {
         return ResponseEntity.ok("User registered!");
     }
 
-    @GetMapping(value = "/activate")
-    public ResponseEntity<Void> activateAccount(@RequestParam String token){
+    @PostMapping(value = "/activate")
+    public ResponseEntity<Void> activateAccount(@RequestParam String token) {
         authService.activateAccount(token);
         return ResponseEntity.ok().build();
     }

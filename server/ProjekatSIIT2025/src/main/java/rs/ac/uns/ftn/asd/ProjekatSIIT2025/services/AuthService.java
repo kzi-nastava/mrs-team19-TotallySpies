@@ -101,13 +101,31 @@ public class AuthService {
         activationToken.setUser(user);
         activationToken.setExpiresAt(LocalDateTime.now().plusHours(24));
         activationTokenRepository.save(activationToken);
-        String activationLink = "http://localhost:4200/activate-account?token=" + token;
-        MailBody mailBody = MailBody.builder()
-                .to(user.getEmail())
-                .text("Click the link to activate (valid 24h): " + activationLink)
-                .subject("Activate your account")
-                .build();
-        emailService.sendSimpleMessage(mailBody);
+        String activationLink = null;
+        if (dto.getClient().equals("web")){
+            activationLink = "http://localhost:4200/activate-account?token=" + token;
+            MailBody mailBody = MailBody.builder()
+                    .to(user.getEmail())
+                    .text("Click the link to activate (valid 24h): " + activationLink)
+                    .subject("Activate your account")
+                    .build();
+            emailService.sendSimpleMessage(mailBody);
+        }
+        else if(dto.getClient().equals("mobile")){
+            //deep link to open android app
+            //activationLink = "totallyspies://activate?token=" + token;
+            activationLink = "https://localhost:8080/verify?token=" + token;
+            MailBody mailBody = MailBody.builder()
+                    .to(user.getEmail())
+                    .text(activationLink)
+                    .subject("Activate your account")
+                    .build();
+            emailService.sendHtmlMessage(mailBody);
+        }
+        else{
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Wrong client specified!");
+        }
+
     }
 
     @Transactional
@@ -124,7 +142,6 @@ public class AuthService {
         User user = activationToken.getUser();
         user.setEnabled(true);
         userRepository.save(user);
-
         activationToken.setUsed(true);
         activationTokenRepository.save(activationToken);
     }

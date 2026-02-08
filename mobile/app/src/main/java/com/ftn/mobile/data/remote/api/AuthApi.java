@@ -11,6 +11,7 @@ import retrofit2.http.Body;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
+import retrofit2.http.Query;
 
 public interface AuthApi {
     @POST("api/v1/auth/login")
@@ -26,9 +27,10 @@ public interface AuthApi {
             @Part("lastName") RequestBody lastName,
             @Part("address") RequestBody address,
             @Part("phoneNumber") RequestBody phoneNumber,
-            @Part MultipartBody.Part profilePicture
+            @Part MultipartBody.Part profilePicture,
+            @Part ("client") RequestBody client
     );
 
-    /*@POST("api/v1/auth/activate")
-    Call<String> activate(@Query String token);*/
+    @POST("api/v1/auth/activate")
+    Call<Void> activate(@Query("token") String token);
 }
