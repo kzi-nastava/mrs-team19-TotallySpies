@@ -1,0 +1,11 @@
+<div >
+  <h1 *ngIf="status === 'loading'">Activating...</h1>
+  <h1 *ngIf="status === 'success'">Activated.</h1>
+  <h1 *ngIf="status === 'error'">Activation failed.</h1>
+
+  <p>{{ message }}</p>
+
+  <button *ngIf="status !== 'loading'" (click)="goToLogin()">
+    Go to Login
+  </button>
+</div>

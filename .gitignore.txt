@@ -1,0 +1,2 @@
+# User uploads
+/server/ProjekatSIIT2025/uploads/

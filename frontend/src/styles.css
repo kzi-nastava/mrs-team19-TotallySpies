@@ -1,1 +1,44 @@
 /* You can add global styles to this file, and also import other style files */
+* {
+    font-family: 'Montserrat', sans-serif;
+  }
+
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow-x: hidden;
+}
+.cdk-overlay-backdrop {
+  background: rgba(0, 0, 0, 0.7) !important;
+  backdrop-filter: blur(2px); 
+}
+
+.mat-mdc-dialog-container .mdc-dialog__surface {
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+.error-snackbar {
+  background: #ff4d4f;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 500;
+  border-radius: 12px;
+  /* padding: 14px 20px; */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+.confirm-snackbar {
+  background: #6e58c6;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 500;
+  border-radius: 12px;
+  padding: 2px 2px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+/* action button (OK) */
+.error-snackbar .mat-mdc-snack-bar-action {
+  color: #ffffff;
+  font-weight: 600;
+}

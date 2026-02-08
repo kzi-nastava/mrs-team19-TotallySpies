@@ -1,0 +1,139 @@
+.activation-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100%;
+    background-color: #261F32;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 10px;
+}
+
+.card {
+    background-color: #3b2f5c;
+    width: 100%;
+    max-width: 900px;
+    border-radius: 20px;
+    padding: 60px;
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+}
+
+.content-section {
+    flex: 1;
+    min-width: 300px;
+}
+
+.text-group h1 {
+    color: #c5b6ff;
+    font-size: 48px;
+    margin: 0;
+    line-height: 1.1;
+    font-weight: 800;
+}
+
+.text-group p {
+    color: #b0aec3;
+    margin-top: 20px;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+.illustration-wrapper {
+    margin-top: 40px;
+}
+
+.illustration-wrapper img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Form Section */
+.form-section {
+    flex: 1;
+    min-width: 300px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 25px;
+    padding-left: 40px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.input-group label {
+    color: #d1cce0;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.input-group input {
+    background: transparent;
+    border: 1px solid #5e548e;
+    border-radius: 12px;
+    padding: 12px 16px;
+    color: white;
+    font-size: 14px;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.input-group input:focus {
+    border-color: #b6d957;
+    background: rgba(182, 217, 87, 0.05);
+}
+
+.activate-btn {
+    background-color: #b6d957;
+    border: none;
+    padding: 15px;
+    border-radius: 50px;
+    font-weight: bold;
+    font-size: 15px;
+    color: #2e3415;
+    cursor: pointer;
+    margin-top: 10px;
+    align-self: flex-start;
+    padding: 12px 32px;
+    transition: transform 0.1s ease;
+}
+
+.activate-btn:hover {
+    background-color: #c2d660;
+}
+
+.activate-btn:active {
+    transform: scale(0.98);
+}
+
+.footer-note {
+    position: absolute;
+    bottom: 20px;
+    left: 60px;
+    color: #8380a0;
+    font-size: 0.85rem;
+}
+
+/* Responzivnost za mobilne uređaje */
+@media (max-width: 768px) {
+    .card {
+        padding: 30px;
+    }
+
+    .form-section {
+        padding-left: 0;
+        margin-top: 40px;
+    }
+
+    .footer-note {
+        position: static;
+        margin-top: 30px;
+        text-align: center;
+        width: 100%;
+    }
+}

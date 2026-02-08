@@ -1,20 +1,54 @@
 package rs.ac.uns.ftn.asd.ProjekatSIIT2025.model;
 
+import jakarta.persistence.*;
+
+@Entity
 public class Review {
-    private int rating;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="passenger_id")
+    private Passenger passenger;
+
     private String comment;
-    private Long rideId;
-    private String passenger;
-    
+
+    private int grade;
+
+    @Enumerated(EnumType.STRING)
+    private ReviewType type;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="ride_id")
+    private Ride ride;
+
     public Review() {
     }
 
-    public int getRating() {
-        return rating;
+    public Review(Long id, Passenger passenger, String comment, int grade, ReviewType type, Ride ride) {
+        this.id = id;
+        this.passenger = passenger;
+        this.comment = comment;
+        this.grade = grade;
+        this.type = type;
+        this.ride = ride;
     }
 
-    public void setRating(int rating) {
-        this.rating = rating;
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Passenger getPassenger() {
+        return passenger;
+    }
+
+    public void setPassenger(Passenger passenger) {
+        this.passenger = passenger;
     }
 
     public String getComment() {
@@ -25,19 +59,27 @@ public class Review {
         this.comment = comment;
     }
 
-    public Long getRideId() {
-        return rideId;
+    public int getGrade() {
+        return grade;
     }
 
-    public void setRideId(Long rideId) {
-        this.rideId = rideId;
+    public void setGrade(int grade) {
+        this.grade = grade;
     }
 
-    public String getPassenger() {
-        return passenger;
+    public ReviewType getType() {
+        return type;
     }
 
-    public void setPassenger(String passenger) {
-        this.passenger = passenger;
+    public void setType(ReviewType type) {
+        this.type = type;
+    }
+
+    public Ride getRide() {
+        return ride;
+    }
+
+    public void setRide(Ride ride) {
+        this.ride = ride;
     }
 }

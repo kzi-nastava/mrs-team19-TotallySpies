@@ -1,0 +1,23 @@
+<div class="review-container">
+  <button class="close-x" (click)="close()">×</button>
+  
+  <h2 class="title">Rate this {{ data.type }} and tell others what you think</h2>
+
+  <div class="stars-row">
+    <span *ngFor="let star of [1,2,3,4,5]; let i = index" 
+          (click)="setRating(i + 1)"
+          [class.active]="i < selectedRating">
+      ★
+    </span>
+  </div>
+
+  <textarea 
+    [(ngModel)]="reviewText" 
+    placeholder="Your text here..." 
+    class="review-input">
+  </textarea>
+
+  <div class="actions">
+    <button class="send-btn" (click)="submit()">Send</button>
+  </div>
+</div>

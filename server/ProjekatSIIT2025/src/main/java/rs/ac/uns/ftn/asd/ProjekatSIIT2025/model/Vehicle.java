@@ -1,14 +1,20 @@
 package rs.ac.uns.ftn.asd.ProjekatSIIT2025.model;
 
+import jakarta.persistence.*;
+
+@Entity
 public class Vehicle {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String model;
+
+    @Enumerated(value = EnumType.STRING)
     private VehicleType vehicleType;
     private String licensePlate;
     private int passengerCapacity;
     private boolean babyTransport;
-    private boolean petTransport; 
-    private boolean isBusy;
+    private boolean petTransport;
     private double currentLat;
     private double currentLng;
 
@@ -69,14 +75,6 @@ public class Vehicle {
 
     public void setPetTransport(boolean petTransport) {
         this.petTransport = petTransport;
-    }
-
-    public boolean isBusy() {
-        return isBusy;
-    }
-
-    public void setBusy(boolean isBusy) {
-        this.isBusy = isBusy;
     }
 
     public double getCurrentLat() {

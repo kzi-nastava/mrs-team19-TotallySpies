@@ -1,0 +1,90 @@
+*{
+  font-family: 'Montserrat', sans-serif;
+}
+.driver-card {
+  background-color: #3b3654; 
+  padding: 0.8rem;
+  border-radius: 15px;
+  margin-top: 2rem;
+  width: 12rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: white;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+.image-container {
+  background-color: white;
+  border-radius: 5px; 
+  margin-bottom: 10px;
+  width: 100px;
+  height: 100px;
+  padding-bottom: 1rem;
+}
+
+.driver-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 2px;
+}
+
+.driver-name {
+  margin: 5px 0 2px 0;
+  font-size: 16px;
+  padding-bottom: 0.4rem;
+  font-weight: bold;
+}
+
+.car-model {
+  margin: 0;
+  font-size: 12px;
+  padding-bottom: 0.2rem;
+  color: #E8EDFC;
+  font-style: italic;
+}
+
+.rating {
+  color: #b6ce59;
+  font-size: 20px;
+  padding-bottom: 0.4rem;
+}
+
+.report-btn {
+  background-color: #6E58C6;
+  color: #E8EDFC;
+  border: none;
+  margin-top: 0.8rem;
+  padding: 8px 30px;
+  border-radius: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.review-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  margin-top: 15px;
+}
+
+.rate-btn {
+  background-color: #6E58C6;
+  color: #E8EDFC;
+  border: none;
+  padding: 10px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: 0.3s;
+}
+
+.rate-btn:hover {
+  background-color: #5a48a3;
+}

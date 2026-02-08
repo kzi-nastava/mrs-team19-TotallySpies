@@ -1,15 +1,16 @@
 <nav class="navbar">
   <div class="navbar-left">
-    <span class="logo" routerLink="/home">smart ride</span>
+    <span class="logo" routerLink="/display-info">smart ride</span>
 
     <a routerLink="/profile" routerLinkActive="active">Profile</a>
-    <a routerLink="/driver-profile" routerLinkActive="active">Driver profile</a>
-    <a routerLink="/admin-profile" routerLinkActive="active">Admin profile</a>
+    <!--<a routerLink="/driver-profile" routerLinkActive="active">Driver profile</a>
+    <a routerLink="/admin-profile" routerLinkActive="active">Admin profile</a>-->
     <a routerLink="/ride-history" routerLinkActive="active">Ride history</a>
   </div>
 
   <div class="navbar-right">
     <a routerLink="/login" class="login-btn">Login</a>
     <a routerLink="/register" class="register-btn">Register</a>
+    <button (click)="logout()" class = "login-btn">Logout</button>
   </div>
 </nav>

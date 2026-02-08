@@ -1,26 +1,56 @@
 package rs.ac.uns.ftn.asd.ProjekatSIIT2025.model;
 
+import jakarta.persistence.*;
+
+import java.time.LocalDateTime;
 import java.util.List;
 
+@Entity
 public class Ride {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String startTime;
-    private String endTime;
-    private double totalPrice;
-    private String driver;
-    private List<String> passengers;
-    private List<Route> routes;
-    private List<String> consistencyReports; 
+
+    @ManyToOne
+    private Driver driver;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    private List<Passenger> passengers;
+
+    private boolean panic;
+
+    @OneToMany(mappedBy = "ride", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<RideStop> stops;
+
+    @Enumerated(EnumType.STRING)
+    private RideStatus status;
+
+    private double distanceKm;
+    private double estimatedTime;
+    private double totalPrice; //cijena_po_tipu + kilometri * 120
+
+    private boolean babiesTransport;
+    private boolean petsTransport;
+
+    @Enumerated(EnumType.STRING)
+    private VehicleType vehicleType;
+
+    private LocalDateTime createdAt;
+    private LocalDateTime scheduledFor;
+    private LocalDateTime startedAt;
+    private LocalDateTime finishedAt;
+
+    @OneToOne(mappedBy = "ride", cascade = CascadeType.ALL)
+    private RideCancellation rideCancellation;
+
+    @OneToMany
+    private List<Report> reports;
+
+    @OneToMany
     private List<Review> reviews;
-    private String status;
-    private Rejection rejection;
-    private boolean panicFlag;
-    private boolean babyFlag;
-    private boolean petFlag;
-    private String vehicleType;
-    
-    public Ride() {
-    }
+
+    @OneToOne(mappedBy = "ride", cascade = CascadeType.ALL)
+    private PanicNotification panicNotification;
 
     public Long getId() {
         return id;
@@ -30,20 +60,52 @@ public class Ride {
         this.id = id;
     }
 
-    public String getStartTime() {
-        return startTime;
+    public Driver getDriver() {
+        return driver;
     }
 
-    public void setStartTime(String startTime) {
-        this.startTime = startTime;
+    public void setDriver(Driver driver) {
+        this.driver = driver;
     }
 
-    public String getEndTime() {
-        return endTime;
+    public List<Passenger> getPassengers() {
+        return passengers;
     }
 
-    public void setEndTime(String endTime) {
-        this.endTime = endTime;
+    public void setPassengers(List<Passenger> passengers) {
+        this.passengers = passengers;
+    }
+
+    public boolean isPanic() {
+        return panic;
+    }
+
+    public void setPanic(boolean panic) {
+        this.panic = panic;
+    }
+
+    public List<RideStop> getStops() {
+        return stops;
+    }
+
+    public void setStops(List<RideStop> stops) {
+        this.stops = stops;
+    }
+
+    public RideStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(RideStatus status) {
+        this.status = status;
+    }
+
+    public double getDistanceKm() {
+        return distanceKm;
+    }
+
+    public void setDistanceKm(double distanceKm) {
+        this.distanceKm = distanceKm;
     }
 
     public double getTotalPrice() {
@@ -54,36 +116,76 @@ public class Ride {
         this.totalPrice = totalPrice;
     }
 
-    public String getDriver() {
-        return driver;
+    public boolean isBabiesTransport() {
+        return babiesTransport;
     }
 
-    public void setDriver(String driver) {
-        this.driver = driver;
+    public void setBabiesTransport(boolean babiesTransport) {
+        this.babiesTransport = babiesTransport;
     }
 
-    public List<String> getPassengers() {
-        return passengers;
+    public boolean isPetsTransport() {
+        return petsTransport;
     }
 
-    public void setPassengers(List<String> passengers) {
-        this.passengers = passengers;
+    public void setPetsTransport(boolean petsTransport) {
+        this.petsTransport = petsTransport;
     }
 
-    public List<Route> getRoutes() {
-        return routes;
+    public VehicleType getVehicleType() {
+        return vehicleType;
     }
 
-    public void setRoutes(List<Route> routes) {
-        this.routes = routes;
+    public void setVehicleType(VehicleType vehicleType) {
+        this.vehicleType = vehicleType;
     }
 
-    public List<String> getConsistencyReports() {
-        return consistencyReports;
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 
-    public void setConsistencyReports(List<String> consistencyReports) {
-        this.consistencyReports = consistencyReports;
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getScheduledFor() {
+        return scheduledFor;
+    }
+
+    public void setScheduledFor(LocalDateTime scheduledFor) {
+        this.scheduledFor = scheduledFor;
+    }
+
+    public LocalDateTime getStartedAt() {
+        return startedAt;
+    }
+
+    public void setStartedAt(LocalDateTime startedAt) {
+        this.startedAt = startedAt;
+    }
+
+    public LocalDateTime getFinishedAt() {
+        return finishedAt;
+    }
+
+    public void setFinishedAt(LocalDateTime finishedAt) {
+        this.finishedAt = finishedAt;
+    }
+
+    public RideCancellation getRideCancellation() {
+        return rideCancellation;
+    }
+
+    public void setRideCancellation(RideCancellation rideCancellation) {
+        this.rideCancellation = rideCancellation;
+    }
+
+    public List<Report> getReports() {
+        return reports;
+    }
+
+    public void setReports(List<Report> reports) {
+        this.reports = reports;
     }
 
     public List<Review> getReviews() {
@@ -94,55 +196,19 @@ public class Ride {
         this.reviews = reviews;
     }
 
-    public String getStatus() {
-        return status;
+    public double getEstimatedTime() {
+        return estimatedTime;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setEstimatedTime(double estimatedTime) {
+        this.estimatedTime = estimatedTime;
     }
 
-    public Rejection getRejection() {
-        return rejection;
+    public PanicNotification getPanicNotification() {
+        return panicNotification;
     }
 
-    public void setRejection(Rejection rejection) {
-        this.rejection = rejection;
+    public void setPanicNotification(PanicNotification panicNotification) {
+        this.panicNotification = panicNotification;
     }
-
-    public boolean isPanicFlag() {
-        return panicFlag;
-    }
-
-    public void setPanicFlag(boolean panicFlag) {
-        this.panicFlag = panicFlag;
-    }
-
-    public boolean isBabyFlag() {
-        return babyFlag;
-    }
-
-    public void setBabyFlag(boolean babyFlag) {
-        this.babyFlag = babyFlag;
-    }
-
-    public boolean isPetFlag() {
-        return petFlag;
-    }
-
-    public void setPetFlag(boolean petFlag) {
-        this.petFlag = petFlag;
-    }
-
-    public String getVehicleType() {
-        return vehicleType;
-    }
-
-    public void setVehicleType(String vehicleType) {
-        this.vehicleType = vehicleType;
-    }
-
-    
-
-    
 }

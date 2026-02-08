@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import {Ride} from '../../models/ride.model';
+import {RideDetailsDTO, RideFinishResponseDTO} from '../../models/ride.model';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -9,5 +9,6 @@ import { CommonModule } from '@angular/common';
   styleUrl: './ride-info.component.css',
 })
 export class RideInfoComponent {
-  @Input() ride!: Ride;
+  @Input() ride!: RideDetailsDTO;
+  @Input() isUpcoming: boolean = false;
 }

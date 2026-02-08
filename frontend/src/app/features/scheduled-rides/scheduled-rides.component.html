@@ -1,0 +1,33 @@
+<div class="scheduled-container">
+    <h2>My Rides</h2>
+    <div class="ride-card-container" *ngFor="let ride of rides">
+        
+        <div class="left-section">
+            <app-ride-info [ride]="mapFinishToDetails(ride)"></app-ride-info>
+            
+            <button *ngIf="ride.status === 'SCHEDULED'" 
+                    class="start-btn" 
+                    (click)="handleStart(ride.rideId)"
+                    >
+                Start
+            </button>
+
+            <button *ngIf ="ride.status === 'SCHEDULED'"
+                class = "start-btn"
+                (click) = "openCancelDialog(ride.rideId)">
+                Cancel
+            </button>
+            
+            <button *ngIf="ride.status === 'ACTIVE'" 
+                    class="end-btn" 
+                    (click)="handleFinish(ride.rideId)">
+                End Ride
+            </button>
+        </div>
+
+        <div class="right-section">
+            <app-passenger-info [passengers]="ride.passengers"></app-passenger-info>
+        </div>
+        
+    </div>
+</div>

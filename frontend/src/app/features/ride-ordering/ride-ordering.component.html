@@ -1,0 +1,197 @@
+<div class="page-container">
+  <main class="content-wrapper">
+    <aside class="sidebar">
+      <div class="scrollable-form">
+        <h1 class="title">Where <br> to go?</h1>
+
+        <div class="favorites" (click)="openFavourites()">
+          <span class="star">⭐</span> Pick from favorites
+        </div>
+
+        <div class="route-inputs" [formGroup]="routeForm">
+
+          <!-- Starting Point -->
+          <div class="input-row">
+            <div class="dot-icon start"></div>
+            <input type="text" placeholder="Starting point" class="dark-input" formControlName="start">
+          </div>
+
+          <!-- Dynamic Stops -->
+          <div cdkDropList (cdkDropListDropped)="drop($event)" class="stops-list">
+            <div class="input-row draggable" *ngFor="let stop of stops.controls; let i = index" cdkDrag>
+              <span class="drag-handle" cdkDragHandle>≡</span>
+              <input type="text" [formControl]="stop" class="dark-input">
+              <button class="icon-btn delete" type="button" (click)="removeStop(i)">🗑️</button>
+            </div>
+          </div>
+
+          <!-- Add Stop Button -->
+          <button type="button" class="add-stop-btn" (click)="addStop()">
+            <span class="plus-icon">⊕</span> Add stop
+          </button>
+
+          <!-- Destination -->
+          <div class="input-row">
+            <div class="dot-icon end"></div>
+            <input type="text" placeholder="Destination" class="dark-input" formControlName="end">
+          </div>
+
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="section" [formGroup]="routeForm">
+          <label for="passenger-email">Invite passengers by email</label>
+
+          <div *ngFor="let email of emails.controls; let i = index" class="email-input-wrapper">
+            <input type="email" [formControl]="email" placeholder="Enter email" class="dark-input">
+            <button type="button" class="icon-btn delete" (click)="removeEmail(i)">🗑️</button>
+
+            <div class="error-msg" *ngIf="email.invalid && (email.dirty || email.touched)">
+              <span *ngIf="email.errors?.['required']">Email is required.</span>
+              <span *ngIf="email.errors?.['email']">Invalid email format.</span>
+            </div>
+          </div>
+
+          <button type="button" class="add-email-btn" (click)="addEmail()">⊕ Add another email</button>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="section" [formGroup]="routeForm"> <label>Additional options</label>
+          <p class="sub-label">Vehicle type</p>
+
+          <div class="radio-group">
+            <label class="custom-radio">
+              <input type="radio" formControlName="vehicleType" value="standard">
+              <span class="radio-mark"></span> Standard
+            </label>
+            <label class="custom-radio">
+              <input type="radio" formControlName="vehicleType" value="luxury">
+              <span class="radio-mark"></span> Luxury
+            </label>
+            <label class="custom-radio">
+              <input type="radio" formControlName="vehicleType" value="van">
+              <span class="radio-mark"></span> Van
+            </label>
+          </div>
+
+          <label class="custom-checkbox">
+            <input type="checkbox" formControlName="babyTransport">
+            <span class="check-mark"></span> Traveling with a baby
+          </label>
+          <br>
+          <label class="custom-checkbox">
+            <input type="checkbox" formControlName="petTransport">
+            <span class="check-mark"></span> Traveling with a pet
+          </label>
+        </div>
+
+        <div class="divider"></div>
+
+
+
+        <div class="scroll-spacer"></div>
+      </div>
+
+      <div class="sidebar-footer">
+        <button *ngIf="!showResults" class="search-main-btn" (click)="onSearch()">
+          Search Route
+        </button>
+
+        <div *ngIf="showResults" class="results-container">
+          <div class="price-summary">
+            <p>Distance: <strong>{{ distanceKm }} km</strong></p>
+            <p>Estimated Time: <strong>{{ estimatedTime }} min</strong></p>
+            <h2 class="total-price">Price: {{ estimatedPrice }} RSD</h2>
+          </div>
+
+          <div class="action-buttons">
+            <button class="cancel-btn search-main-btn" (click)="cancelRide()">Cancel</button>
+            <button class="confirm-btn search-main-btn" (click)="confirmRide()" [disabled]="!canConfirmRide()">
+              Book Now
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </aside>
+
+    <section class="map-view">
+      <app-map [pickupAddress]="pickupForMap" [destinationAddress]="destinationForMap"
+        (routeInfo)="onRouteInfo($event)">
+      </app-map>
+    </section>
+  </main>
+</div>
+
+<div class="modal-backdrop" *ngIf="showFavouritesModal">
+  <div class="modal">
+    <h2 style="color: white;">Your favorites</h2>
+
+    <div class="cards">
+      <div
+        class="fav-card"
+        *ngFor="let fav of favourites"
+        (click)="selectFavourite(fav)"
+      >
+        <div class="route">
+          <div
+            class="stop"
+            *ngFor="let loc of fav.locations; let i = index"
+          >
+            <span
+              class="dot"
+              [class.start]="i === 0"
+              [class.end]="i === fav.locations.length - 1"
+            ></span>
+            {{ loc.address }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button class="close" (click)="showFavouritesModal = false">✕</button>
+  </div>
+</div>
+
+<app-driver-search-modal
+  [status]="driverSearchStatus"
+  [errorMessage]="driverErrorMessage"
+  (close)="closeDriverModal()">
+</app-driver-search-modal>
+
+<!--
+        za zakazivanje voznje, koristice se kasnije
+        <div class="section">
+          <label>Schedule ride</label>
+          <div class="radio-vertical">
+            <label class="custom-radio">
+              <input type="radio" name="time" value="now">
+              <span class="radio-mark"></span> Now
+            </label>
+            <label class="custom-radio">
+              <input type="radio" name="time" value="later" checked>
+              <span class="radio-mark"></span> Later
+            </label>
+          </div>
+
+          <div class="time-picker-card">
+            <p class="picker-title">Enter time</p>
+            <div class="time-selector">
+              <div class="time-unit">
+                <span class="val">20</span>
+                <span class="unit-label">Hour</span>
+              </div>
+              <span class="time-separator">:</span>
+              <div class="time-unit">
+                <span class="val">00</span>
+                <span class="unit-label">Minute</span>
+              </div>
+            </div>
+            <div class="picker-actions">
+              <button class="flat-btn">Cancel</button>
+              <button class="flat-btn">OK</button>
+            </div>
+          </div>
+        </div>-->

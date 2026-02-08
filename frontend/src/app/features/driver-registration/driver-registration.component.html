@@ -1,0 +1,169 @@
+<!--<div class="background">
+    <div class="modal-container">
+
+        <div class="form-grid">
+            <div class="column">
+                <label>Email</label>
+                <input type="email" placeholder="Enter email.." />
+
+                <label>Name</label>
+                <input type="text" placeholder="Enter name.." />
+
+                <label>Last name</label>
+                <input type="text" placeholder="Enter last name.." />
+
+                <label>Address</label>
+                <input type="text" placeholder="Enter address.." />
+
+                <label>Phone number</label>
+                <input type="text" placeholder="Enter phone number.." />
+            </div>
+
+            <div class="column">
+                <label>Vehicle model</label>
+                <input type="text" placeholder="Enter vehicle model.." />
+
+                <label>Vehicle type</label>
+                <div class="select-wrapper">
+                    <select class="custom-select" class="custom-select" style="color: #8b82b0;"
+                        onchange="this.style.color='white'">
+                        <option value="" disabled selected>Select vehicle type..</option>
+                        <option value="standard">Standard</option>
+                        <option value="luxury">Luxury</option>
+                        <option value="van">Van</option>
+                    </select>
+                </div>
+
+                <label>Licence plate</label>
+                <input type="text" placeholder="Enter licence plate.." />
+
+                <label>Number of seats</label>
+                <input type="number" placeholder="Enter number of seats.." />
+
+                <div class="switch-wrapper">
+                    <div class="switch-row">
+                        <span>Baby friendly</span>
+                        <label class="switch">
+                            <input type="checkbox" checked />
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="switch-row">
+                        <span>Pet friendly</span>
+                        <label class="switch">
+                            <input type="checkbox" />
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="actions">
+            <button class="primary">Add driver</button>
+            <button class="secondary">Cancel</button>
+        </div>
+    </div>
+</div>-->
+
+<div class="background">
+    <div class="modal-container">
+
+        <form [formGroup]="driverForm" class="form-grid">
+
+            <div class="column">
+                <label>Email</label>
+                <input type="email" placeholder="Enter email.." formControlName="email" />
+                <div class="error-msg" *ngIf="driverForm.get('email')?.invalid && driverForm.get('email')?.touched">
+                    <small *ngIf="driverForm.get('email')?.errors?.['required']">Email is required</small>
+                    <small *ngIf="driverForm.get('email')?.errors?.['email']">Enter a valid email</small>
+                </div>
+
+                <label>Name</label>
+                <input type="text" placeholder="Enter name.." formControlName="firstName" />
+                <div class="error-msg"
+                    *ngIf="driverForm.get('firstName')?.invalid && driverForm.get('firstName')?.touched">
+                    <small *ngIf="driverForm.get('firstName')?.errors?.['required']">First name is required</small>
+                </div>
+
+                <label>Last name</label>
+                <input type="text" placeholder="Enter last name.." formControlName="lastName" />
+                <div class="error-msg"
+                    *ngIf="driverForm.get('lastName')?.invalid && driverForm.get('lastName')?.touched">
+                    <small *ngIf="driverForm.get('lastName')?.errors?.['required']">Last name is required</small>
+                </div>
+
+                <label>Address</label>
+                <input type="text" placeholder="Enter address.." formControlName="address" />
+                <div class="error-msg" *ngIf="driverForm.get('address')?.invalid && driverForm.get('address')?.touched">
+                    <small *ngIf="driverForm.get('address')?.errors?.['required']">Address is required</small>
+                </div>
+
+                <label>Phone number</label>
+                <input type="text" placeholder="Enter phone number.." formControlName="phone" />
+                <div class="error-msg" *ngIf="driverForm.get('phone')?.invalid && driverForm.get('phone')?.touched">
+                    <small *ngIf="driverForm.get('phone')?.errors?.['required']">Phone is required</small>
+                    <small *ngIf="driverForm.get('phone')?.errors?.['pattern']">
+                        Phone must be in format +381 6X XXX XXX(X)
+                    </small>
+                </div>
+            </div>
+
+            <div class="column">
+                <label>Vehicle model</label>
+                <input type="text" placeholder="Enter vehicle model.." formControlName="model" />
+                <div class="error-msg" *ngIf="driverForm.get('model')?.invalid && driverForm.get('model')?.touched">
+                    <small *ngIf="driverForm.get('model')?.errors?.['required']">Vehicle model is required</small>
+                </div>
+
+                <label>Vehicle type</label>
+                <select formControlName="type" class="custom-select">
+                    <option value="" disabled>Select vehicle type..</option>
+                    <option *ngFor="let type of vehicleTypes" [value]="type">{{ type }}</option>
+                </select>
+                <div class="error-msg" *ngIf="driverForm.get('type')?.invalid && driverForm.get('type')?.touched">
+                    <small *ngIf="driverForm.get('type')?.errors?.['required']">Vehicle type is required</small>
+                </div>
+
+                <label>Licence plate</label>
+                <input type="text" placeholder="Enter licence plate.." formControlName="licensePlate" />
+                <div class="error-msg"
+                    *ngIf="driverForm.get('licensePlate')?.invalid && driverForm.get('licensePlate')?.touched">
+                    <small *ngIf="driverForm.get('licensePlate')?.errors?.['required']">Licence plate is
+                        required</small>
+                </div>
+
+                <label>Number of seats</label>
+                <input type="number" placeholder="Enter number of seats.." formControlName="seats" min="1" />
+                <div class="error-msg" *ngIf="driverForm.get('seats')?.invalid && driverForm.get('seats')?.touched">
+                    <small *ngIf="driverForm.get('seats')?.errors?.['required']">Number of seats is required</small>
+                    <small *ngIf="driverForm.get('seats')?.errors?.['min']">Seats must be at least 1</small>
+                </div>
+
+                <div class="switch-wrapper">
+                    <div class="switch-row">
+                        <span>Baby friendly</span>
+                        <label class="switch">
+                            <input type="checkbox" formControlName="babyFriendly" />
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="switch-row">
+                        <span>Pet friendly</span>
+                        <label class="switch">
+                            <input type="checkbox" formControlName="petFriendly" />
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="actions">
+                <button type="button" class="primary" (click)="addDriver()">Add driver</button>
+                <button type="button" class="secondary" (click)="cancel()">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>

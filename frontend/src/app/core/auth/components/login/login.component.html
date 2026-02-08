@@ -1,0 +1,47 @@
+<div class="login-bg">
+  <div class="login-layout">
+    <div class="illustration">
+      <img src="/illustrations/illustration_1_v2.png" alt="illustration" />
+    </div>
+
+    <div class="login-card">
+      <h1>Login</h1>
+
+      <form [formGroup]="loginForm" (ngSubmit)="login()">
+        <label>
+          Email
+          <input type="email" formControlName="email" placeholder="Enter your email" />
+          @if (email.touched && email.invalid){
+            <div
+              class="error">
+              Email is required
+            </div>
+          } 
+        </label>
+
+        <label>
+          Password
+          <input type="password" formControlName="password" placeholder="Enter your password" />
+          @if(password.touched && password.invalid){
+            <div
+            class="error">
+            Password is required in format of at least 8 characters
+          </div>
+          }
+          
+        </label>
+
+        <a class="forgot" routerLink="/forgot-password">Forgot password?</a>
+
+        <p class="signup">
+          Don’t have an account?
+          <a class="link" routerLink="/register">Sign up</a>
+        </p>
+
+        <div class="button-container">
+          <button type="submit">Login</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

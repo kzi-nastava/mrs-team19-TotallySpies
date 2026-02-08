@@ -1,41 +1,45 @@
 package rs.ac.uns.ftn.asd.ProjekatSIIT2025.controllers.rides;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import jakarta.validation.Valid;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.ReviewRequestDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.ReviewResponseDTO;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.Review;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.ReviewType;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.services.ReviewService;
 
 @RestController
 @RequestMapping("api/v1/reviews")
 public class ReviewController {
 
+    @Autowired
+    private ReviewService reviewService;
+
     @PostMapping(value = "/{rideId}/vehicle", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('PASSENGER')")
     public ResponseEntity<ReviewResponseDTO> createVehicleReview(
             @PathVariable Long rideId, 
-            @RequestBody ReviewRequestDTO request) {
+            @Valid @RequestBody ReviewRequestDTO request) {
         
-        ReviewResponseDTO response = new ReviewResponseDTO();
-        response.setId(101L);
-        response.setRating(request.getRating());
-        response.setComment(request.getComment());
-        response.setPassengerEmail("passenger@gmail.com");
-        
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        Review review = reviewService.saveReview(rideId, request, ReviewType.VEHICLE);
+                
+        return new ResponseEntity<>(new ReviewResponseDTO(review), HttpStatus.OK);
     }
 
     @PostMapping(value = "/{rideId}/driver", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('PASSENGER')")
     public ResponseEntity<ReviewResponseDTO> createDriverReview(
             @PathVariable Long rideId, 
-            @RequestBody ReviewRequestDTO request) {
+            @Valid @RequestBody ReviewRequestDTO request) {
         
-        ReviewResponseDTO response = new ReviewResponseDTO();
-        response.setId(102L);
-        response.setRating(request.getRating());
-        response.setComment(request.getComment());
-        response.setPassengerEmail("passenger@gmail.com");
+        Review review = reviewService.saveReview(rideId, request, ReviewType.DRIVER);
         
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return new ResponseEntity<>(new ReviewResponseDTO(review), HttpStatus.OK);
     }
 }

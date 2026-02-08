@@ -1,17 +1,33 @@
 <div class="history-page">
     
     <div class="filter-container">
-       <button class="filter-btn">Filter <img src="/icons/filter.png" alt="filter" class="filter-icon"></button>
+        <label>From:</label>
+        <input type="date" [(ngModel)]="filterStart">
+        
+        <label>To:</label>
+        <input type="date" [(ngModel)]="filterEnd">
+
+        <button class="filter-btn" (click)="loadHistory()">
+            Search
+        </button>
+        <button class="reset-btn" (click)="resetFilters()">Reset</button>
     </div>
 
     <div class="ride-card-container" *ngFor="let ride of rides">
-        
-        <div class="left-section">
-            <app-ride-info [ride]="ride"></app-ride-info>
-        </div>
+    
+    <div class="left-section">
+        <app-ride-info [ride]="mapHistoryToDetails(ride)"></app-ride-info>
+    </div>
 
-        <div class="right-section">
-<app-passenger-info [passengers]="ride.passengers"></app-passenger-info>        </div>
+    <div class="right-section">
+        <app-passenger-info 
+        [passengers]="mapToPassengerObjects(ride.passengers)">
+        </app-passenger-info>
+    </div>
 
+</div>
+
+    <div *ngIf="!isLoading && rides.length === 0" class="no-rides">
+        <p>No rides found for selected period.</p>
     </div>
 </div>

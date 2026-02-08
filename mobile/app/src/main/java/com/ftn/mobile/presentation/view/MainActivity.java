@@ -2,6 +2,9 @@ package com.ftn.mobile.presentation.view;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
@@ -9,7 +12,12 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
+
 import com.ftn.mobile.R;
+import com.ftn.mobile.data.local.TokenStorage;
+import com.ftn.mobile.data.local.UserRoleManger;
+import com.ftn.mobile.presentation.fragments.DriverHistoryFragment;
 import com.google.android.material.navigation.NavigationView;
 
 public class MainActivity extends AppCompatActivity {
@@ -35,6 +43,36 @@ public class MainActivity extends AppCompatActivity {
         drawerLayout = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
 
+        Menu menu = navigationView.getMenu();
+        menu.findItem(R.id.nav_profile).setVisible(false);
+
+        UserRoleManger.getRoleLiveData().observe(this, role -> {
+            boolean isLoggedIn = (role != null);
+
+            MenuItem profileItem = menu.findItem(R.id.nav_profile);
+            if (profileItem != null) {
+                profileItem.setVisible(isLoggedIn);
+            }
+
+            MenuItem historyItem = menu.findItem(R.id.nav_history);
+            if (historyItem != null) {
+                boolean isDriver = "ROLE_DRIVER".equals(role);
+                historyItem.setVisible(isDriver);
+            }
+        });
+
+        String token = TokenStorage.get(this);
+        if (token != null) {
+            if (!UserRoleManger.isTokenExpired(token)) {
+                UserRoleManger.updateRole(token);
+            } else {
+                TokenStorage.clear(this);
+                UserRoleManger.updateRole(null);
+            }
+        } else{
+            UserRoleManger.updateRole(null);
+        }
+
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawerLayout, toolbar, R.string.open_nav, R.string.close_nav);
         drawerLayout.addDrawerListener(toggle);
@@ -44,24 +82,40 @@ public class MainActivity extends AppCompatActivity {
             int id = item.getItemId();
 
             if (id == R.id.nav_history) {
-                Intent intent = new Intent(MainActivity.this, DriverHistoryActivity.class);
-                startActivity(intent);
+                openFragment(new DriverHistoryFragment(), "Ride History");
+            } else if (id == R.id.nav_home) {
+                removeCurrentFragment();
+                getSupportActionBar().setTitle("SmartRide");
             } else if (id == R.id.nav_profile) {
                 Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
                 startActivity(intent);
             } else if (id == R.id.nav_register) {
-                Intent intent = new Intent(MainActivity.this, Register.class);
+                Intent intent = new Intent(MainActivity.this, RegisterActivity.class);
                 startActivity(intent);
             }else if (id == R.id.nav_login) {
-                Intent intent = new Intent(MainActivity.this, Login.class);
-                startActivity(intent);
-            }
-            else if (id == R.id.nav_home) {
-                Intent intent = new Intent(MainActivity.this, MainActivity.class);
+                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                 startActivity(intent);
             }
             drawerLayout.closeDrawers();
             return true;
         });
+    }
+    private void openFragment(Fragment fragment, String title) {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container, fragment)
+                .addToBackStack(null)
+                .commit();
+
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(title);
+        }
+    }
+
+    private void removeCurrentFragment() {
+        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+        if (fragment != null) {
+            getSupportFragmentManager().beginTransaction().remove(fragment).commit();
+            getSupportFragmentManager().popBackStack(null, androidx.fragment.app.FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        }
     }
 }

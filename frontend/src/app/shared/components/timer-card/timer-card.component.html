@@ -1,0 +1,16 @@
+<div class="timer-card">
+  <div class="spinner-wrapper">
+    <mat-progress-spinner
+      class="custom-spinner"
+      mode="determinate"
+      [value]="progressValue"
+      [strokeWidth]="8"
+      [diameter]="100">
+    </mat-progress-spinner>
+    
+    <div class="inner-text">
+      <span class="label">{{ statusText }}</span>
+      <span class="time" *ngIf="minutes > 0">{{ minutes }} min</span>
+    </div>
+  </div>
+</div>

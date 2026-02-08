@@ -1,12 +1,21 @@
 package rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides;
 
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.Review;
+
 public class ReviewResponseDTO {
     private Long id;
     private int rating;
     private String comment;
-    private String passengerEmail;
+    private Long passengerId;
 
     public ReviewResponseDTO() {
+    }
+    
+    public ReviewResponseDTO(Review review) {
+        this.id = review.getId();
+        this.rating = review.getGrade();
+        this.comment = review.getComment();
+        this.passengerId = review.getPassenger().getId();
     }
 
     public Long getId() {
@@ -33,12 +42,12 @@ public class ReviewResponseDTO {
         this.comment = comment;
     }
 
-    public String getPassengerEmail() {
-        return passengerEmail;
+    public Long getPassengerId() {
+        return passengerId;
     }
 
-    public void setPassengerEmail(String passengerEmail) {
-        this.passengerEmail = passengerEmail;
+    public void setPassengerId(Long passengerId) {
+        this.passengerId = passengerId;
     }
 
      
