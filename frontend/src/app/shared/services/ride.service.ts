@@ -2,7 +2,6 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { CreateRideRequestDTO, CreateRideResponseDTO, RideFinishResponseDTO, RideTrackingDTO } from '../models/ride.model';
-import { InconsistencyReportRequestDTO } from '../models/ride.model';
 import { environment } from '../../../env/environment';
 import { CancelRideDTO } from '../models/cancel-ride.model';
 import { PanicRideDTO } from '../models/panic-ride.model';
@@ -22,15 +21,11 @@ export class RideService {
     return this.http.put<RideFinishResponseDTO>(`${environment.apiHost}/rides/${id}/end`, {});
   }
 
-  getRideLocation(rideId: number): Observable<RideTrackingDTO> {
-    return this.http.get<RideTrackingDTO>(`${environment.apiHost}/rides/${rideId}/location`);
-  }
-
-    checkRideAccess(rideId: number): Observable<boolean> {
+  checkRideAccess(rideId: number): Observable<boolean> {
     return this.http.get<boolean>(`${environment.apiHost}/rides/${rideId}/access`);
   }
 
-    getRideData(rideId: number): Observable<RideTrackingDTO> {
+  getRideData(rideId: number): Observable<RideTrackingDTO> {
     return this.http.get<RideTrackingDTO>(`${environment.apiHost}/rides/${rideId}`);
   }
 

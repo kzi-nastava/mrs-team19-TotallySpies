@@ -1,5 +1,4 @@
 import { Routes } from '@angular/router';
-import { HomeComponent } from './features/home/home.component';
 import { LoginComponent } from './core/auth/components/login/login.component';
 import { RegisterComponent } from './core/auth/components/register/register.component';
 import { UserProfileComponent } from './features/user-profile/user-profile.component';
@@ -22,10 +21,6 @@ import { ActivateAccountComponent } from './core/auth/components/activate-accoun
 import { ChangeOldPasswordComponent } from './shared/components/change-old-password/change-old-password.component';
 
 export const routes: Routes = [
-  {
-    path: 'home',
-    component: HomeComponent,
-  },
   {
     path: 'login',
     component: LoginComponent,
@@ -64,7 +59,7 @@ export const routes: Routes = [
   },
   {
     path: '',
-    redirectTo: 'home',
+    redirectTo: 'display-info',
     pathMatch: 'full',
   },
   {
@@ -95,9 +90,8 @@ export const routes: Routes = [
     path: 'activate-driver-account',
     component: ActivateDriverComponent
   },
-  {
-    path: 'ride-tracker-user',
-    component: RideTrackerUserComponent
+  { path: 'ride-tracker-user/:id',
+    component: RideTrackerUserComponent 
   },
   {
     path: 'ride-ordering',

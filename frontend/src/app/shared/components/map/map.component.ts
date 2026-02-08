@@ -11,7 +11,8 @@ import {
 import * as L from 'leaflet';
 import { MapService } from './map.service';
 import 'leaflet-routing-machine';
-import { interval, Subscription, startWith, switchMap } from 'rxjs'; //for polling
+import { interval, Subscription, startWith, switchMap, catchError, of } from 'rxjs'; //for polling
+import { RideTrackingDTO } from '../../models/ride.model';
 export type RouteInfo = { distanceKm: number; estimatedTime: number };
 
 @Component({
@@ -20,14 +21,16 @@ export type RouteInfo = { distanceKm: number; estimatedTime: number };
   styleUrls: ['./map.component.css'],
   standalone: true,
 })
-export class MapComponent implements AfterViewInit, OnDestroy {
+export class MapComponent implements AfterViewInit, OnDestroy, OnDestroy {
   private map!: L.Map;
   private routeControl?: L.Routing.Control;
   private vehicleMarkers: Map<number, L.Marker> = new Map();
   private pollingSubscription?: Subscription;
   @Input() pickupAddress = '';
   @Input() destinationAddress = '';
+  @Input() rideId: number | null = null;
   @Output() routeInfo = new EventEmitter<RouteInfo>();
+  @Output() rideUpdate = new EventEmitter<RideTrackingDTO>();
 
   private greenIcon = L.icon({
     iconUrl: 'icons/car-icon-green.png',
@@ -132,16 +135,12 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     });
   }
   ngOnChanges(changes: SimpleChanges): void {
-    if (!this.map) return; // map not created yet
-
-    const pickupChanged = !!changes['pickupAddress'];
-    const destinationChanged = !!changes['destinationAddress'];
-
-    if (!pickupChanged && !destinationChanged) return;
-
-    if (!this.pickupAddress.trim() || !this.destinationAddress.trim()) return;
-
-    this.setRoute();
+    if (this.map && (changes['pickupAddress'] || changes['destinationAddress'])) {
+        this.setRoute();
+    }
+    if (changes['rideId'] && !changes['rideId'].firstChange) {
+        this.startPollingPositions();
+    }
   }
 
   ngOnDestroy(): void {
@@ -157,28 +156,46 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
     L.Marker.prototype.options.icon = DefaultIcon;
     this.initMap();
-    this.startPollingPositions();
-    //this.setRoute();
-    // if inputs are already set by the time map is ready, draw route now
     if (this.pickupAddress.trim() && this.destinationAddress.trim()) {
       this.setRoute();
     }
+    this.startPollingPositions();
+    // if inputs are already set by the time map is ready, draw route now
     //this.registerOnClick();
   }
 
   private startPollingPositions(): void {
-    
-    this.pollingSubscription = interval(10000)
+    if (this.pollingSubscription) {
+      this.pollingSubscription.unsubscribe();
+    }
+    this.pollingSubscription = interval(4000) // Poll na svake 4 sekunde (češće je bolje za praćenje uživo)
       .pipe(
         startWith(0),
-        switchMap(() => this.mapService.getAllVehiclePositions())
+        switchMap(() => {
+          if (this.rideId) {
+            // display specific ride
+            return this.mapService.getRideLocation(this.rideId).pipe(
+                catchError(err => {
+                    console.error('Error tracking ride', err);
+                    return of(null);
+                })
+            );
+          } else {
+            // display all active vehicles
+            return this.mapService.getAllVehiclePositions();
+          }
+        })
       )
-      .subscribe({
-        next: (vehicles: any[]) => {
-          this.updateVehicleMarkers(vehicles);
-          console.log("nema")
-        },
-        error: (err) => console.error('error with getting a position:', err)
+      .subscribe((result: any) => {
+        if (!result) return;
+
+        if (this.rideId) {
+            // update specific
+            this.handleSingleRideUpdate(result as RideTrackingDTO);
+        } else {
+            // update all
+            this.updateVehicleMarkers(result);
+        }
       });
   }
 
@@ -200,4 +217,26 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     }
   });
 }
+
+// update map for specific ride tracking
+  private handleSingleRideUpdate(data: RideTrackingDTO): void {
+    this.rideUpdate.emit(data);
+
+    const latLng = L.latLng(data.vehicleLat, data.vehicleLng);
+
+    if (this.vehicleMarkers.has(data.rideId)) {
+      const marker = this.vehicleMarkers.get(data.rideId)!;
+      marker.setLatLng(latLng);
+    } else {
+      this.vehicleMarkers.forEach(m => m.remove());
+      this.vehicleMarkers.clear();
+
+      const marker = L.marker(latLng, { icon: this.redIcon })
+        .addTo(this.map)
+        .bindPopup(`Vehicle arrived in: ${data.eta} min`);
+      
+      this.vehicleMarkers.set(data.rideId, marker);
+    }
+  }
+
 }

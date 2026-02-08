@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import {Ride, RideFinishResponseDTO} from '../../models/ride.model';
+import {RideDetailsDTO, RideFinishResponseDTO} from '../../models/ride.model';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -9,11 +9,6 @@ import { CommonModule } from '@angular/common';
   styleUrl: './ride-info.component.css',
 })
 export class RideInfoComponent {
-  @Input() ride!: Ride | RideFinishResponseDTO;
+  @Input() ride!: RideDetailsDTO;
   @Input() isUpcoming: boolean = false;
-
-  // helper function to see if its is dto or not
-  isDTO(r: any): r is RideFinishResponseDTO {
-    return r && 'rideId' in r;
-  }
 }

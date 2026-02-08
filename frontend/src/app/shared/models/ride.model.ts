@@ -20,19 +20,7 @@ export interface Passenger {
   phoneNumber: string | null;
 }
 
-export interface Ride {
-  date: string;
-  startTime: string;
-  endTime: string;
-  price: number;
-  startLocation: string;
-  endLocation: string;
-  status: 'Finished' | 'Cancelled' | 'Upcoming' | 'Active';
-  cancelledBy?: 'Driver' | 'Passenger';
-  passengers: Passenger[];
-  panicPressed: boolean;
-  isUpcoming: boolean;
-}
+
 export enum RideStatus {
     COMPLETED,
     CANCELLED,
@@ -102,13 +90,35 @@ export interface InconsistencyReportRequestDTO {
 }
 
 export interface RideDetailsDTO {
-  driverName: string;
-  carModel: string;
-  profilePicture: string;
+
+  rideId: number;
   status: 'ACTIVE' | 'SCHEDULED' | 'COMPLETED' | 'STOPPED';
-  pickupAddress: string;
-  destinationAddress: string;
-  startTime?: string;
+  startLocation: string;
+  endLocation: string;
+  passengers?: Passenger[];
+  nextRideId?: number | null;
+  startTime: string;     
   endTime?: string;
-  price?: number;
+  price: number;
+  passengersEmails?: string[];
+  cancelled?: boolean;
+  cancelledBy?: string | null;
+  cancellReason?: string | null;
+  panicPressed?: boolean;
+  panicReason?: string | null;
+}
+
+export interface DriverRideHistoryDTO {
+  id: number;
+  startTime: string;     
+  endTime: string;
+  price: number;
+  passengers: string[];
+  startLocation: string;
+  endLocation: string;
+  cancelled: boolean;
+  cancelledBy: string | null;
+  cancellReason: string | null;
+  panicPressed: boolean;
+  panicReason: string | null;
 }

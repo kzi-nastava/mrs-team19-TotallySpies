@@ -32,15 +32,16 @@ public class DriverController {
     RideService rideService;
 
     @PreAuthorize("hasRole('DRIVER')")
-    @GetMapping(value = "/{id}/ride")
+    @GetMapping(value = "/history")
     public ResponseEntity<List<DriverRideHistoryResponseDTO>> getDriverRideHistory(
-            @PathVariable Long id,
+            Authentication auth,
             @RequestParam(required = false) String from,
             @RequestParam(required = false) String to) {
         
         System.out.println("Filters from: " + from + ", to: " + to);
+        String email = auth.getName();
 
-        List<DriverRideHistoryResponseDTO> history = rideService.getDriverHistory(id, from, to);
+        List<DriverRideHistoryResponseDTO> history = rideService.getDriverHistory(email, from, to);
         
         return new ResponseEntity<>(history, HttpStatus.OK);
     }

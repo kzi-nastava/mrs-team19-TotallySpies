@@ -166,6 +166,7 @@ public class User implements UserDetails {
     @Override public boolean isAccountNonExpired() { return true; }
     @Override public boolean isAccountNonLocked() { return true; }
     @Override public boolean isCredentialsNonExpired() { return true; }
+    //if user activated his profile with email activation link then he becomes enabled
     @Override public boolean isEnabled() { return enabled; }
 
 }

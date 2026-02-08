@@ -9,12 +9,12 @@
       [isFinished]="currentDriver.isFinished"
       [rideId]="rideId"></app-driver-info>
     <button 
-      class="panic-btn"
+      class="panic-btn" *ngIf="!currentDriver.isFinished"
       (click)="openPanicDialog(rideId)">
       PANIC
     </button>
     <button 
-      class="stop-btn"
+      class="stop-btn" *ngIf="!currentDriver.isFinished"
       (click)="stopRide()">
       Stop ride 
     </button>
@@ -39,6 +39,8 @@
     <app-map 
       [pickupAddress]="pickupAddress" 
       [destinationAddress]="destinationAddress"
+      [rideId]="rideId"
+      (rideUpdate)="handleRideUpdate($event)"
     >
     </app-map>
   </div>
