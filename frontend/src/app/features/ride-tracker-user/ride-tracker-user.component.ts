@@ -9,6 +9,7 @@ import { RideService } from '../../shared/services/ride.service';
 import { ActivatedRoute } from '@angular/router';
 import { PanicRideDTO } from '../../shared/models/panic-ride.model';
 import { MapService } from '../../shared/components/map/map.service';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-ride-tracker-user',
@@ -18,12 +19,12 @@ import { MapService } from '../../shared/components/map/map.service';
 })
 export class RideTrackerUserComponent implements OnInit, OnDestroy {
   private trackingSub?: Subscription;
-  rideId: number = 123;
+  rideId!: number;
   minutesRemaining: number = 0;
   currentVehicleLocation: { lat: number; lng: number } = { lat: 0, lng: 0 };
   pickupAddress: string = '';
   destinationAddress: string = '';
-  progress: number = 100;
+  progress: number = 0;
   currentDriver = {
     driverName: '', 
     carModel: '',
@@ -40,58 +41,44 @@ export class RideTrackerUserComponent implements OnInit, OnDestroy {
   constructor(
     private rideService: RideService,
     private route: ActivatedRoute,
-    private cdr: ChangeDetectorRef,
-    private mapService : MapService
+    private mapService : MapService,
+    private dialog: MatDialog
   ) {}
 
 
   ngOnInit() {
-    const idParam = this.route.snapshot.paramMap.get('id');
-    
-    if (idParam) {
-      this.rideId = Number(idParam);
-    } else {
-      console.warn('ID nije u URL-u, koristim testni ID 2');
-      this.rideId = 2;
-    }
-    
-    this.loadInitialData();
-  }
-
-  loadInitialData() {
-    this.rideService.getRideLocation(this.rideId).subscribe({
-      next: (data: RideTrackingDTO) => {
-        this.updateFields(data);
-        
-        if (data.status === 'ACTIVE') {
-          this.startTracking();
-        }
-      },
-      error: (err) => {
-        console.error('Greška pri učitavanju vožnje:', err);
-      }
+    this.route.params.subscribe(params => {
+      this.rideId = +params['id'];
+      this.loadInitialData();
     });
   }
 
-  updateFields(data: RideTrackingDTO) {
-    if (!data) return; 
+  private loadInitialData(): void {
+    this.trackingSub = interval(2000)
+      .pipe(
+        switchMap(() => this.mapService.getRideLocation(this.rideId))
+      )
+      .subscribe({
+        next: (data: RideTrackingDTO) => {
+          this.handleRideUpdate(data);
+        },
+        error: (err) => {
+          console.error('Failed to fetch ride tracking data:', err);
+        }
+      });
+  }
 
-    this.rideStatus = data.status;
+  handleRideUpdate(data: RideTrackingDTO): void {
+    console.log('Update:', data);
+
+    if (!this.pickupAddress) this.pickupAddress = data.pickupAddress;
+    if (!this.destinationAddress) this.destinationAddress = data.destinationAddress;
+
+    this.currentDriver.driverName = data.driverName;
+    this.currentDriver.carModel = data.carModel;
+    this.currentDriver.profileImageUrl = data.profilePicture;
     this.minutesRemaining = data.eta;
-    this.currentVehicleLocation = { lat: data.vehicleLat, lng: data.vehicleLng };
-    this.pickupAddress = data.pickupAddress || 'Adresa nije dostupna';
-    this.destinationAddress = data.destinationAddress || 'Adresa nije dostupna';
     
-    const isCompleted = data.status === 'COMPLETED' || data.status === 'STOPPED';
-    
-    this.currentDriver = {
-      driverName: data.driverName,
-      carModel: data.carModel,
-      rating: 4.9,
-      profileImageUrl: data.profilePicture,
-      isFinished: isCompleted
-    };
-
     if (data.status === 'ACTIVE') {
       this.progress = data.eta > 0 ? (100 - (data.eta * 2)) : 100; 
       if (this.progress < 0) this.progress = 5;
@@ -99,30 +86,6 @@ export class RideTrackerUserComponent implements OnInit, OnDestroy {
       this.progress = 100;
       this.minutesRemaining = 0;
     }
-
-    this.cdr.detectChanges();
-  }
-
-  startTracking() {
-    if (this.trackingSub) {
-      return;
-    }
-    
-    this.trackingSub = interval(5000).pipe(
-      switchMap(() => this.rideService.getRideLocation(this.rideId))
-    ).subscribe({
-      next: (data: RideTrackingDTO) => {
-        this.updateFields(data);
-        
-        if (data.status === 'COMPLETED' || data.status === 'STOPPED') {
-          this.stopTracking();
-        }
-      },
-      error: (err) => {
-        console.error('Tracking error:', err);
-        this.stopTracking();
-      }
-    });
   }
 
   stopTracking() {

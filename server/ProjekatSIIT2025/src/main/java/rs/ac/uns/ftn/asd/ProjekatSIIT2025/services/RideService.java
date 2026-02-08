@@ -330,7 +330,9 @@ public class RideService {
     }
 
     @Transactional
-    public List<DriverRideHistoryResponseDTO> getDriverHistory(Long id, String from, String to) {
+    public List<DriverRideHistoryResponseDTO> getDriverHistory(String email, String from, String to) {
+        Driver driver = Optional.ofNullable(driverRepository.findByEmail(email))
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Driver not found"));
         //  if sent, transform String dates into LocalDateTime
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDateTime fromDate;
@@ -350,7 +352,7 @@ public class RideService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "format of date must be yyyy-MM-dd");
         }
 
-        List<Ride> rides = rideRepository.findAllByDriverIdAndStartedAtBetween(id, fromDate, toDate);
+        List<Ride> rides = rideRepository.findAllByDriverIdAndStartedAtBetween(driver.getId(), fromDate, toDate);
 
         return rides.stream().map(ride -> {
             DriverRideHistoryResponseDTO dto = new DriverRideHistoryResponseDTO();

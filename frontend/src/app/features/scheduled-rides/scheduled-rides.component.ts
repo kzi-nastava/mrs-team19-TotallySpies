@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { RideInfoComponent } from '../../shared/components/ride-info/ride-info.component';
 import { PassengerInfoComponent } from '../../shared/components/passenger-info/passenger-info.component';
-import { RideFinishResponseDTO } from '../../shared/models/ride.model';
+import { RideFinishResponseDTO, RideDetailsDTO } from '../../shared/models/ride.model';
 import { CommonModule } from '@angular/common';
 import { RideService } from '../../shared/services/ride.service';
 import { CancelRideDTO } from '../../shared/models/cancel-ride.model';
@@ -14,6 +14,20 @@ import { CancelRideDTO } from '../../shared/models/cancel-ride.model';
   standalone: true,
 })
 export class ScheduledRidesComponent implements OnInit{
+
+  mapFinishToDetails(finish: RideFinishResponseDTO): RideDetailsDTO {
+  return {
+    rideId: finish.rideId,
+    status: finish.status as 'ACTIVE' | 'SCHEDULED' | 'COMPLETED',
+    startLocation: finish.startLocation,
+    endLocation: finish.endLocation,
+    startTime: finish.displayTime,
+    price: finish.totalPrice,
+    passengers: finish.passengers,
+    nextRideId: finish.nextRideId,
+  };
+}
+
   rides: RideFinishResponseDTO[] = [];
   constructor(private rideService: RideService, 
     private cdr: ChangeDetectorRef
@@ -23,22 +37,17 @@ export class ScheduledRidesComponent implements OnInit{
   }
 
   loadRides() {
-  this.rideService.getRidesForDriver().subscribe({
-    next: (data) => {
-      console.log('Podaci stigli:', data);
-      this.rides = data;
-      this.cdr.detectChanges();
-    },
-    error: (error) => {
-      console.error('Greška:', error);
-    }
-  });
-}
-
-formatDate(dateString: string): string {
-  const date = new Date(dateString);
-  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-}
+    this.rideService.getRidesForDriver().subscribe({
+      next: (data) => {
+        console.log('Podaci stigli:', data);
+        this.rides = data;
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        console.error('Greška:', error);
+      }
+    });
+  }
 
   handleFinish(id: number) {
     this.rideService.finishRide(id).subscribe(() => {

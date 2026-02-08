@@ -12,7 +12,7 @@ export class PassengerInfoComponent {
   @Input() passengers: Passenger[] = [];
 
   getProfileImageUrl(p: any): string {
-const defaultUrl = `http://localhost:8080/api/v1/users/image/default-profile-image.jpg`;
+const defaultUrl = `icons/person.png`;
 
   if (!p?.profilePicture) return defaultUrl;
 

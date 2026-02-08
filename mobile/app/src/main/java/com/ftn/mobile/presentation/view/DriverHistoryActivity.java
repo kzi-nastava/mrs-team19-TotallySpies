@@ -10,9 +10,6 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -33,9 +30,6 @@ import retrofit2.Response;
 
 public class DriverHistoryActivity extends AppCompatActivity {
     ArrayList<Ride> rideModels = new ArrayList<>();
-    private static final String MOCK_JWT = "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiUk9MRV9EUklWRVIiLCJzdWIiOiJkcml2ZXIxQGdtYWlsLmNvbSIsImlhdCI6MTc3MDIxOTkyNSwiZXhwIjoxNzcwMjIxNzI1fQ.Pk5zOdRS4MhSxp4ICt-ZfkTD8d8Rmfu6L13mZ08I3dE" ;  // until the login on mobile app is implemented,
-                                                // we paste jwt tocken from postman here
-    private static final Long MOCK_DRIVER_ID = 2L; // id driver with that jwt tocken
     DriverHistoryAdapter adapter;
     private String selectedFromDate = null;
     private String selectedToDate = null;
@@ -45,7 +39,6 @@ public class DriverHistoryActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_driver_history);
-        mockLogin();
         RecyclerView recyclerView = findViewById(R.id.adhRecycleView);
         adapter = new DriverHistoryAdapter(this, rideModels);
         recyclerView.setAdapter(adapter);
@@ -60,15 +53,12 @@ public class DriverHistoryActivity extends AppCompatActivity {
     private void showDateRangePicker() {
         Calendar calendar = Calendar.getInstance();
 
-        // Dijalog za "OD" datum
         DatePickerDialog fromDatePicker = new DatePickerDialog(this, (view, year, month, dayOfMonth) -> {
             selectedFromDate = String.format("%d-%02d-%02d", year, month + 1, dayOfMonth);
 
-            // Odmah otvori dijalog za "DO" datum
             DatePickerDialog toDatePicker = new DatePickerDialog(this, (view1, year1, month1, dayOfMonth1) -> {
                 selectedToDate = String.format("%d-%02d-%02d", year1, month1 + 1, dayOfMonth1);
 
-                // Kada imamo oba, pozivamo server
                 loadHistoryFromServer(selectedFromDate, selectedToDate);
 
             }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
@@ -82,20 +72,9 @@ public class DriverHistoryActivity extends AppCompatActivity {
         fromDatePicker.show();
     }
 
-    private void mockLogin() {
-        SharedPreferences sp = getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sp.edit();
-        editor.putString("jwt_token", MOCK_JWT);
-        editor.putLong("driver_id", MOCK_DRIVER_ID);
-        editor.apply();
-        Log.d("MOCK_LOGIN", "tocken and driver id saved");
-    }
-
     private void loadHistoryFromServer(String from, String to) {
-        SharedPreferences sp = getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);
-        Long driverId = sp.getLong("driver_id", -1L);
 
-        ApiProvider.driver().getDriverHistory(driverId, from, to).enqueue(new Callback<List<DriverRideHistoryDTO>>() {
+        ApiProvider.driver().getDriverHistory(from, to).enqueue(new Callback<List<DriverRideHistoryDTO>>() {
             @Override
             public void onResponse(Call<List<DriverRideHistoryDTO>> call, Response<List<DriverRideHistoryDTO>> response) {
                 if (response.isSuccessful() && response.body() != null) {
@@ -107,6 +86,12 @@ public class DriverHistoryActivity extends AppCompatActivity {
 
                     if (rideModels.isEmpty()) {
                         Toast.makeText(DriverHistoryActivity.this, "No rides found for this range", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                else {
+                    Log.e("API_ERROR", "Response code: " + response.code());
+                    if (response.code() == 403 || response.code() == 401) {
+                        Toast.makeText(DriverHistoryActivity.this, "Session expired, please login again", Toast.LENGTH_LONG).show();
                     }
                 }
             }

@@ -2,6 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable,map } from 'rxjs';
 import { environment } from '../../../../env/environment';
+import { RideTrackingDTO } from '../../models/ride.model';
 
 export type RouteInfo = { distanceKm: number; estimatedTime: number };
 @Injectable({
@@ -47,5 +48,9 @@ export class MapService {
         return { distanceKm, estimatedTime };
       })
     );
+  }
+
+  getRideLocation(rideId: number): Observable<RideTrackingDTO> {
+    return this.http.get<RideTrackingDTO>(`${environment.apiHost}/rides/${rideId}/location`);
   }
 }

@@ -65,7 +65,7 @@ export class LoginComponent {
             panelClass : ['confirm-snackbar']
           });
 
-          this.router.navigate(['home']);
+          this.router.navigate(['display-info']);
         },
         error: (err) => {
           this.snackBar.open(this.extractErrorMessage(err), 'OK', {
