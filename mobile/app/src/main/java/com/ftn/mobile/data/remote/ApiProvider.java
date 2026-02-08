@@ -1,5 +1,6 @@
 package com.ftn.mobile.data.remote;
 
+import com.ftn.mobile.data.remote.api.AdminApi;
 import com.ftn.mobile.data.remote.api.AuthApi;
 
 import com.ftn.mobile.data.remote.api.DriverApi;
@@ -15,6 +16,8 @@ public final class ApiProvider {
     private static UserApi userApi;
 
     private static DriverApi driverApi;
+
+    private static AdminApi adminApi;
 
     private ApiProvider() {}
 
@@ -43,6 +46,13 @@ public final class ApiProvider {
             driverApi = RetrofitClient.getRetrofit().create(DriverApi.class);
         }
         return driverApi;
+    }
+
+    public static AdminApi admin() {
+        if (adminApi == null){
+            adminApi = RetrofitClient.getRetrofit().create(AdminApi.class);
+        }
+        return adminApi;
     }
 }
 

@@ -1,6 +1,12 @@
 package com.ftn.mobile.data.remote;
 
 import com.ftn.mobile.BuildConfig;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializer;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -15,6 +21,11 @@ public class RetrofitClient {
     private RetrofitClient(){};
     public static Retrofit getRetrofit(){
         if(retrofit == null){
+            Gson gson = new GsonBuilder()
+                    .registerTypeAdapter(LocalDateTime.class, (JsonDeserializer<LocalDateTime>) (json, typeOfT, context) -> {
+                        return LocalDateTime.parse(json.getAsString(), DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+                    })
+                    .create();
             HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
             logging.setLevel(HttpLoggingInterceptor.Level.BODY);
             OkHttpClient client = new OkHttpClient.Builder()
@@ -25,7 +36,7 @@ public class RetrofitClient {
                     .baseUrl(BuildConfig.BASE_URL)
                     .client(client)
                     //which library is responsible to convert http response (json) to java class
-                    .addConverterFactory(GsonConverterFactory.create())
+                    .addConverterFactory(GsonConverterFactory.create(gson))
                     .build();
         }
         return retrofit;
