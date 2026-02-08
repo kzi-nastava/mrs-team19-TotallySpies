@@ -44,6 +44,8 @@ public class AdminProfileChangeRequestsActivity extends AppCompatActivity {
 
         api = RetrofitClient.getRetrofit().create(AdminApi.class);
 
+        findViewById(R.id.btnBackRequests).setOnClickListener(v -> finish());
+
         loadPendingRequests();
     }
 
