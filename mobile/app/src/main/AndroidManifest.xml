@@ -30,10 +30,6 @@
             android:name=".presentation.view.EditProfileActivity"
             android:exported="false" />
         <activity
-            android:name=".presentation.view.DriverHistoryActivity"
-            android:exported="false"
-            android:theme="@style/Theme.Mobile" />
-        <activity
             android:name=".presentation.view.RegisterActivity"
             android:exported="true"
             android:windowSoftInputMode="stateHidden|adjustResize" />

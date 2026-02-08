@@ -1,15 +1,21 @@
-package com.ftn.mobile.presentation.view;
+package com.ftn.mobile.presentation.fragments;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -28,47 +34,41 @@ import retrofit2.Callback;
 import retrofit2.Call;
 import retrofit2.Response;
 
-public class DriverHistoryActivity extends AppCompatActivity {
+public class DriverHistoryFragment extends Fragment {
     ArrayList<Ride> rideModels = new ArrayList<>();
     DriverHistoryAdapter adapter;
     private String selectedFromDate = null;
     private String selectedToDate = null;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_driver_history);
-        RecyclerView recyclerView = findViewById(R.id.adhRecycleView);
-        adapter = new DriverHistoryAdapter(this, rideModels);
-        recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        Button btnFilter = findViewById(R.id.btnFilterHistory);
-        btnFilter.setOnClickListener(v -> {
-            showDateRangePicker();
-        });
-        loadHistoryFromServer(null, null);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_driver_history, container, false);
     }
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        RecyclerView recyclerView = view.findViewById(R.id.adhRecycleView);
+        adapter = new DriverHistoryAdapter(getContext(), rideModels);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        Button btnFilter = view.findViewById(R.id.btnFilterHistory);
+        btnFilter.setOnClickListener(v -> showDateRangePicker());
+
+        loadHistoryFromServer(null, null);
+    }
     private void showDateRangePicker() {
         Calendar calendar = Calendar.getInstance();
-
-        DatePickerDialog fromDatePicker = new DatePickerDialog(this, (view, year, month, dayOfMonth) -> {
+        DatePickerDialog fromDatePicker = new DatePickerDialog(requireContext(), (view, year, month, dayOfMonth) -> {
             selectedFromDate = String.format("%d-%02d-%02d", year, month + 1, dayOfMonth);
-
-            DatePickerDialog toDatePicker = new DatePickerDialog(this, (view1, year1, month1, dayOfMonth1) -> {
+            DatePickerDialog toDatePicker = new DatePickerDialog(requireContext(), (view1, year1, month1, dayOfMonth1) -> {
                 selectedToDate = String.format("%d-%02d-%02d", year1, month1 + 1, dayOfMonth1);
-
                 loadHistoryFromServer(selectedFromDate, selectedToDate);
-
             }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
-
-            toDatePicker.setTitle("Select To Date");
             toDatePicker.show();
-
         }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
-
-        fromDatePicker.setTitle("Select From Date");
         fromDatePicker.show();
     }
 
@@ -84,14 +84,13 @@ public class DriverHistoryActivity extends AppCompatActivity {
                     }
                     adapter.notifyDataSetChanged();
 
-                    if (rideModels.isEmpty()) {
-                        Toast.makeText(DriverHistoryActivity.this, "No rides found for this range", Toast.LENGTH_SHORT).show();
+                    if (rideModels.isEmpty() && isAdded()) {
+                        Toast.makeText(requireContext(), "No rides found", Toast.LENGTH_SHORT).show();
                     }
                 }
-                else {
-                    Log.e("API_ERROR", "Response code: " + response.code());
+                else if (isAdded()) {
                     if (response.code() == 403 || response.code() == 401) {
-                        Toast.makeText(DriverHistoryActivity.this, "Session expired, please login again", Toast.LENGTH_LONG).show();
+                        Toast.makeText(requireContext(), "Session expired", Toast.LENGTH_LONG).show();
                     }
                 }
             }
