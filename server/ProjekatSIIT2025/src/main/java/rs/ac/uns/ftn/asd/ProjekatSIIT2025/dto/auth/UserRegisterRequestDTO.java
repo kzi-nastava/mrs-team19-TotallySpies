@@ -30,7 +30,8 @@ public class UserRegisterRequestDTO {
     private String phoneNumber;
     @NotBlank(message = "Address is required")
     private String address;
-
+    @NotBlank(message = "Client is required (mobile or web)")
+    private String client;
 
     public UserRegisterRequestDTO(){}
 
@@ -81,4 +82,8 @@ public class UserRegisterRequestDTO {
     }
     public String getConfirmedPassword() {return confirmedPassword;}
     public void setConfirmedPassword(String confirmedPassword) {this.confirmedPassword = confirmedPassword;}
+
+    public String getClient() {return client;}
+
+    public void setClient(String client) {this.client = client;}
 }

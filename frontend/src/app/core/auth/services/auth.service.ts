@@ -78,7 +78,7 @@ export class AuthService {
     const headers = new HttpHeaders({
       skip : 'true',   //to tell intercept to not attach jwt
     });
-    return this.http.get(environment.apiHost + '/auth/activate',{
+    return this.http.post(environment.apiHost + '/auth/activate', null,{
       headers,
       params: { token },
       responseType: 'text' 

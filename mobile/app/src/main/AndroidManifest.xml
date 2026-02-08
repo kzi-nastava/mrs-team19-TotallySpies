@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
     <application
         android:name=".App"
         android:allowBackup="true"
@@ -15,8 +17,18 @@
         android:theme="@style/Theme.Mobile"
         android:usesCleartextTraffic="true">
         <activity
-            android:name=".presentation.view.AdminProfileChangeRequestsActivity"
-            android:exported="false" />
+            android:name=".presentation.view.UserActivationActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="https"
+                    android:host="localhost"
+                    android:pathPrefix="/verify" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".presentation.view.ChangePasswordActivity"
             android:exported="false" />
@@ -25,10 +37,14 @@
             android:exported="false" />
         <activity
             android:name=".presentation.view.VerifyEmailActivity"
-            android:theme="@style/Theme.Mobile"/>
+            android:theme="@style/Theme.Mobile" />
         <activity
             android:name=".presentation.view.EditProfileActivity"
             android:exported="false" />
+        <activity
+            android:name=".presentation.view.DriverHistoryActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Mobile" />
         <activity
             android:name=".presentation.view.RegisterActivity"
             android:exported="true"

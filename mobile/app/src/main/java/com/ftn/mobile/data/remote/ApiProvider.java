@@ -26,7 +26,6 @@ public final class ApiProvider {
             authApi = RetrofitClient.getRetrofit().create(AuthApi.class);
         }
         return authApi;
-
     }
     public static ForgotPasswordApi forgotPassword(){
         if(forgotPasswordApi == null){
