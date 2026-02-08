@@ -19,15 +19,17 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/adhRecycleView"
-        android:layout_width="409dp"
-        android:layout_height="729dp"
+        android:layout_width="408dp"
+        android:layout_height="706dp"
         android:layout_marginStart="1dp"
         android:layout_marginTop="1dp"
         android:layout_marginEnd="1dp"
         android:layout_marginBottom="1dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.666"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btnFilterHistory"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btnFilterHistory"/>
+        app:layout_constraintVertical_bias="0.971" />
 </androidx.constraintlayout.widget.ConstraintLayout>
