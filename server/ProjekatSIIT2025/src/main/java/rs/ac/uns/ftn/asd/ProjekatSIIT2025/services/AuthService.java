@@ -79,7 +79,7 @@ public class AuthService {
         user.setPassword(encoder.encode(user.getPassword()));
         user.setRole(UserRole.valueOf("PASSENGER"));
         user.setBlocked(false);
-        user.setEnabled(false);
+        user.setEnabled(false); //user becomes enabled when he activates his profile from activation link
         user = userRepository.save(user);
 
         //handle profile picture upload
