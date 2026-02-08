@@ -2,6 +2,9 @@ package com.ftn.mobile.presentation.view;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
@@ -10,6 +13,8 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import com.ftn.mobile.R;
+import com.ftn.mobile.data.local.TokenStorage;
+import com.ftn.mobile.data.local.UserRoleManger;
 import com.google.android.material.navigation.NavigationView;
 
 public class MainActivity extends AppCompatActivity {
@@ -34,6 +39,30 @@ public class MainActivity extends AppCompatActivity {
 
         drawerLayout = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
+
+        Menu menu = navigationView.getMenu();
+        menu.findItem(R.id.nav_profile).setVisible(false);
+
+        UserRoleManger.getRoleLiveData().observe(this, role -> {
+            boolean isLoggedIn = (role != null);
+
+            MenuItem profileItem = menu.findItem(R.id.nav_profile);
+            if (profileItem != null) {
+                profileItem.setVisible(isLoggedIn);
+            }
+        });
+
+        String token = TokenStorage.get(this);
+        if (token != null) {
+            if (!UserRoleManger.isTokenExpired(token)) {
+                UserRoleManger.updateRole(token);
+            } else {
+                TokenStorage.clear(this);
+                UserRoleManger.updateRole(null);
+            }
+        } else{
+            UserRoleManger.updateRole(null);
+        }
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawerLayout, toolbar, R.string.open_nav, R.string.close_nav);

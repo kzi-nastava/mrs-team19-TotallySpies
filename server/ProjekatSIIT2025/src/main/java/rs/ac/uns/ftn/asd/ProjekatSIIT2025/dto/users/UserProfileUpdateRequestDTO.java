@@ -5,8 +5,10 @@ import jakarta.validation.constraints.Pattern;
 public class UserProfileUpdateRequestDTO {
     private String name;
     private String lastName;
-    @Pattern(regexp = "^\\+381 \\d{2} \\d{3} (\\d{3}|\\d{4})$",
-    message = "Phone number must be in format +381 ** *** ***(*)")
+    @Pattern(
+            regexp = "^(\\+381 \\d{2} \\d{3} \\d{3,4}|\\d{11})$",
+            message = "Phone number must be in format +381 ** *** ***(*) or have 11 digits"
+    )
     private String phoneNumber;
     private String address;
 

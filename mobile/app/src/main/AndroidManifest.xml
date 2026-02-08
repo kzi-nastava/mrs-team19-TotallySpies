@@ -15,6 +15,9 @@
         android:theme="@style/Theme.Mobile"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".presentation.view.AdminProfileChangeRequestsActivity"
+            android:exported="false" />
+        <activity
             android:name=".presentation.view.ChangePasswordActivity"
             android:exported="false" />
         <activity
@@ -22,8 +25,7 @@
             android:exported="false" />
         <activity
             android:name=".presentation.view.VerifyEmailActivity"
-        android:theme="@style/Theme.Mobile"/>
-
+            android:theme="@style/Theme.Mobile"/>
         <activity
             android:name=".presentation.view.EditProfileActivity"
             android:exported="false" />
