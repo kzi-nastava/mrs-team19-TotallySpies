@@ -11,15 +11,22 @@ import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 public class RedisConfig {
     @Bean
     public RedisMessageListenerContainer container(RedisConnectionFactory connectionFactory,
-                                                   MessageListenerAdapter listenerAdapter) {
+                                                   MessageListenerAdapter vehicleListener,
+                                                   MessageListenerAdapter rideListener) {
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
-        container.addMessageListener(listenerAdapter, new PatternTopic("vehicle-locations"));
+        container.addMessageListener(vehicleListener, new PatternTopic("vehicle-locations"));
+        container.addMessageListener(rideListener, new PatternTopic("ride-updates"));
         return container;
     }
 
     @Bean
-    public MessageListenerAdapter listenerAdapter(RedisReceiver receiver) {
-        return new MessageListenerAdapter(receiver, "receiveMessage");
+    public MessageListenerAdapter vehicleListener(RedisReceiver receiver) {
+        return new MessageListenerAdapter(receiver, "receiveVehicleMessage");
+    }
+
+    @Bean
+    public MessageListenerAdapter rideListener(RedisReceiver receiver) {
+        return new MessageListenerAdapter(receiver, "receiveRideMessage");
     }
 }

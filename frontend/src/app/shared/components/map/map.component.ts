@@ -57,21 +57,22 @@ export class MapComponent implements AfterViewInit, OnDestroy, OnDestroy {
       onConnect: () => {
         console.log('Connected to WebSocket for Map Updates');
         
-        // listen topic for map updates
-        this.stompClient!.subscribe('/topic/map-updates', (message) => {
-          if (message.body) {
+        // if we are tracking specific ride
+        if (this.rideId) {
+          console.log(`Subscribing to specific ride: ${this.rideId}`);
+          this.stompClient!.subscribe(`/topic/ride/${this.rideId}`, (message) => {
+            const data: RideTrackingDTO = JSON.parse(message.body);
+            this.handleSingleRideUpdate(data);
+          });
+        } 
+        // all vehicles map
+        else {
+          console.log('Subscribing to all map updates');
+          this.stompClient!.subscribe('/topic/map-updates', (message) => {
             const vehicles = JSON.parse(message.body);
-            
-            if (this.rideId) {
-                // add further logic for ride tracking specific ride
-                const myVehicle = vehicles.find((v: any) => v.id === this.rideId);
-                if (myVehicle) this.handleSingleRideUpdate(myVehicle);
-            } else {
-                // display all vehicles
-                this.updateVehicleMarkers(vehicles);
-            }
-          }
-        });
+            this.updateVehicleMarkers(vehicles);
+          });
+        }
       }
     });
     this.stompClient.activate();

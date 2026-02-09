@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.transaction.Transactional;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.VehicleDisplayResponseDTO;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.RideTrackingDTO; // DODAJ OVO
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.Driver;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.Ride;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.RideStatus;
@@ -28,14 +29,13 @@ public class VehicleSimulationService {
     @Autowired
     private StringRedisTemplate redisTemplate;
     @Autowired
-    private ObjectMapper objectMapper; // dto to json
-
+    private ObjectMapper objectMapper;
 
     @Scheduled(fixedRate = 2000)
     @Transactional
     public void simulateMovement() {
         List<Driver> drivers = driverRepository.findByIsActiveTrue();
-        List<VehicleDisplayResponseDTO> updates = new ArrayList<>();
+        List<VehicleDisplayResponseDTO> allVehiclesUpdates = new ArrayList<>();
 
         for (Driver driver : drivers) {
             if (driver.getVehicle() == null) continue;
@@ -55,11 +55,9 @@ public class VehicleSimulationService {
                     driver.getVehicle().setCurrentLng(targetPoint.getLongitude());
                     driver.getVehicle().setCurrentRouteIndex(currentIndex + 1);
                 } else {
-                    // end of route
                     driver.getVehicle().setCurrentRouteIndex(0);
                 }
             } else {
-                // random movement when free
                 double latChange = (Math.random() - 0.5) * 0.0005;
                 double lngChange = (Math.random() - 0.5) * 0.0005;
                 driver.getVehicle().setCurrentLat(driver.getVehicle().getCurrentLat() + latChange);
@@ -68,7 +66,32 @@ public class VehicleSimulationService {
 
             vehicleRepository.save(driver.getVehicle());
 
-            updates.add(new VehicleDisplayResponseDTO(
+            if (activeRide != null) {
+                try {
+                    int totalPoints = activeRide.getRoutePoints().size();
+                    int remainingPoints = totalPoints - driver.getVehicle().getCurrentRouteIndex();
+                    int etaMinutes = Math.max(1, (remainingPoints * 2) / 60);
+
+                    RideTrackingDTO trackingDTO = new RideTrackingDTO(
+                        activeRide.getId(),
+                        driver.getVehicle().getCurrentLat(),
+                        driver.getVehicle().getCurrentLng(),
+                        etaMinutes,
+                        activeRide.getStatus().toString(),
+                        driver.getName(),
+                        driver.getVehicle().getModel(),
+                        driver.getProfilePicture(),
+                        activeRide.getStops().get(0).getAddress(),
+                        activeRide.getStops().get(activeRide.getStops().size() - 1).getAddress()
+                    );
+
+                    redisTemplate.convertAndSend("ride-updates", objectMapper.writeValueAsString(trackingDTO));
+                } catch (Exception e) {
+                    System.err.println("error: " + e.getMessage());
+                }
+            }
+
+            allVehiclesUpdates.add(new VehicleDisplayResponseDTO(
                     driver.getVehicle().getId(),
                     driver.getVehicle().getCurrentLat(),
                     driver.getVehicle().getCurrentLng(),
@@ -77,11 +100,10 @@ public class VehicleSimulationService {
         }
 
         try {
-            String jsonUpdates = objectMapper.writeValueAsString(updates);
+            String jsonUpdates = objectMapper.writeValueAsString(allVehiclesUpdates);
             redisTemplate.convertAndSend("vehicle-locations", jsonUpdates);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-
 }
