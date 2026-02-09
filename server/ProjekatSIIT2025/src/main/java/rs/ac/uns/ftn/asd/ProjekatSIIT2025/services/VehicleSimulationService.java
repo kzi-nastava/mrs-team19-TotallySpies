@@ -1,12 +1,18 @@
 package rs.ac.uns.ftn.asd.ProjekatSIIT2025.services;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import jakarta.transaction.Transactional;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.VehicleDisplayResponseDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.Driver;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.Ride;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.RideStatus;
@@ -20,11 +26,18 @@ public class VehicleSimulationService {
     @Autowired
     private VehicleRepository vehicleRepository;
     private static final double SPEED = 0.002;
+    @Autowired
+    private StringRedisTemplate redisTemplate;
+    @Autowired
+    private ObjectMapper objectMapper; // dto to json
 
-    @Scheduled(fixedRate = 10000)
+
+    @Scheduled(fixedRate = 2000)
     @Transactional
     public void simulateMovement() {
         List<Driver> drivers = driverRepository.findByIsActiveTrue();
+        List<VehicleDisplayResponseDTO> updates = new ArrayList<>();
+
         for (Driver driver : drivers) {
             if (driver.getVehicle() == null) continue;
 
@@ -33,12 +46,11 @@ public class VehicleSimulationService {
                 .findFirst()
                 .orElse(null);
 
-            if (activeRide != null) {
-                var stops = activeRide.getStops(); 
-                if (stops.isEmpty()) continue;
+
+            //moving to destination
+            if (activeRide != null && !activeRide.getStops().isEmpty()) {
                 
-                var destination = stops.get(stops.size() - 1); 
-                
+                var destination = activeRide.getStops().get(activeRide.getStops().size() - 1);                
                 double currentLat = driver.getVehicle().getCurrentLat();
                 double currentLng = driver.getVehicle().getCurrentLng();
                 double destLat = destination.getLatitude();
@@ -59,7 +71,7 @@ public class VehicleSimulationService {
                     driver.getVehicle().setCurrentLat(newLat);
                     driver.getVehicle().setCurrentLng(newLng);
                 }
-
+                //random moving while not occupied
             } else {
                 double latChange = (Math.random() - 0.5) * 0.0005;
                 double lngChange = (Math.random() - 0.5) * 0.0005;
@@ -67,6 +79,19 @@ public class VehicleSimulationService {
                 driver.getVehicle().setCurrentLng(driver.getVehicle().getCurrentLng() + lngChange);
             }
             vehicleRepository.save(driver.getVehicle());
+
+            updates.add(new VehicleDisplayResponseDTO(
+                    driver.getVehicle().getId(),
+                    driver.getVehicle().getCurrentLat(),
+                    driver.getVehicle().getCurrentLng(),
+                    activeRide != null
+            ));
+        }
+        try {
+            String jsonUpdates = objectMapper.writeValueAsString(updates);
+            redisTemplate.convertAndSend("vehicle-locations", jsonUpdates);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
     
