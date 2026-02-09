@@ -46,7 +46,7 @@ public class DriverService {
         if (driver == null) {
             throw new RuntimeException("Driver not found");
         }
-        if (!driver.isActive()) return;
+        if (driver.isActive()) return;
 
         driver.setActive(true);
         driverRepository.save(driver);

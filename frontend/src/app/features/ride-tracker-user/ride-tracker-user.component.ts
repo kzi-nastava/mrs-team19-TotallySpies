@@ -43,6 +43,8 @@ export class RideTrackerUserComponent implements OnInit, OnDestroy {
     private rideService: RideService,
     private route: ActivatedRoute,
     private mapService : MapService,
+    private dialog: MatDialog,
+    private cdr: ChangeDetectorRef
   ) {}
 
 
@@ -81,11 +83,18 @@ export class RideTrackerUserComponent implements OnInit, OnDestroy {
   }
 
   handleRideUpdate(data: RideTrackingDTO): void {
+    console.log("Ride status from back:", data.status);
+
     this.pickupAddress = data.pickupAddress;
     this.destinationAddress = data.destinationAddress;
-    this.currentDriver.driverName = data.driverName;
-    this.currentDriver.carModel = data.carModel;
-    this.currentDriver.profileImageUrl = data.profilePicture || 'icons/person.png';
+    
+    this.currentDriver = {
+        ...this.currentDriver,
+        driverName: data.driverName,
+        carModel: data.carModel,
+        profileImageUrl: data.profilePicture || 'icons/person.png',
+        isFinished: data.status === 'COMPLETED'
+    };
     this.minutesRemaining = data.eta;
     
     if (data.status === 'ACTIVE') {
@@ -95,6 +104,7 @@ export class RideTrackerUserComponent implements OnInit, OnDestroy {
       this.currentDriver.isFinished = true;
       this.stompClient?.deactivate(); 
     }
+    this.cdr.detectChanges();
   }
 
   ngOnDestroy() {
