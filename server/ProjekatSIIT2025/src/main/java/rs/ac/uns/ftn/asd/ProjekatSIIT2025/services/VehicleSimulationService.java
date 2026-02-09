@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +15,7 @@ import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.VehicleDisplayResponseDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.Driver;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.Ride;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.RideStatus;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.RoutePoint;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.DriverRepository;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.VehicleRepository;
 
@@ -25,7 +25,6 @@ public class VehicleSimulationService {
     private DriverRepository driverRepository;
     @Autowired
     private VehicleRepository vehicleRepository;
-    private static final double SPEED = 0.002;
     @Autowired
     private StringRedisTemplate redisTemplate;
     @Autowired
@@ -42,42 +41,31 @@ public class VehicleSimulationService {
             if (driver.getVehicle() == null) continue;
 
             Ride activeRide = driver.getRides().stream()
-                .filter(r -> r.getStatus() == RideStatus.ACTIVE)
-                .findFirst()
-                .orElse(null);
+                    .filter(r -> r.getStatus() == RideStatus.ACTIVE)
+                    .findFirst()
+                    .orElse(null);
 
+            if (activeRide != null && activeRide.getRoutePoints() != null && !activeRide.getRoutePoints().isEmpty()) {
+                List<RoutePoint> route = activeRide.getRoutePoints();
+                int currentIndex = driver.getVehicle().getCurrentRouteIndex();
 
-            //moving to destination
-            if (activeRide != null && !activeRide.getStops().isEmpty()) {
-                
-                var destination = activeRide.getStops().get(activeRide.getStops().size() - 1);                
-                double currentLat = driver.getVehicle().getCurrentLat();
-                double currentLng = driver.getVehicle().getCurrentLng();
-                double destLat = destination.getLatitude();
-                double destLng = destination.getLongitude();
-
-                double distance = Math.sqrt(Math.pow(destLat - currentLat, 2) + Math.pow(destLng - currentLng, 2));
-
-                if (distance < SPEED) {
-                    // if the destination is there
-                    driver.getVehicle().setCurrentLat(destLat);
-                    driver.getVehicle().setCurrentLng(destLng);
-                    // change status?
+                if (currentIndex < route.size()) {
+                    RoutePoint targetPoint = route.get(currentIndex);
+                    driver.getVehicle().setCurrentLat(targetPoint.getLatitude());
+                    driver.getVehicle().setCurrentLng(targetPoint.getLongitude());
+                    driver.getVehicle().setCurrentRouteIndex(currentIndex + 1);
                 } else {
-                    double ratio = SPEED / distance;
-                    double newLat = currentLat + (destLat - currentLat) * ratio;
-                    double newLng = currentLng + (destLng - currentLng) * ratio;
-                    
-                    driver.getVehicle().setCurrentLat(newLat);
-                    driver.getVehicle().setCurrentLng(newLng);
+                    // end of route
+                    driver.getVehicle().setCurrentRouteIndex(0);
                 }
-                //random moving while not occupied
             } else {
+                // random movement when free
                 double latChange = (Math.random() - 0.5) * 0.0005;
                 double lngChange = (Math.random() - 0.5) * 0.0005;
                 driver.getVehicle().setCurrentLat(driver.getVehicle().getCurrentLat() + latChange);
                 driver.getVehicle().setCurrentLng(driver.getVehicle().getCurrentLng() + lngChange);
             }
+
             vehicleRepository.save(driver.getVehicle());
 
             updates.add(new VehicleDisplayResponseDTO(
@@ -87,6 +75,7 @@ public class VehicleSimulationService {
                     activeRide != null
             ));
         }
+
         try {
             String jsonUpdates = objectMapper.writeValueAsString(updates);
             redisTemplate.convertAndSend("vehicle-locations", jsonUpdates);
@@ -94,5 +83,5 @@ public class VehicleSimulationService {
             e.printStackTrace();
         }
     }
-    
+
 }

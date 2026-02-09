@@ -11,8 +11,9 @@ import {
 import * as L from 'leaflet';
 import { MapService } from './map.service';
 import 'leaflet-routing-machine';
-import { interval, Subscription, startWith, switchMap, catchError, of } from 'rxjs'; //for polling
 import { RideTrackingDTO } from '../../models/ride.model';
+import { Client } from '@stomp/stompjs';
+import SockJS from 'sockjs-client';
 export type RouteInfo = { distanceKm: number; estimatedTime: number };
 
 @Component({
@@ -25,12 +26,14 @@ export class MapComponent implements AfterViewInit, OnDestroy, OnDestroy {
   private map!: L.Map;
   private routeControl?: L.Routing.Control;
   private vehicleMarkers: Map<number, L.Marker> = new Map();
-  private pollingSubscription?: Subscription;
+  private stompClient: Client | null = null;
+  private coordinates: any[] = [];
   @Input() pickupAddress = '';
   @Input() destinationAddress = '';
   @Input() rideId: number | null = null;
   @Output() routeInfo = new EventEmitter<RouteInfo>();
   @Output() rideUpdate = new EventEmitter<RideTrackingDTO>();
+  @Output() routeCoordinatesFound = new EventEmitter<any[]>();  // emitt coordinates of route when found
 
   private greenIcon = L.icon({
     iconUrl: 'icons/car-icon-green.png',
@@ -45,6 +48,34 @@ export class MapComponent implements AfterViewInit, OnDestroy, OnDestroy {
   });
 
   constructor(private mapService: MapService) {}
+
+  private subscribeToWebsocket(): void {
+    const socket = new SockJS('http://localhost:8080/ws-transport');
+    this.stompClient = new Client({
+      webSocketFactory: () => socket,
+      reconnectDelay: 5000, // try again if connection is lost
+      onConnect: () => {
+        console.log('Connected to WebSocket for Map Updates');
+        
+        // listen topic for map updates
+        this.stompClient!.subscribe('/topic/map-updates', (message) => {
+          if (message.body) {
+            const vehicles = JSON.parse(message.body);
+            
+            if (this.rideId) {
+                // add further logic for ride tracking specific ride
+                const myVehicle = vehicles.find((v: any) => v.id === this.rideId);
+                if (myVehicle) this.handleSingleRideUpdate(myVehicle);
+            } else {
+                // display all vehicles
+                this.updateVehicleMarkers(vehicles);
+            }
+          }
+        });
+      }
+    });
+    this.stompClient.activate();
+  }
 
   setRoute(): void {
     if (!this.pickupAddress?.trim() || !this.destinationAddress?.trim()) return;
@@ -95,6 +126,8 @@ export class MapComponent implements AfterViewInit, OnDestroy, OnDestroy {
 
     this.routeControl.on('routesfound', (e: any) => {
       const route = e.routes[0];
+      this.coordinates = route.coordinates; 
+      this.routeCoordinatesFound.emit(this.coordinates);
       //creating a rectangle around the route
       const bounds = L.latLngBounds(route.coordinates as any);
       //moves and zooms the map so the entire rectangle with route is visible
@@ -138,13 +171,12 @@ export class MapComponent implements AfterViewInit, OnDestroy, OnDestroy {
     if (this.map && (changes['pickupAddress'] || changes['destinationAddress'])) {
         this.setRoute();
     }
-    if (changes['rideId'] && !changes['rideId'].firstChange) {
-        this.startPollingPositions();
-    }
   }
 
   ngOnDestroy(): void {
-    this.pollingSubscription?.unsubscribe();
+    if (this.stompClient) {
+      this.stompClient.deactivate();
+    }
     // we dont want to use up all resources when he is not on that page
   }
 
@@ -159,64 +191,29 @@ export class MapComponent implements AfterViewInit, OnDestroy, OnDestroy {
     if (this.pickupAddress.trim() && this.destinationAddress.trim()) {
       this.setRoute();
     }
-    this.startPollingPositions();
+    this.subscribeToWebsocket();
     // if inputs are already set by the time map is ready, draw route now
     //this.registerOnClick();
   }
 
-  private startPollingPositions(): void {
-    if (this.pollingSubscription) {
-      this.pollingSubscription.unsubscribe();
-    }
-    this.pollingSubscription = interval(4000) // Poll na svake 4 sekunde (češće je bolje za praćenje uživo)
-      .pipe(
-        startWith(0),
-        switchMap(() => {
-          if (this.rideId) {
-            // display specific ride
-            return this.mapService.getRideLocation(this.rideId).pipe(
-                catchError(err => {
-                    console.error('Error tracking ride', err);
-                    return of(null);
-                })
-            );
-          } else {
-            // display all active vehicles
-            return this.mapService.getAllVehiclePositions();
-          }
-        })
-      )
-      .subscribe((result: any) => {
-        if (!result) return;
-
-        if (this.rideId) {
-            // update specific
-            this.handleSingleRideUpdate(result as RideTrackingDTO);
-        } else {
-            // update all
-            this.updateVehicleMarkers(result);
-        }
-      });
-  }
-
   private updateVehicleMarkers(vehicles: any[]): void {
-  vehicles.forEach(v => {
-    const latLng = L.latLng(v.currentLat, v.currentLng);
-    const iconToUse = v.busy ? this.redIcon : this.greenIcon;
+    vehicles.forEach(v => {
+      const latLng = L.latLng(v.currentLat, v.currentLng);
+      const iconToUse = v.busy ? this.redIcon : this.greenIcon;
 
-    if (this.vehicleMarkers.has(v.id)) {
-      const marker = this.vehicleMarkers.get(v.id)!;
-      marker.setLatLng(latLng);
-      marker.setIcon(iconToUse); // update icon if the sttaus is updated
-    } else {
-      const marker = L.marker(latLng, { icon: iconToUse })
-        .addTo(this.map)
-        .bindPopup(`vehicle: ${v.id} <br> status: ${v.busy ? 'occupied' : 'free'}`);
-      
-      this.vehicleMarkers.set(v.id, marker);
-    }
-  });
-}
+      if (this.vehicleMarkers.has(v.id)) {
+        const marker = this.vehicleMarkers.get(v.id)!;
+        marker.setLatLng(latLng);
+        marker.setIcon(iconToUse); // update icon if the sttaus is updated
+      } else {
+        const marker = L.marker(latLng, { icon: iconToUse })
+          .addTo(this.map)
+          .bindPopup(`vehicle: ${v.id} <br> status: ${v.busy ? 'occupied' : 'free'}`);
+        
+        this.vehicleMarkers.set(v.id, marker);
+      }
+    });
+  }
 
 // update map for specific ride tracking
   private handleSingleRideUpdate(data: RideTrackingDTO): void {

@@ -49,7 +49,7 @@ public class SecurityConfig {
                              "/error", "/api/v1/rides/{id}/location", "/api/v1/rides/{id}/inconsistency-report",
                             "/error", "/api/v1/vehicles", "/api/v1/drivers/{id}/ride",
                             "/api/v1/forgot-password/**","/api/v1/auth/activate","/api/v1/auth/activate-driver",
-                            "/api/v1/vehicles/active")
+                            "/api/v1/vehicles/active", "/ws-transport/**")
               .permitAll()
                     .anyRequest().authenticated()
                     )

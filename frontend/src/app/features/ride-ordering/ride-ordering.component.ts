@@ -30,6 +30,7 @@ export class RideOrderingComponent implements OnInit {
   favourites: FavouriteRideDTO[] = [];
   driverSearchStatus: 'IDLE' | 'SEARCHING' | 'FOUND' | 'NOT_FOUND' = 'IDLE';
   driverErrorMessage: string | null = null;
+  private detailedPath: any[] = [];
 
   constructor(private fb: FormBuilder, private mapService: MapService,
     private rideService: RideService, private favouriteService: FavouriteService, private cd: ChangeDetectorRef) {
@@ -45,6 +46,11 @@ export class RideOrderingComponent implements OnInit {
   }
 
   showResults = false;
+
+  onRouteCoordinates(coords: any[]) {
+    console.log("path deliverd, num of points:", coords.length);
+    this.detailedPath = coords;
+  }
 
   ngOnInit() {
     // automatski reaguje cijena na promjenu vrste vozila
@@ -128,7 +134,8 @@ export class RideOrderingComponent implements OnInit {
           estimatedTime: this.estimatedTime!,
           passengerEmails: validEmails,
           babyTransport: this.routeForm.value.babyTransport,
-          petTransport: this.routeForm.value.petTransport
+          petTransport: this.routeForm.value.petTransport,
+          path :this.detailedPath
         };
 
         this.rideService.createRide(dto).subscribe({

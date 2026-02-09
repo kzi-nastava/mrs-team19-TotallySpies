@@ -119,7 +119,8 @@
 
     <section class="map-view">
       <app-map [pickupAddress]="pickupForMap" [destinationAddress]="destinationForMap"
-        (routeInfo)="onRouteInfo($event)">
+        (routeInfo)="onRouteInfo($event)"
+        (routeCoordinatesFound)="onRouteCoordinates($event)">
       </app-map>
     </section>
   </main>
