@@ -10,6 +10,7 @@ import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.parameters.P;
@@ -329,6 +330,7 @@ public class RideService {
         return true;
     }
 
+
     @Transactional
     public List<DriverRideHistoryResponseDTO> getDriverHistory(String email, String from, String to) {
         Driver driver = Optional.ofNullable(driverRepository.findByEmail(email))
@@ -622,5 +624,41 @@ public class RideService {
         ride.setStatus(RideStatus.ACTIVE);
         ride.setStartedAt(LocalDateTime.now());
         rideRepository.save(ride);
+    }
+
+    @Transactional
+    public List<PassengerRideHistoryResponseDTO> getPassengerHistory(String email, Sort sort, LocalDateTime from, LocalDateTime to){
+        User user = userRepository.findByEmail(email);
+        if (user == null) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Passenger not found!");
+        Long passengerId = user.getId();
+
+        List<RideStatus> statuses = List.of(
+                RideStatus.COMPLETED,
+                RideStatus.STOPPED);
+
+        List<Ride> rides = null;
+        if(from != null && to != null){
+            rides = rideRepository.findByPassengers_IdAndStatusInAndCreatedAtBetween(passengerId, statuses, sort,from,to);
+        }
+        else if(from != null){
+            rides = rideRepository.findByPassengers_IdAndStatusInAndCreatedAtAfter(passengerId, statuses, sort, from);
+        }
+        else if(to != null){
+            rides = rideRepository.findByPassengers_IdAndStatusInAndCreatedAtBefore(passengerId, statuses, sort, to);
+        }
+        else{
+            rides = rideRepository.findByPassengers_IdAndStatusIn(passengerId, statuses, sort);
+        }
+
+        List<PassengerRideHistoryResponseDTO> response = new ArrayList<>();
+        for (Ride ride : rides){
+            response.add(new PassengerRideHistoryResponseDTO(
+                    ride.getFinishedAt(),
+                    ride.getStartedAt(),
+                    ride.getCreatedAt(),
+                    ride.getStops(),
+                    ride.getId()));
+        }
+        return response;
     }
 }

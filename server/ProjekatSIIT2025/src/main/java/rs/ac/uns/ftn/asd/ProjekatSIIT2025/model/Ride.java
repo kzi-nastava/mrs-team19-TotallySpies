@@ -20,6 +20,7 @@ public class Ride {
     private boolean panic;
 
     @OneToMany(mappedBy = "ride", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OrderBy("orderIndex ASC")
     private List<RideStop> stops;
 
     @Enumerated(EnumType.STRING)
