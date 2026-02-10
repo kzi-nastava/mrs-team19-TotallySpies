@@ -24,13 +24,11 @@ public interface RideRepository extends JpaRepository<Ride, Long> {
     boolean existsByPassengersContainingAndStatus(Passenger creator, RideStatus rideStatus);
 
     List<Ride> findByDriverAndStatusIn(Driver d, List<RideStatus> active);
-<<<<<<< Updated upstream
     List<Ride> findByPassengers_IdAndStatusIn(Long id, List<RideStatus> statuses, Sort sort);
     List<Ride> findByPassengers_IdAndStatusInAndCreatedAtBetween(Long id, List<RideStatus> statuses, Sort sort, LocalDateTime from, LocalDateTime to);
     List<Ride> findByPassengers_IdAndStatusInAndCreatedAtBefore(Long id, List<RideStatus> statuses, Sort sort, LocalDateTime to);
     List<Ride> findByPassengers_IdAndStatusInAndCreatedAtAfter(Long id, List<RideStatus> statuses, Sort sort, LocalDateTime from);
-=======
-
     List<Ride> findByStatusAndScheduledForBetween(RideStatus status, LocalDateTime from, LocalDateTime to);
->>>>>>> Stashed changes
+
+    List<Ride> findByStatus(RideStatus rideStatus);
 }

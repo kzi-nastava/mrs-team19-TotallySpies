@@ -55,6 +55,8 @@ public class RideService {
 
     @Autowired
     DriverActivityService driverActivityService;
+    @Autowired
+    private NotificationService notificationService;
 
     @Transactional
     public RideFinishResponseDTO finishRide(Long rideId) {
@@ -462,7 +464,7 @@ public class RideService {
         double totalPrice = basePrice + dto.getDistanceKm() * 120;
 
         Ride ride = new Ride();
-        ride.setDriver(driver);
+        ride.setCreator(creator);
         ride.setPassengers(passengers);
 
         if (isScheduled && !assignNow) {
@@ -527,6 +529,8 @@ public class RideService {
         } else {
             response.setDriverEmail(driver.getEmail());
             response.setDriverName(driver.getName() + " " + driver.getLastName());
+            User driverUser = userRepository.findByEmail(driver.getEmail());
+            notificationService.notifyUser(driverUser, ride, "You have a new ride in less than 15 minutes", NotificationType.NEW_RIDE);
             response.setMessage("Ride successfully created and driver assigned.");
         }
         response.setDistanceKm(ride.getDistanceKm());

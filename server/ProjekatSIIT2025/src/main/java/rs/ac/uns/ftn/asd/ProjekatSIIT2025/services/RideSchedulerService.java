@@ -1,11 +1,12 @@
 package rs.ac.uns.ftn.asd.ProjekatSIIT2025.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.Driver;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.Ride;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.RideStatus;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.NotificationDTO;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.*;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.NotificationRepository;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.RideRepository;
 
 import java.time.Duration;
@@ -19,6 +20,9 @@ public class RideSchedulerService {
 
     @Autowired
     private RideService rideService;
+
+    @Autowired
+    private NotificationService notificationService;
 
     @Scheduled(fixedRate = 3 * 60 * 1000) // svake 3 minute
     public void processScheduledRides() {
@@ -45,7 +49,7 @@ public class RideSchedulerService {
             if (minutesToStart <= 15) {
                 ride.setStatus(RideStatus.REJECTED);
                 rideRepository.save(ride);
-                // notify user
+                notifyCreator(ride, "No available drivers, your ride has been rejected", NotificationType.RIDE_REJECTED);
                 continue;
             }
 
@@ -54,10 +58,21 @@ public class RideSchedulerService {
             if (d != null) {
                 ride.setDriver(d);
                 ride.setStatus(RideStatus.SCHEDULED);
-                // notify driver + user
+                notifyCreator(ride, "Driver assigned: " + d.getName(), NotificationType.NEW_RIDE);
+                notifyDriver(ride, "You have a new ride assigned", NotificationType.NEW_RIDE);
             }
         }
 
         rideRepository.saveAll(rides);
+    }
+
+    private void notifyCreator(Ride ride, String message, NotificationType type) {
+        notificationService.notifyUser(ride.getCreator(), ride, message, type);
+    }
+
+    private void notifyDriver(Ride ride, String message, NotificationType type) {
+        if (ride.getDriver() != null) {
+            notificationService.notifyUser(ride.getDriver(), ride, message, type);
+        }
     }
 }

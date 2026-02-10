@@ -57,6 +57,12 @@ public class Ride {
     @OrderBy("sequence ASC")
     private List<RoutePoint> routePoints;
 
+    @ManyToOne
+    private Passenger creator;
+
+    @ElementCollection
+    private List<Integer> sentNotificationMinutes;
+
     public Long getId() {
         return id;
     }
@@ -223,5 +229,21 @@ public class Ride {
 
     public void setRoutePoints(List<RoutePoint> routePoints) {
         this.routePoints = routePoints;
+    }
+
+    public Passenger getCreator() {
+        return creator;
+    }
+
+    public void setCreator(Passenger creator) {
+        this.creator = creator;
+    }
+
+    public List<Integer> getSentNotificationMinutes() {
+        return sentNotificationMinutes;
+    }
+
+    public void setSentNotificationMinutes(List<Integer> sentNotificationMinutes) {
+        this.sentNotificationMinutes = sentNotificationMinutes;
     }
 }
