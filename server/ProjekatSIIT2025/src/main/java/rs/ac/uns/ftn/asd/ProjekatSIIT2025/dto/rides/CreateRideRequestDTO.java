@@ -12,7 +12,8 @@ public class CreateRideRequestDTO {
     private Double estimatedTime;
     private boolean babyTransport;
     private boolean petTransport;
-
+    private List<RoutePointDTO> path;
+    
     public List<RideStopDTO> getLocations() {
         return locations;
     }
@@ -67,5 +68,13 @@ public class CreateRideRequestDTO {
 
     public void setEstimatedTime(Double estimatedTime) {
         this.estimatedTime = estimatedTime;
+    }
+
+    public List<RoutePointDTO> getPath() {
+        return path;
+    }
+
+    public void setPath(List<RoutePointDTO> path) {
+        this.path = path;
     }
 }

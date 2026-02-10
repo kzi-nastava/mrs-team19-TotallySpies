@@ -3,13 +3,14 @@ import { DriverInfoComponent } from '../../shared/components/driver-info/driver-
 import { TimerCardComponent } from '../../shared/components/timer-card/timer-card.component';
 import { MapComponent } from '../../shared/components/map/map.component';
 import { CommonModule } from '@angular/common';
-import { interval, Subscription, switchMap } from 'rxjs';
 import { RideTrackingDTO } from '../../shared/models/ride.model';
 import { RideService } from '../../shared/services/ride.service';
 import { ActivatedRoute } from '@angular/router';
 import { PanicRideDTO } from '../../shared/models/panic-ride.model';
 import { MapService } from '../../shared/components/map/map.service';
 import { MatDialog } from '@angular/material/dialog';
+import { Client } from '@stomp/stompjs';
+import SockJS from 'sockjs-client';
 
 @Component({
   selector: 'app-ride-tracker-user',
@@ -18,7 +19,7 @@ import { MatDialog } from '@angular/material/dialog';
   styleUrl: './ride-tracker-user.component.css',
 })
 export class RideTrackerUserComponent implements OnInit, OnDestroy {
-  private trackingSub?: Subscription;
+  private stompClient: Client | null = null;
   rideId!: number;
   minutesRemaining: number = 0;
   currentVehicleLocation: { lat: number; lng: number } = { lat: 0, lng: 0 };
@@ -42,7 +43,8 @@ export class RideTrackerUserComponent implements OnInit, OnDestroy {
     private rideService: RideService,
     private route: ActivatedRoute,
     private mapService : MapService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private cdr: ChangeDetectorRef
   ) {}
 
 
@@ -50,51 +52,65 @@ export class RideTrackerUserComponent implements OnInit, OnDestroy {
     this.route.params.subscribe(params => {
       this.rideId = +params['id'];
       this.loadInitialData();
+      this.connectToWebSocket(); 
     });
   }
 
   private loadInitialData(): void {
-    this.trackingSub = interval(2000)
-      .pipe(
-        switchMap(() => this.mapService.getRideLocation(this.rideId))
-      )
-      .subscribe({
-        next: (data: RideTrackingDTO) => {
-          this.handleRideUpdate(data);
-        },
-        error: (err) => {
-          console.error('Failed to fetch ride tracking data:', err);
-        }
-      });
+    this.mapService.getRideLocation(this.rideId).subscribe({
+      next: (data: RideTrackingDTO) => this.handleRideUpdate(data),
+      error: (err) => console.error('Initial fetch failed:', err)
+    });
+  }
+
+  private connectToWebSocket(): void {
+    const socket = new SockJS('http://localhost:8080/ws-transport');
+    this.stompClient = new Client({
+      webSocketFactory: () => socket,
+      reconnectDelay: 5000,
+      onConnect: () => {
+        console.log('Connected to Ride Tracking WebSocket');
+        
+        this.stompClient!.subscribe(`/topic/ride/${this.rideId}`, (message) => {
+          if (message.body) {
+            const data: RideTrackingDTO = JSON.parse(message.body);
+            this.handleRideUpdate(data);
+          }
+        });
+      }
+    });
+    this.stompClient.activate();
   }
 
   handleRideUpdate(data: RideTrackingDTO): void {
-    console.log('Update:', data);
+    console.log("Ride status from back:", data.status);
 
-    if (!this.pickupAddress) this.pickupAddress = data.pickupAddress;
-    if (!this.destinationAddress) this.destinationAddress = data.destinationAddress;
-
-    this.currentDriver.driverName = data.driverName;
-    this.currentDriver.carModel = data.carModel;
-    this.currentDriver.profileImageUrl = data.profilePicture;
+    this.pickupAddress = data.pickupAddress;
+    this.destinationAddress = data.destinationAddress;
+    
+    this.currentDriver = {
+        ...this.currentDriver,
+        driverName: data.driverName,
+        carModel: data.carModel,
+        profileImageUrl: data.profilePicture || 'icons/person.png',
+        isFinished: data.status === 'COMPLETED'
+    };
     this.minutesRemaining = data.eta;
     
     if (data.status === 'ACTIVE') {
-      this.progress = data.eta > 0 ? (100 - (data.eta * 2)) : 100; 
-      if (this.progress < 0) this.progress = 5;
-    } else {
+      this.progress = data.eta > 0 ? Math.max(5, 100 - (data.eta * 2)) : 100;
+    } else if (data.status === 'COMPLETED') {
       this.progress = 100;
-      this.minutesRemaining = 0;
+      this.currentDriver.isFinished = true;
+      this.stompClient?.deactivate(); 
     }
-  }
-
-  stopTracking() {
-    this.trackingSub?.unsubscribe();
-    this.trackingSub = undefined;
+    this.cdr.detectChanges();
   }
 
   ngOnDestroy() {
-    this.stopTracking();
+    if (this.stompClient) {
+          this.stompClient.deactivate();
+    }  
   }
 
   panicRide(panicRideDTO : PanicRideDTO) {
@@ -200,8 +216,7 @@ export class RideTrackerUserComponent implements OnInit, OnDestroy {
 
                 this.rideService.stopRide(dto).subscribe({
                   next: (msg) => {
-                    alert(msg);          // "Ride stopped!"
-                    this.stopTracking(); // stop polling
+                    alert(msg);          // "Ride stopped!" //deleted stop polling method
                     this.loadInitialData();
                   },
                   error: (err) => {

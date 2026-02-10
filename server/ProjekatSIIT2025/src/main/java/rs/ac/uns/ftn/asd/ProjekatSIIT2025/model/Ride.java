@@ -53,6 +53,10 @@ public class Ride {
     @OneToOne(mappedBy = "ride", cascade = CascadeType.ALL)
     private PanicNotification panicNotification;
 
+    @OneToMany(mappedBy = "ride", cascade = CascadeType.ALL)
+    @OrderBy("sequence ASC")
+    private List<RoutePoint> routePoints;
+
     public Long getId() {
         return id;
     }
@@ -211,5 +215,13 @@ public class Ride {
 
     public void setPanicNotification(PanicNotification panicNotification) {
         this.panicNotification = panicNotification;
+    }
+
+    public List<RoutePoint> getRoutePoints() {
+        return routePoints;
+    }
+
+    public void setRoutePoints(List<RoutePoint> routePoints) {
+        this.routePoints = routePoints;
     }
 }

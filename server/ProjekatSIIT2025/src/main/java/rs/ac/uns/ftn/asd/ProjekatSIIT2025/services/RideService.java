@@ -461,6 +461,18 @@ public class RideService {
 
         ride.setStops(stops);
 
+        if (dto.getPath() != null && !dto.getPath().isEmpty()) {
+            List<RoutePoint> routePoints = new ArrayList<>();
+            for (RoutePointDTO pDto : dto.getPath()) {
+                RoutePoint rp = new RoutePoint();
+                rp.setLatitude(pDto.getLat());
+                rp.setLongitude(pDto.getLng());
+                rp.setRide(ride); 
+                routePoints.add(rp);
+            }
+            ride.setRoutePoints(routePoints);
+        }
+
         rideRepository.save(ride);
 
         CreateRideResponseDTO response = new CreateRideResponseDTO();
