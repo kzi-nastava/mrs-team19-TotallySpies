@@ -13,13 +13,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.auth.*;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.ActivationToken;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.Driver;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.ImageMetaData;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.User;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.UserRole;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.*;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.ActivationTokenRepository;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.DriverRepository;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.PassengerRepository;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.UserRepository;
 
 import java.io.IOException;
@@ -44,6 +41,9 @@ public class AuthService {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    PassengerRepository passengerRepository;
 
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 
@@ -75,12 +75,18 @@ public class AuthService {
         if (!(dto.getPassword().equals(dto.getConfirmedPassword()))){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Password and confirmed password need to match!");
         }
-        User user = new User(dto);
-        user.setPassword(encoder.encode(user.getPassword()));
+        //User user = new User(dto);
+        Passenger user = new Passenger();
+        user.setAddress(dto.getAddress());
+        user.setPhoneNumber(dto.getPhoneNumber());
+        user.setLastName(dto.getLastName());;
+        user.setName(dto.getName());
+        user.setEmail(dto.getEmail());
+        user.setPassword(encoder.encode(dto.getPassword()));
         user.setRole(UserRole.valueOf("PASSENGER"));
         user.setBlocked(false);
         user.setEnabled(false); //user becomes enabled when he activates his profile from activation link
-        user = userRepository.save(user);
+        user = passengerRepository.save(user);
 
         //handle profile picture upload
         MultipartFile profilePicture = dto.getProfilePicture();
@@ -91,7 +97,8 @@ public class AuthService {
             String storedName = imageService.storeProfileImage(profilePicture, user.getId());
             //user.setProfilePicture("images/users/" + user.getId() + "/" + storedName);
             user.setProfilePicture(storedName);
-            userRepository.save(user);
+            //userRepository.save(user);
+            passengerRepository.save(user);
         }
 
         //send activation link

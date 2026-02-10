@@ -97,4 +97,11 @@ public class RideController {
         CreateRideResponseDTO responseDTO = rideService.createRide(requestDTO, email);
         return ResponseEntity.ok(responseDTO);
     }
+    @PreAuthorize("hasRole('PASSENGER')")
+    @GetMapping(value = "/{id}/details", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<PassengerRideDetailsResponseDTO> getRideDetails(@PathVariable Long id ){
+        PassengerRideDetailsResponseDTO response = rideService.getRideDetails(id);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
 }

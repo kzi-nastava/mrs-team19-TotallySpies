@@ -1,5 +1,6 @@
 package rs.ac.uns.ftn.asd.ProjekatSIIT2025.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
@@ -21,6 +22,7 @@ public class Review {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="ride_id")
+    @JsonIgnore
     private Ride ride;
 
     public Review() {

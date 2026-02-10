@@ -50,7 +50,6 @@ public class DriverService {
 
         driver.setActive(true);
         driverRepository.save(driver);
-
         // start nove aktivnosti
         driverActivityService.startActivity(driver);
     }
