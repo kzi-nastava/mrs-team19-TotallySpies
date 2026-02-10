@@ -4,15 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import jakarta.transaction.Transactional;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.VehicleDisplayResponseDTO;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.RideTrackingDTO; // DODAJ OVO
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.RideTrackingDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.Driver;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.Ride;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.RideStatus;
@@ -27,9 +25,7 @@ public class VehicleSimulationService {
     @Autowired
     private VehicleRepository vehicleRepository;
     @Autowired
-    private StringRedisTemplate redisTemplate;
-    @Autowired
-    private ObjectMapper objectMapper;
+    private SimpMessagingTemplate messagingTemplate;
 
     @Scheduled(fixedRate = 2000)
     @Transactional
@@ -85,7 +81,7 @@ public class VehicleSimulationService {
                         activeRide.getStops().get(activeRide.getStops().size() - 1).getAddress()
                     );
 
-                    redisTemplate.convertAndSend("ride-updates", objectMapper.writeValueAsString(trackingDTO));
+                    messagingTemplate.convertAndSend("/topic/ride/"+ activeRide.getId(), trackingDTO);
                 } catch (Exception e) {
                     System.err.println("error: " + e.getMessage());
                 }
@@ -100,9 +96,7 @@ public class VehicleSimulationService {
         }
 
         try {
-            String jsonUpdates = objectMapper.writeValueAsString(allVehiclesUpdates);
-            redisTemplate.convertAndSend("vehicle-locations", jsonUpdates);
-        } catch (Exception e) {
+            messagingTemplate.convertAndSend("/topic/vehicle-locations", allVehiclesUpdates);        } catch (Exception e) {
             e.printStackTrace();
         }
     }

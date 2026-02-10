@@ -68,7 +68,7 @@ export class MapComponent implements AfterViewInit, OnDestroy, OnDestroy {
         // all vehicles map
         else {
           console.log('Subscribing to all map updates');
-          this.stompClient!.subscribe('/topic/map-updates', (message) => {
+          this.stompClient!.subscribe('/topic/vehicle-locations', (message) => {
             const vehicles = JSON.parse(message.body);
             this.updateVehicleMarkers(vehicles);
           });
