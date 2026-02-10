@@ -1,6 +1,8 @@
 package rs.ac.uns.ftn.asd.ProjekatSIIT2025.controllers.rides;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -36,15 +38,15 @@ public class RideController {
 
     @PostMapping(value = "/{id}/inconsistency-report", consumes = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('PASSENGER')")
-    public ResponseEntity<String> reportInconsistency(
+    public ResponseEntity<Map<String, String>> reportInconsistency(
             @PathVariable Long id, 
             @RequestBody InconsistencyReportRequestDTO request) {
                 boolean isReported = rideService.reportInconsistency(id, request);
                 
                 if (isReported) {
-                    return new ResponseEntity<>("Consistency report sent successfully.", HttpStatus.CREATED);
+                    return ResponseEntity.status(HttpStatus.CREATED).body(Collections.singletonMap("message", "Consistency report sent successfully."));
                 } else {
-                    return new ResponseEntity<>("Failed to send consistency report.", HttpStatus.INTERNAL_SERVER_ERROR);
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.singletonMap("message", "Failed to send consistency report."));
                 }
     }
 
