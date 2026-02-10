@@ -661,4 +661,36 @@ public class RideService {
         }
         return response;
     }
+
+    @Transactional
+    public PassengerRideDetailsResponseDTO getRideDetails(Long id){
+        Ride ride = rideRepository.findById(id).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Ride not found!"));
+        PassengerRideDetailsResponseDTO dto = new PassengerRideDetailsResponseDTO(ride.getId(),ride.getStops(),ride.getDistanceKm(),
+                ride.getTotalPrice());
+        Driver driver = ride.getDriver();
+        dto.setDriverEmail(driver.getEmail());
+        dto.setDriverName(driver.getName());
+        dto.setDriverLastName(driver.getLastName());
+        dto.setDriverPhoneNumber(driver.getPhoneNumber());
+        Map<String, String> reportReasons = new HashMap<>();
+        Map<String, Integer> rideGrades = new HashMap<>();
+        if(ride.getReports() != null){
+            for (Report report : ride.getReports()){
+                reportReasons.put(
+                        report.getPassenger().getEmail(),
+                        report.getReportReason());
+                }
+        }
+        dto.setReportReasons(reportReasons);
+        if(ride.getReviews() != null){
+            for(Review review : ride.getReviews()){
+                rideGrades.put(
+                        review.getPassenger().getEmail(),
+                        review.getGrade()
+                );
+            }
+        }
+        dto.setRideGrades(rideGrades);
+        return dto;
+    }
 }
