@@ -35,5 +35,6 @@ public interface RideRepository extends JpaRepository<Ride, Long> {
            " LOWER(r.driver.lastName) LIKE LOWER(CONCAT('%', :name, '%'))) " +
            "AND r.status = :status")
     List<Ride> findActiveByDriverName(@Param("name") String name, @Param("status") RideStatus status);
-    List<Ride> findByStatus(RideStatus active);
+    List<Ride> findByStatusAndScheduledForBetween(RideStatus status, LocalDateTime from, LocalDateTime to);
+    List<Ride> findByStatus(RideStatus rideStatus);
 }
