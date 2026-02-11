@@ -47,9 +47,9 @@ public class DriverService {
             throw new RuntimeException("Driver not found");
         }
         if (driver.isActive()) return;
-
         driver.setActive(true);
         driverRepository.save(driver);
+
         // start nove aktivnosti
         driverActivityService.startActivity(driver);
     }

@@ -2,6 +2,7 @@ package rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides;
 
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.VehicleType;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class CreateRideRequestDTO {
@@ -12,8 +13,10 @@ public class CreateRideRequestDTO {
     private Double estimatedTime;
     private boolean babyTransport;
     private boolean petTransport;
+    private LocalDateTime scheduledFor;
+
     private List<RoutePointDTO> path;
-    
+
     public List<RideStopDTO> getLocations() {
         return locations;
     }
@@ -68,6 +71,14 @@ public class CreateRideRequestDTO {
 
     public void setEstimatedTime(Double estimatedTime) {
         this.estimatedTime = estimatedTime;
+    }
+
+    public LocalDateTime getScheduledFor() {
+        return scheduledFor;
+    }
+
+    public void setScheduledFor(LocalDateTime scheduledFor) {
+        this.scheduledFor = scheduledFor;
     }
 
     public List<RoutePointDTO> getPath() {

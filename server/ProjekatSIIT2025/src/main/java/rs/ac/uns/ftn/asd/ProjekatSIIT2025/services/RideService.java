@@ -55,6 +55,8 @@ public class RideService {
 
     @Autowired
     DriverActivityService driverActivityService;
+    @Autowired
+    private NotificationService notificationService;
 
     @Transactional
     public RideFinishResponseDTO finishRide(Long rideId) {
@@ -399,6 +401,31 @@ public class RideService {
         boolean creatorHasActiveRide = rideRepository.existsByPassengersContainingAndStatus(creator, RideStatus.ACTIVE);
         if (creatorHasActiveRide) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You already have an active ride");
+        } else if (creator.getBlocked()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You are blocked! You can't order a new ride!");
+        }
+
+        boolean isScheduled = dto.getScheduledFor() != null;
+
+        if (isScheduled) {
+            if (dto.getScheduledFor().isBefore(LocalDateTime.now())) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Time must be in future");
+            }
+            if (dto.getScheduledFor().isAfter(LocalDateTime.now().plusHours(5))) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ride can be scheduled max 5 hours ahead");
+            }
+        }
+
+        boolean assignNow = false;
+
+        if (isScheduled) {
+            long minutesToStart = Duration
+                    .between(LocalDateTime.now(), dto.getScheduledFor())
+                    .toMinutes();
+
+            if (minutesToStart <= 30) {
+                assignNow = true;
+            }
         }
 
         // other passengers
@@ -422,18 +449,34 @@ public class RideService {
             }
         }
 
-        Driver driver = findBestDriver(dto);
-        if (driver == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No available drivers");
+        DriverSearchContext context = this.fromRequest(dto);
+
+        Driver driver = null;
+
+        if (!isScheduled) {
+            driver = findBestDriver(context);
+            if (driver == null) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No available drivers");
+            }
         }
 
         double basePrice = priceByVehicleType(dto.getVehicleType());
         double totalPrice = basePrice + dto.getDistanceKm() * 120;
 
         Ride ride = new Ride();
-        ride.setDriver(driver);
+        ride.setCreator(creator);
         ride.setPassengers(passengers);
-        ride.setStatus(RideStatus.SCHEDULED);
+
+        if (isScheduled && !assignNow) {
+            ride.setStatus(RideStatus.PENDING);
+            ride.setScheduledFor(dto.getScheduledFor());
+        } else if (driver != null) {
+            ride.setDriver(driver);
+            ride.setStatus(RideStatus.SCHEDULED);
+        } else {
+            ride.setStatus(RideStatus.PENDING);
+            ride.setScheduledFor(dto.getScheduledFor());
+        }
 
         ride.setVehicleType(dto.getVehicleType());
         ride.setBabiesTransport(dto.isBabyTransport());
@@ -478,30 +521,68 @@ public class RideService {
         CreateRideResponseDTO response = new CreateRideResponseDTO();
         response.setRideId(ride.getId());
         response.setStatus(ride.getStatus());
-        response.setDriverEmail(driver.getEmail());
-        response.setDriverName(driver.getName() + " " + driver.getLastName());
+
+        if(driver == null){
+            response.setDriverName(null);
+            response.setDriverEmail(null);
+            response.setMessage("Ride successfully scheduled. You will receive notification 15 min before ride start.");
+        } else {
+            response.setDriverEmail(driver.getEmail());
+            response.setDriverName(driver.getName() + " " + driver.getLastName());
+            User driverUser = userRepository.findByEmail(driver.getEmail());
+            notificationService.notifyUser(driverUser, ride, "You have a new ride in less than 15 minutes", NotificationType.NEW_RIDE);
+            response.setMessage("Ride successfully created and driver assigned.");
+        }
         response.setDistanceKm(ride.getDistanceKm());
         response.setEstimatedTime(ride.getEstimatedTime());
-        response.setMessage("Ride successfully created and driver assigned.");
 
         return response;
     }
 
-    private Driver findBestDriver(CreateRideRequestDTO dto) {
+    private DriverSearchContext fromRequest(CreateRideRequestDTO dto) {
+        DriverSearchContext ctx = new DriverSearchContext();
 
-        int requiredSeats = 1 +
-                (dto.getPassengerEmails() == null ? 0 : dto.getPassengerEmails().size());
+        ctx.setVehicleType(dto.getVehicleType());
+        ctx.setBabyTransport(dto.isBabyTransport());
+        ctx.setPetTransport(dto.isPetTransport());
+        ctx.setEstimatedTime(dto.getEstimatedTime());
 
-        // get driver whose vehicles are compatible with ride request
-        List<Driver> potentialDrivers = driverRepository.findPotentialDrivers(
-                dto.getVehicleType(),
-                requiredSeats,
-                dto.isPetTransport(),
-                dto.isBabyTransport()
-        );
-        if (potentialDrivers.isEmpty()) return null;
+        int seats = 1 + (dto.getPassengerEmails() == null ? 0 : dto.getPassengerEmails().size());
+        ctx.setRequiredSeats(seats);
 
         RideStopDTO pickup = dto.getLocations().get(0);
+        ctx.setPickupLat(pickup.getLat());
+        ctx.setPickupLng(pickup.getLng());
+
+        return ctx;
+    }
+
+    public DriverSearchContext fromRide(Ride ride) {
+        DriverSearchContext ctx = new DriverSearchContext();
+
+        ctx.setVehicleType(ride.getVehicleType());
+        ctx.setBabyTransport(ride.isBabiesTransport());
+        ctx.setPetTransport(ride.isPetsTransport());
+        ctx.setEstimatedTime(ride.getEstimatedTime());
+
+        ctx.setRequiredSeats(ride.getPassengers().size());
+
+        RideStop pickup = ride.getStops().get(0);
+        ctx.setPickupLat(pickup.getLatitude());
+        ctx.setPickupLng(pickup.getLongitude());
+
+        return ctx;
+    }
+
+    public Driver findBestDriver(DriverSearchContext context) {
+        // get driver whose vehicles are compatible with ride request
+        List<Driver> potentialDrivers = driverRepository.findPotentialDrivers(
+                context.getVehicleType(),
+                context.getRequiredSeats(),
+                context.isPetTransport(),
+                context.isBabyTransport()
+        );
+        if (potentialDrivers.isEmpty()) return null;
 
         // list for free drivers
         List<Driver> freeDrivers = new ArrayList<>();
@@ -525,7 +606,7 @@ public class RideService {
 
             if (activeRideOpt.isEmpty()) {
                 // free driver: Start from current vehicle location, 0 minutes remaining
-                if (canDriverTakeRide(d, dto, 0, d.getVehicle().getCurrentLat(), d.getVehicle().getCurrentLng())) {
+                if (canDriverTakeRide(d, context, 0, d.getVehicle().getCurrentLat(), d.getVehicle().getCurrentLng())) {
                     freeDrivers.add(d);
                 }
             } else {
@@ -539,7 +620,7 @@ public class RideService {
                     RideStop lastStop = activeRide.getStops().get(activeRide.getStops().size() - 1);
 
                     // check work limit starting from the last stop of the current ride
-                    if (canDriverTakeRide(d, dto, timeRemaining, lastStop.getLatitude(), lastStop.getLongitude())) {
+                    if (canDriverTakeRide(d, context, timeRemaining, lastStop.getLatitude(), lastStop.getLongitude())) {
                         eligibleBusyDrivers.put(d, lastStop);
                     }
                 }
@@ -553,7 +634,7 @@ public class RideService {
             return freeDrivers.stream()
                     .min(Comparator.comparingDouble(d ->
                             distance(d.getVehicle().getCurrentLat(), d.getVehicle().getCurrentLng(),
-                                    pickup.getLat(), pickup.getLng())))
+                                    context.getPickupLat(), context.getPickupLng())))
                     .orElse(null);
         }
 
@@ -564,7 +645,7 @@ public class RideService {
                         RideStop finishPoint = entry.getValue(); // finish stop of current active ride
                         return distance(
                                 finishPoint.getLatitude(), finishPoint.getLongitude(),
-                                pickup.getLat(), pickup.getLng()
+                                context.getPickupLat(), context.getPickupLng()
                         );
                     }))
                     .map(Map.Entry::getKey)
@@ -592,17 +673,16 @@ public class RideService {
         };
     }
 
-    private boolean canDriverTakeRide(Driver driver, CreateRideRequestDTO dto, long remainingMinutesOfCurrentRide, double startLat, double startLng) {
+    private boolean canDriverTakeRide(Driver driver, DriverSearchContext context, long remainingMinutesOfCurrentRide, double startLat, double startLng) {
         // minutes worked in the last 24h
         DriverActivityResponseDTO activity = driverActivityService.getActivityMinutesLast24h(driver.getEmail());
         long minutesWorked = activity.getMinutesLast24h();
 
         // estimated duration of the new requested ride
-        long rideMinutes = Math.round(dto.getEstimatedTime());
+        long rideMinutes = Math.round(context.getEstimatedTime());
 
         // travel time from reference point to the new pickup location
-        RideStopDTO pickup = dto.getLocations().get(0);
-        double distanceToPickupKm = distance(startLat, startLng, pickup.getLat(), pickup.getLng());
+        double distanceToPickupKm = distance(startLat, startLng, context.getPickupLat(), context.getPickupLng());
 
         // travelTimeToPickup calculation (assuming average speed 30km/h -> 0.5km/min)
         long travelTimeToPickup = Math.round(distanceToPickupKm / 0.5);

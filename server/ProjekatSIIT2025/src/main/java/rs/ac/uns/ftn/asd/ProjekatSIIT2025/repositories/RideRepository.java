@@ -28,4 +28,7 @@ public interface RideRepository extends JpaRepository<Ride, Long> {
     List<Ride> findByPassengers_IdAndStatusInAndCreatedAtBetween(Long id, List<RideStatus> statuses, Sort sort, LocalDateTime from, LocalDateTime to);
     List<Ride> findByPassengers_IdAndStatusInAndCreatedAtBefore(Long id, List<RideStatus> statuses, Sort sort, LocalDateTime to);
     List<Ride> findByPassengers_IdAndStatusInAndCreatedAtAfter(Long id, List<RideStatus> statuses, Sort sort, LocalDateTime from);
+    List<Ride> findByStatusAndScheduledForBetween(RideStatus status, LocalDateTime from, LocalDateTime to);
+
+    List<Ride> findByStatus(RideStatus rideStatus);
 }
