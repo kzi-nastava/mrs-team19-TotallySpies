@@ -8,12 +8,13 @@ public class RideTrackingDTO {
     private String status;
     private String driverName;
     private String carModel;
+    private double rating;
     private String profilePicture;
     private String pickupAddress;
     private String destinationAddress;
 
     public RideTrackingDTO(Long rideId, double vehicleLat, double vehicleLng, int eta, String status, String driverName,
-            String carModel, String profilePicture, String pickupAddress, String destinationAddress) {
+            String carModel, double rating, String profilePicture, String pickupAddress, String destinationAddress) {
         this.rideId = rideId;
         this.vehicleLat = vehicleLat;
         this.vehicleLng = vehicleLng;
@@ -21,12 +22,12 @@ public class RideTrackingDTO {
         this.status = status;
         this.driverName = driverName;
         this.carModel = carModel;
+        this.rating = rating;
         this.profilePicture = profilePicture;
         this.pickupAddress = pickupAddress;
         this.destinationAddress = destinationAddress;
     }
 
-    
 
     public String getPickupAddress() {
         return pickupAddress;
@@ -116,6 +117,16 @@ public class RideTrackingDTO {
 
     public void setProfilePicture(String profilePicture) {
         this.profilePicture = profilePicture;
+    }
+
+
+    public double getRating() {
+        return rating;
+    }
+
+
+    public void setRating(double rating) {
+        this.rating = rating;
     }
 
     

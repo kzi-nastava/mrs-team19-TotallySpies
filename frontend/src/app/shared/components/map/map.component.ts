@@ -34,6 +34,7 @@ export class MapComponent implements AfterViewInit, OnDestroy, OnDestroy {
   @Output() routeInfo = new EventEmitter<RouteInfo>();
   @Output() rideUpdate = new EventEmitter<RideTrackingDTO>();
   @Output() routeCoordinatesFound = new EventEmitter<any[]>();  // emitt coordinates of route when found
+  mapContainerId: string = 'map-' + Math.random().toString(36).substr(2, 9);
 
   private greenIcon = L.icon({
     iconUrl: 'icons/car-icon-green.png',
@@ -143,7 +144,7 @@ export class MapComponent implements AfterViewInit, OnDestroy, OnDestroy {
   }
 
   private initMap(): void {
-    this.map = L.map('map', {
+    this.map = L.map(this.mapContainerId, {
       center: [45.2396, 19.8227],
       zoom: 13,
     });

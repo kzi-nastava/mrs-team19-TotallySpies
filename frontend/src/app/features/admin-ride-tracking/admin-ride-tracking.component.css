@@ -1,0 +1,139 @@
+* {
+  font-family: 'Montserrat', sans-serif;
+}
+.admin-tracking-page {
+  padding: 20px;
+  min-height: 100vh;
+  background-color: #261F32;
+}
+
+.header-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  margin-left: 2rem;
+  margin-right: 2rem;
+  margin-bottom: 2.2rem;
+}
+
+.search-input {
+  padding: 10px 15px;
+  background-color: #73669e;
+  border: 1px solid #6E58C6;
+  color: #edfce8;
+  border-radius: 5px;
+  width: 300px;
+  font-size: 16px;
+}
+
+
+::placeholder {
+  color: #E8EDFC;
+}
+
+.rides-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.ride-card {
+  border-radius: 10px;
+  background-color: #6E58C630; 
+  box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+  overflow: hidden; 
+  display: flex;
+  flex-direction: column;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  margin-left: 2rem;
+  margin-right: 2rem;
+}
+
+.card-info-row {
+  display: flex;
+  padding: 20px;
+  background-color: #6E58C630;
+  border-bottom: 1px solid #eee;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.left-section {
+  flex: 2; 
+  border-right: 1px solid #6E58C6;
+  padding-right: 20px;
+}
+
+.right-section {
+  flex: 1;
+  padding-left: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-map-row {
+  height: 350px;
+  width: 100%;
+  background-color: #e0e0e0;
+}
+
+.map-wrapper {
+  height: 100%;
+  width: 100%;
+}
+
+:host ::ng-deep .map-frame {
+  height: 100% !important;
+  width: 100% !important;
+}
+
+.no-rides {
+  text-align: center;
+  margin-top: 50px;
+  font-size: 18px;
+  color: #666;
+}
+
+h2 {
+    color: #C5B6FF;
+    font-size: 2.5rem;
+}
+
+.info-column {
+  flex: 1;
+  border-right: 1px solid #f0f0f0;
+  padding: 0 10px;
+}
+
+.info-column.passenger-column {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+}
+
+.info-column:last-child {
+  border-right: none;
+}
+
+.column-title {
+  font-size: 0.85rem;
+  color: #888;
+  text-transform: uppercase;
+  margin-bottom: 15px;
+  letter-spacing: 1px;
+}
+
+:host ::ng-deep .driver-card {
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+h4 {
+  color:#E8EDFC !important;
+}

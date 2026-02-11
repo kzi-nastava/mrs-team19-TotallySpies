@@ -9,3 +9,7 @@
   /* margin: auto;
   border-radius: 8px; */
 }
+.map-frame {
+  height: 100%;
+  width: 100%;
+}
