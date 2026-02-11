@@ -211,6 +211,18 @@ input.editing {
   box-shadow: 0 8px 12px rgba(0, 0, 0, 0.3);
 }
 
+.note-card.blocked {
+  background: #ffe5e5;
+  border: 1px solid #ff6b6b;
+  color: #a10000;
+}
+
+.note-card.ok {
+  background: #e7f7ec;
+  border: 1px solid #4caf50;
+  color: #1b5e20;
+}
+
 /* --- Admin Dashboard Card --- */
 .dashboard-card {
   background-color: rgba(110, 88, 198, 0.3);
@@ -304,12 +316,6 @@ input.editing {
   overflow-x: auto;
 }
 
-.custom-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 14px;
-}
-
 .custom-table th {
   text-align: left;
   color: #C8E261; 
@@ -320,10 +326,57 @@ input.editing {
   border-bottom: 1px solid rgba(255,255,255,0.1);
 }
 
+.custom-table th:nth-child(1), .custom-table td:nth-child(1) {
+  width: 30%; /* Email */
+}
+
+.custom-table th:nth-child(2), .custom-table td:nth-child(2) {
+  width: 17%; /* Name */
+}
+
+.custom-table th:nth-child(3), .custom-table td:nth-child(3) {
+  width: 38%; /* Blocked Reason */
+}
+
+.custom-table th:nth-child(4), .custom-table td:nth-child(4) {
+  width: 15%; /* Action */
+  text-align: right;
+}
+
+
+.block-reason {
+  font-size: 13px;
+  color: #c8c6c6;
+  margin-top: 2px;
+  white-space: normal; 
+  word-wrap: break-word;
+  max-width: 300px;
+  line-height: 1.4;
+}
+
+/* Fiksna širina za dugme da se tabela ne širi/skuplja */
+.action-btn {
+  width: 100px; /* Dovoljno široko za reč UNBLOCK */
+  text-align: center;
+  padding: 8px 0; /* Vertikalni padding */
+  font-family: inherit;
+  transition: all 0.2s ease;
+  display: inline-block;
+}
+
+/* Osiguraj da tabela ima layout-fixed ako želiš striktnu kontrolu */
+.custom-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed; 
+  font-size: 14px;
+}
+
 .custom-table td {
+  overflow-wrap: break-word;
   padding: 15px 10px;
   border-bottom: 1px solid rgba(255,255,255,0.05);
-  vertical-align: middle;
+  /*vertical-align: middle;*/
   color: #ccc;
 }
 
@@ -374,6 +427,24 @@ input.editing {
   filter: brightness(0) saturate(100%) invert(27%) sepia(91%) saturate(6280%) hue-rotate(354deg) brightness(96%) contrast(114%);
 }
 
+.btn-block {
+  color: white;
+  background-color: red;
+  font-weight: bold;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 4px;
+}
+
+.btn-unblock {
+  color: white;
+  background-color: green;
+  font-weight: bold;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 4px;
+}
+
 .empty-state {
     padding: 40px;
     text-align: center;
@@ -386,6 +457,27 @@ input.editing {
   object-fit: cover;
   border-radius: 50%;
   border: 1px solid #ddd;
+}
+
+.badge-success {
+  color: #1b5e20;
+  padding: 4px 4px;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.badge-danger {
+  color: #a10000;
+  padding: 4px 4px;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.block-reason {
+  font-size: 12px;
+  color: #c8c6c6;
+  margin-top: 2px;
 }
 
 /* ===================== RESPONSIVE ===================== */

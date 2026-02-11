@@ -1,6 +1,7 @@
 package rs.ac.uns.ftn.asd.ProjekatSIIT2025.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -9,6 +10,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.users.AdminUserDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.users.UserImageUpdateDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.users.UserProfileResponseDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.users.UserProfileUpdateRequestDTO;
@@ -17,6 +20,7 @@ import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.User;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.UserRole;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.UserRepository;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -162,5 +166,49 @@ public class UserService implements UserDetailsService {
         } else {
             profileChangeService.createChangeRequest(user, ProfileField.IMAGE, user.getProfilePicture(), imagePath);
         }
+    }
+
+    public List<AdminUserDTO> findAllUsersByRole(UserRole role){
+        List<User> users = userRepository.findAllByRole(role);
+        List<AdminUserDTO> usersDTOList = new ArrayList<>();
+
+        for (User user : users){
+            AdminUserDTO dto = new AdminUserDTO();
+            dto.setId(user.getId());
+            dto.setEmail(user.getEmail());
+            dto.setName(user.getName());
+            dto.setRole(user.getRole());
+            dto.setBlocked(user.isBlocked());
+            dto.setBlockReason(user.getBlockReason());
+            usersDTOList.add(dto);
+        }
+
+        return usersDTOList;
+    }
+
+    public void blockUser(Long userId, String blockReason){
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        if (user.isBlocked()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This user is already blocked!");
+        }
+
+        user.setBlocked(true);
+        user.setBlockReason(blockReason);
+        userRepository.save(user);
+    }
+
+    public void unblockUser(Long userId){
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        if (!user.isBlocked()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This user is not blocked!");
+        }
+
+        user.setBlocked(false);
+        user.setBlockReason(null);
+        userRepository.save(user);
     }
 }

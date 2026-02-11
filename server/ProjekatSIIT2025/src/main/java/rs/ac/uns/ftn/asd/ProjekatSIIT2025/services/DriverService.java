@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.auth.MailBody;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.users.CreateDriverRequestDTO;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.users.DriverBlockedStatusDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.users.VehicleInfoResponseDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.ActivationToken;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.Driver;
@@ -141,5 +142,18 @@ public class DriverService {
                 .build();
 
         emailService.sendSimpleMessage(mailBody);
+    }
+
+    public DriverBlockedStatusDTO getBlockStatus(String email){
+        Driver driver = driverRepository.findByEmail(email);
+
+        if (driver == null) {
+            throw new RuntimeException("Driver not found");
+        }
+
+        DriverBlockedStatusDTO dto = new DriverBlockedStatusDTO();
+        dto.setBlockReason(driver.getBlockReason());
+        dto.setBlocked(driver.isBlocked());
+        return dto;
     }
 }

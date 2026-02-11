@@ -1,5 +1,6 @@
 package rs.ac.uns.ftn.asd.ProjekatSIIT2025.controllers.drivers;
 
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.DriverRideHistoryResponseDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.users.DriverActivityResponseDTO;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.users.DriverBlockedStatusDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.users.DriverProfileResponseDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.users.VehicleInfoResponseDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.services.DriverActivityService;
@@ -59,6 +61,13 @@ public class DriverController {
     public ResponseEntity<VehicleInfoResponseDTO> getVehicleInfo(Authentication auth) {
         String email = auth.getName();
         VehicleInfoResponseDTO dto = driverService.getVehicleInfo(email);
+        return ResponseEntity.ok(dto);
+    }
+
+    @GetMapping(value = "/blocked-status")
+    public ResponseEntity<DriverBlockedStatusDTO> getBlockStatus(Authentication auth){
+        String email = auth.getName();
+        DriverBlockedStatusDTO dto = driverService.getBlockStatus(email);
         return ResponseEntity.ok(dto);
     }
 

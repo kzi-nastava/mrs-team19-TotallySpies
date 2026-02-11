@@ -10,7 +10,7 @@ import { MapService } from '../../shared/components/map/map.service';
 import { RideService } from '../../shared/services/ride.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FavouriteService } from '../../shared/services/favourite.service';
-import { DriverSearchModalComponent } from '../../shared/components/driver-search-modal/driver-search-modal.component';
+import { DriverSearchModalComponent, DriverSearchStatus } from '../../shared/components/driver-search-modal/driver-search-modal.component';
 
 @Component({
   selector: 'app-ride-ordering',
@@ -28,7 +28,7 @@ export class RideOrderingComponent implements OnInit {
   destinationForMap = '';
   showFavouritesModal = false;
   favourites: FavouriteRideDTO[] = [];
-  driverSearchStatus: 'IDLE' | 'SEARCHING' | 'FOUND' | 'NOT_FOUND' = 'IDLE';
+  driverSearchStatus: DriverSearchStatus = 'IDLE';
   driverErrorMessage: string | null = null;
   private detailedPath: any[] = [];
 
@@ -103,7 +103,7 @@ export class RideOrderingComponent implements OnInit {
       this.routeForm.get('start')?.value,
       ...(this.routeForm.get('stops') as FormArray).value,
       this.routeForm.get('end')?.value
-    ].filter(addr => !!addr && addr.trim() !== ''); 
+    ].filter(addr => !!addr && addr.trim() !== '');
 
     const geocodeRequests = allAddresses.map(addr =>
       this.mapService.search(addr).pipe(
@@ -135,7 +135,7 @@ export class RideOrderingComponent implements OnInit {
           passengerEmails: validEmails,
           babyTransport: this.routeForm.value.babyTransport,
           petTransport: this.routeForm.value.petTransport,
-          path :this.detailedPath
+          path: this.detailedPath
         };
 
         this.rideService.createRide(dto).subscribe({
@@ -144,13 +144,20 @@ export class RideOrderingComponent implements OnInit {
             this.cd.detectChanges();
           },
           error: (err: HttpErrorResponse) => {
-            this.driverSearchStatus = 'NOT_FOUND';
-            if (err.status === 400 && err.error?.message) {
-              this.driverErrorMessage = err.error.message; 
-            } else if (err.status === 404) {
-              this.driverErrorMessage = "Resource not found.";
+
+            const errorMessage = err.error?.message || "";
+            if (errorMessage.toLowerCase().includes('blocked')) {
+              this.driverSearchStatus = 'BLOCKED';
+              this.driverErrorMessage = errorMessage;
             } else {
-              this.driverErrorMessage = "Unexpected error occurred.";
+              this.driverSearchStatus = 'NOT_FOUND';
+              if (err.status === 400 && err.error?.message) {
+                this.driverErrorMessage = err.error.message;
+              } else if (err.status === 404) {
+                this.driverErrorMessage = "Resource not found.";
+              } else {
+                this.driverErrorMessage = "Unexpected error occurred.";
+              }
             }
             this.cd.detectChanges();
           }
