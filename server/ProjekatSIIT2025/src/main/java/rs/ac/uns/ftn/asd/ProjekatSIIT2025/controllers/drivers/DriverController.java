@@ -71,6 +71,14 @@ public class DriverController {
         return ResponseEntity.ok(dto);
     }
 
+    @PreAuthorize("hasRole('DRIVER')")
+    @PostMapping(value = "/logout")
+    public ResponseEntity<Void> logoutDriver(Authentication auth) {
+        String email = auth.getName();
+        driverService.setInactiveDriver(email);
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping(value = "/{id}")
     public ResponseEntity<DriverProfileResponseDTO> getDriverProfile(@PathVariable Long id) {
         DriverProfileResponseDTO dto = new DriverProfileResponseDTO();

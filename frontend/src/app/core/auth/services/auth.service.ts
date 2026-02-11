@@ -32,14 +32,30 @@ export class AuthService {
   //this sends POST request to specific login endpoint with body {email, password}
   login(dto: UserLoginRequestDTO): Observable<UserTokenStateDTO> {
     return this.http.post<UserTokenStateDTO>(environment.apiHost + '/auth/login',
-      dto, 
-      {headers: this.headers,}
+      dto,
+      { headers: this.headers, }
     );
   }
 
-  logout() : void{ //removes jwt from local storage
-    localStorage.removeItem('token');
-    this.user$.next(null);
+  logout(): void { //removes jwt from local storage
+    const role = this.getRole();
+    const isDriver = role === 'ROLE_DRIVER';
+    if (isDriver) {
+      this.logoutDriver().subscribe({
+        next: () => {
+          localStorage.removeItem('token');
+          this.user$.next(null);
+        },
+        error: (err) => {
+          console.error("Backend logout failed:", err);
+          localStorage.removeItem('token');
+          this.user$.next(null);
+        }
+      });
+    } else {
+      localStorage.removeItem('token');
+      this.user$.next(null);
+    }
   }
   verifyEmail(dto: VerifyEmailDTO): Observable<string> {
     return this.http.post(
@@ -49,46 +65,46 @@ export class AuthService {
     );
   }
 
-  verifyOtp(dto : VerifyOtpDTO) : Observable<string>{
+  verifyOtp(dto: VerifyOtpDTO): Observable<string> {
     return this.http.post(
       environment.apiHost + '/forgot-password/verify-otp',
       dto,
-      { headers : this.headers, responseType: 'text'}
+      { headers: this.headers, responseType: 'text' }
     );
   }
-  changePassword(dto : ChangedPasswordDTO) : Observable<string>{
+  changePassword(dto: ChangedPasswordDTO): Observable<string> {
     return this.http.post(
       environment.apiHost + '/forgot-password/change-password',
       dto,
-      { headers : this.headers, responseType : 'text'}
+      { headers: this.headers, responseType: 'text' }
     );
   }
   register(formData: FormData): Observable<string> {
-  // do not set 'Content-Type' here
-  const uploadHeaders = new HttpHeaders({
-    skip: 'true',
-  });
-
-  return this.http.post(environment.apiHost + '/auth/register', formData, {
-    headers: uploadHeaders,
-    responseType: 'text',
-  });
-  }
-  activateAccount(token : string){
-    const headers = new HttpHeaders({
-      skip : 'true',   //to tell intercept to not attach jwt
+    // do not set 'Content-Type' here
+    const uploadHeaders = new HttpHeaders({
+      skip: 'true',
     });
-    return this.http.post(environment.apiHost + '/auth/activate', null,{
+
+    return this.http.post(environment.apiHost + '/auth/register', formData, {
+      headers: uploadHeaders,
+      responseType: 'text',
+    });
+  }
+  activateAccount(token: string) {
+    const headers = new HttpHeaders({
+      skip: 'true',   //to tell intercept to not attach jwt
+    });
+    return this.http.post(environment.apiHost + '/auth/activate', null, {
       headers,
       params: { token },
-      responseType: 'text' 
+      responseType: 'text'
     });
   }
 
   getRole(): any { //checks if token exists in localStorage, decodes it and extracts role
     if (this.isLoggedIn()) {
       const accessToken: any = localStorage.getItem('token');
-      const helper = new JwtHelperService(); 
+      const helper = new JwtHelperService();
       //return helper.decodeToken(accessToken).role[0].authority;
       return helper.decodeToken(accessToken).role; //gets role from jwt claims to use it for custom navbar
     }
@@ -104,7 +120,11 @@ export class AuthService {
   }
 
   activateDriver(dto: DriverActivationRequestDTO): Observable<void> {
-  const headers = new HttpHeaders({ skip: 'true' }); // da interceptor ne dodaje JWT
-  return this.http.post<void>(`${environment.apiHost}/auth/activate-driver`, dto, { headers });
-}
+    const headers = new HttpHeaders({ skip: 'true' }); // da interceptor ne dodaje JWT
+    return this.http.post<void>(`${environment.apiHost}/auth/activate-driver`, dto, { headers });
+  }
+
+  logoutDriver(): Observable<void> {
+    return this.http.post<void>(`${environment.apiHost}/drivers/logout`, {});
+  }
 }
