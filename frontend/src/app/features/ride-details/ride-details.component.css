@@ -1,0 +1,130 @@
+.map-container {
+  position: relative;
+  height: 100vh;
+  margin: 0;
+  background-color: #261f32;
+  overflow: hidden;
+}
+
+.main-box {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 1000;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  background: rgba(38, 22, 64, 0.4);
+  /*background : #261f32;*/
+  border-radius: 12px;
+  padding: 12px;
+  max-width: min(920px, calc(100vw - 40px));
+  max-height: calc(100vh - 40px); /* da ne pređe ekran */
+  overflow: hidden;  
+}
+.grades-box,
+.reports-box {
+  grid-column: 1 / -1;
+  background: #261f32;
+  border-radius: 12px;
+  padding: 15px;
+  font-family: 'Montserrat', sans-serif;
+  max-height: 150px;
+  overflow-y: auto;
+}
+.ride-box,
+.driver-box {
+  background: #261f32;
+  border-radius: 12px;
+  padding: 15px;
+  font-family: 'Montserrat', sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  font-size: 16px;
+  color: #c8e261;
+  margin: 0;
+  text-align: left;
+}
+
+.driver-info-container {
+  border-radius: 12px;
+  background-color: #6e58c6;
+  padding: 15px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 7px;
+  margin-bottom: 10px;
+}
+
+img {
+  width: 28px;
+  height: 28px;
+}
+
+p {
+  color: white;
+  font-size: 14px;
+  font-weight : 300;
+  margin: 6px 0;
+}
+
+.reports-table {
+  width: 100%;    
+  border-collapse: collapse;
+  overflow: hidden;
+  border-radius: 12px;
+  margin-top: 10px;
+}
+.reports-table thead th {
+  text-align: left;
+  font-size: 14px;
+  font-weight: 600;
+  color: #c8e261;
+  padding: 10px 14px;
+}
+.reports-table tbody tr {
+  background: #6e58c6;
+}
+
+.reports-table tbody td {
+  padding: 10px 14px;
+  font-size: 13px;
+  color: #f2effa;
+  vertical-align: middle;
+}
+
+.reports-table tbody tr + tr td {
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+.info-header{
+    color: #c8e261;
+    font-weight: 600;
+}
+
+@media (max-width: 900px) {
+  .main-box {
+    grid-template-columns: 1fr;
+  }
+
+  .reports-box {
+    grid-column: auto;
+  }
+}
+.ride-btn {
+  border-radius: 8px;
+  border-color:#6e58c6;
+  background-color: #6e58c6;
+  margin-top : 20px;
+  color: white;
+  width: 120px;
+  height: 40px;
+  margin: auto;
+  font-family: 'Montserrat', sans-serif;
+}

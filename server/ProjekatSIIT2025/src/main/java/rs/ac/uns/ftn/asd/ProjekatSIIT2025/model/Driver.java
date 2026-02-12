@@ -19,6 +19,9 @@ public class Driver extends User {
     @OneToMany(mappedBy = "driver")
     private List<Ride> rides = new ArrayList<>();
 
+    @Column(nullable = false)
+    private double averageRating = 0.0;
+
     public boolean isActive() {
         return isActive;
     }
@@ -42,5 +45,14 @@ public class Driver extends User {
     public void setRides(List<Ride> rides) {
         this.rides = rides;
     }
+
+    public double getAverageRating() {
+        return averageRating;
+    }
+
+    public void setAverageRating(double averageRating) {
+        this.averageRating = averageRating;
+    }
+    
 }
 

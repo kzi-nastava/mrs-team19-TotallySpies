@@ -1,0 +1,31 @@
+<div class="notification-container">
+  
+  <button class="bell-btn" (click)="toggleDropdown()">
+  <img src="icons/notification-icon.png" alt="Notifications" class="bell-img-icon">
+    
+    <span *ngIf="unreadCount > 0" class="badge">{{ unreadCount }}</span>
+  </button>
+
+  <div class="dropdown" *ngIf="isOpen">
+    <div class="dropdown-header">Notifications</div>
+    
+    <div class="notification-list">
+      <div *ngFor="let notif of notifications" 
+           class="notification-item" 
+           [class.unread]="!notif.read"
+           (click)="onNotificationClick(notif)">
+        
+        <div class="notif-content">
+          <p class="notif-msg">{{ notif.message }}</p>
+          <span class="notif-time">{{ notif.createdAt | date:'shortTime' }}</span>
+        </div>
+        
+      </div>
+
+      <div *ngIf="notifications.length === 0" class="empty-state">
+        No notifications.
+      </div>
+    </div>
+  </div>
+
+</div>

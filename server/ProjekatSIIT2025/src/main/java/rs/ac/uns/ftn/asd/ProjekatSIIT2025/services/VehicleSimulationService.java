@@ -76,6 +76,7 @@ public class VehicleSimulationService {
                         activeRide.getStatus().toString(),
                         driver.getName(),
                         driver.getVehicle().getModel(),
+                        driver.getAverageRating(),
                         driver.getProfilePicture(),
                         activeRide.getStops().get(0).getAddress(),
                         activeRide.getStops().get(activeRide.getStops().size() - 1).getAddress()

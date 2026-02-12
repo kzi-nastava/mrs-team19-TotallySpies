@@ -46,9 +46,26 @@
 }
 
 .rating {
+    margin: 10px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+}
+
+.star {
+  font-size: 1.2rem;
+  color: #ccc; 
+}
+
+.star.filled {
   color: #b6ce59;
-  font-size: 20px;
-  padding-bottom: 0.4rem;
+}
+
+.rating-number {
+    font-size: 0.9rem;
+    color: #666;
+    margin-left: 5px;
 }
 
 .report-btn {

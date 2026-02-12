@@ -127,4 +127,22 @@ export class AuthService {
   logoutDriver(): Observable<void> {
     return this.http.post<void>(`${environment.apiHost}/drivers/logout`, {});
   }
+
+  getUserId(): number | null {
+    const token = this.getToken();
+    if (!token) return null;
+    
+    try {
+      const helper = new JwtHelperService();
+      const decodedToken = helper.decodeToken(token);
+      return decodedToken.id || decodedToken.userId || decodedToken.sub || null;
+    } catch (error) {
+      console.error('Error decoding token:', error);
+      return null;
+    }
+  }
+
+    getToken(): string | null {
+    return localStorage.getItem('token');
+  }
 }

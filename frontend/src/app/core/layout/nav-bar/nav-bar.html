@@ -6,9 +6,12 @@
     <!--<a routerLink="/driver-profile" routerLinkActive="active">Driver profile</a>
     <a routerLink="/admin-profile" routerLinkActive="active">Admin profile</a>-->
     <a routerLink="/ride-history" routerLinkActive="active">Ride history</a>
+    <a routerLink="/report-page" routerLinkActive="active">Reports</a>
   </div>
 
   <div class="navbar-right">
+    <app-notification></app-notification> 
+
     <a routerLink="/login" class="login-btn">Login</a>
     <a routerLink="/register" class="register-btn">Register</a>
     <button (click)="logout()" class = "login-btn">Logout</button>
