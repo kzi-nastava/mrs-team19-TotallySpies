@@ -11,9 +11,10 @@ import {
 import * as L from 'leaflet';
 import { MapService } from './map.service';
 import 'leaflet-routing-machine';
-import { RideTrackingDTO } from '../../models/ride.model';
+import { RideDetailsStopDTO, RideStopDTO, RideTrackingDTO } from '../../models/ride.model';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
+
 export type RouteInfo = { distanceKm: number; estimatedTime: number };
 
 @Component({
@@ -22,7 +23,7 @@ export type RouteInfo = { distanceKm: number; estimatedTime: number };
   styleUrls: ['./map.component.css'],
   standalone: true,
 })
-export class MapComponent implements AfterViewInit, OnDestroy, OnDestroy {
+export class MapComponent implements AfterViewInit, OnDestroy, OnChanges {
   private map!: L.Map;
   private routeControl?: L.Routing.Control;
   private vehicleMarkers: Map<number, L.Marker> = new Map();
@@ -30,6 +31,8 @@ export class MapComponent implements AfterViewInit, OnDestroy, OnDestroy {
   private coordinates: any[] = [];
   @Input() pickupAddress = '';
   @Input() destinationAddress = '';
+  @Input() mode = '';
+  @Input() rideStops: RideDetailsStopDTO[] = [];
   @Input() rideId: number | null = null;
   @Output() routeInfo = new EventEmitter<RouteInfo>();
   @Output() rideUpdate = new EventEmitter<RideTrackingDTO>();
@@ -143,6 +146,33 @@ export class MapComponent implements AfterViewInit, OnDestroy, OnDestroy {
     });
   }
 
+
+  private routeLine?: L.Polyline;
+
+  private drawRouteFromStops(): void {
+    console.log('STATIC stops:', this.rideStops);
+    console.log('MAP exists:', !!this.map);
+    if (!this.rideStops || this.rideStops.length < 2) return;
+
+    // clean previous route
+    if (this.routeLine) {
+      this.routeLine.remove();
+      this.routeLine = undefined;
+    }
+
+    const points = this.rideStops.map(s => L.latLng(s.latitude, s.longitude));
+
+    //draw a line
+    this.routeLine = L.polyline(points).addTo(this.map);
+
+    // zoom 
+    this.map.fitBounds(this.routeLine.getBounds(), { padding: [30, 30] });
+
+    // markers
+    L.marker(points[0]).addTo(this.map).bindPopup('Pickup');
+    L.marker(points[points.length - 1]).addTo(this.map).bindPopup('Destination');
+  }
+
   private initMap(): void {
     this.map = L.map(this.mapContainerId, {
       center: [45.2396, 19.8227],
@@ -170,6 +200,12 @@ export class MapComponent implements AfterViewInit, OnDestroy, OnDestroy {
     });
   }
   ngOnChanges(changes: SimpleChanges): void {
+    if(!this.map)
+      return;
+
+    if (this.mode === 'static' && changes['rideStops']) {
+      this.drawRouteFromStops();
+    }
     if (this.map && (changes['pickupAddress'] || changes['destinationAddress'])) {
         this.setRoute();
     }
@@ -190,10 +226,16 @@ export class MapComponent implements AfterViewInit, OnDestroy, OnDestroy {
 
     L.Marker.prototype.options.icon = DefaultIcon;
     this.initMap();
+
+    if (this.mode === 'static'){
+      this.drawRouteFromStops(); 
+      return;
+    }
+    
+    this.subscribeToWebsocket();
     if (this.pickupAddress.trim() && this.destinationAddress.trim()) {
       this.setRoute();
     }
-    this.subscribeToWebsocket();
     // if inputs are already set by the time map is ready, draw route now
     //this.registerOnClick();
   }

@@ -45,7 +45,11 @@ export interface CreateRideResponseDTO {
   distanceKm: number,
   estimatedTime: number
 }
-
+export interface RideDetailsStopDTO{
+  address:string,
+  latitude :number,
+  longitude : number
+}
 export interface RideStopDTO {
   address: string,
   lat: number,
