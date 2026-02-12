@@ -45,7 +45,7 @@ export class ReportComponent implements OnInit {
         this.reportData = data;
 
         this.cdr.detectChanges();
-        
+
         this.updateCharts();
       }
     });
@@ -79,10 +79,5 @@ export class ReportComponent implements OnInit {
       },
       options: { responsive: true, plugins: { legend: { labels: { color: '#fff' } } } }
     });
-  }
-
-  resetFilters(): void {
-    this.targetEmail = '';
-    this.generateReport();
   }
 }
