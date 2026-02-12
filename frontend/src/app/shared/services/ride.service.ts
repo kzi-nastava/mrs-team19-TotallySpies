@@ -6,6 +6,7 @@ import { environment } from '../../../env/environment';
 import { CancelRideDTO } from '../models/cancel-ride.model';
 import { PanicRideDTO } from '../models/panic-ride.model';
 import { StopRideDTO } from '../models/stop-ride.model';
+import { PassengerRideDetailsResponseDTO } from '../models/passenger-ride-details.model';
 
 @Injectable({
   providedIn: 'root',
@@ -66,5 +67,9 @@ export class RideService {
       params = params.set('driverName', driverName);
     }
     return this.http.get<ActiveRideDTO[]>(`${environment.apiHost}/rides/active-admin`, { params });
+  }
+
+  getRideDetails(rideId : number){
+    return this.http.get<PassengerRideDetailsResponseDTO>(`${environment.apiHost}/rides/${rideId}/details`)
   }
 }

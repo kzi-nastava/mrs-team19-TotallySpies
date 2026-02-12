@@ -15,9 +15,9 @@ public class PassengerRideDetailsResponseDTO {
     private String driverEmail;
     private String driverPhoneNumber;
     private Map<String, String> reportReasons; //passenger email and report reason
-    private Map<String,Integer> rideGrades; //passenger email and grade
+    private List<RideGradeDTO> rideGrades;
 
-    public PassengerRideDetailsResponseDTO(Long rideId, List<RideStop> rideStops, double distanceKm, double totalPrice, String driverName, String driverLastName, String driverEmail, String driverPhoneNumber, Map<String, String> reportReasons, Map<String, Integer> rideGrades) {
+    public PassengerRideDetailsResponseDTO(Long rideId, List<RideStop> rideStops, double distanceKm, double totalPrice, String driverName, String driverLastName, String driverEmail, String driverPhoneNumber, Map<String, String> reportReasons, List<RideGradeDTO> rideGrades) {
         this.rideId = rideId;
         this.rideStops = rideStops;
         this.distanceKm = distanceKm;
@@ -109,11 +109,11 @@ public class PassengerRideDetailsResponseDTO {
         this.reportReasons = reportReasons;
     }
 
-    public Map<String, Integer> getRideGrades() {
+    public List<RideGradeDTO> getRideGrades() {
         return rideGrades;
     }
 
-    public void setRideGrades(Map<String, Integer> rideGrades) {
+    public void setRideGrades(List<RideGradeDTO> rideGrades) {
         this.rideGrades = rideGrades;
     }
 }

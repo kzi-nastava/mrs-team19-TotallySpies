@@ -66,11 +66,12 @@ public class UserController {
             LocalDateTime to )
 
     {
-        Set<String> allowedSorts = Set.of("startedAt", "finishedAt");
+        Set<String> allowedSorts = Set.of("startedAt", "finishedAt", "createdAt", "pickupAddress", "destinationAddress");
         if (!allowedSorts.contains(sortBy)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid sort field");
         }
         Sort sort = null;
+
         if(sortDirection.equals("ASC")){
             sort = Sort.by(sortBy).ascending();
         }
@@ -79,7 +80,6 @@ public class UserController {
         }
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         List<PassengerRideHistoryResponseDTO> history = rideService.getPassengerHistory(email,sort, from, to);
-
         return new ResponseEntity<>(history, HttpStatus.OK);
     }
 

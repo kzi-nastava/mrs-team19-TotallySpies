@@ -19,6 +19,8 @@ import { VerifyOtpComponent } from './core/auth/components/verify-otp/verify-otp
 import { ChangePasswordComponent } from './core/auth/components/change-password/change-password.component';
 import { ActivateAccountComponent } from './core/auth/components/activate-account/activate-account.component';
 import { ChangeOldPasswordComponent } from './shared/components/change-old-password/change-old-password.component';
+import { PassengerRidesHistoryComponent } from './features/passenger-rides-history/passenger-rides-history.component';
+import { RideDetailsComponent } from './features/ride-details/ride-details.component';
 import { ReportComponent } from './features/report/report.component';
 import { AdminRideTrackingComponent } from './features/admin-ride-tracking/admin-ride-tracking.component';
 
@@ -105,6 +107,14 @@ export const routes: Routes = [
   },
   { path: 'change-old-password', 
     component: ChangeOldPasswordComponent 
+  },
+  {
+    path : 'passenger-ride-history',
+    component : PassengerRidesHistoryComponent
+  },
+  {
+    path : 'ride-details/:id',
+    component : RideDetailsComponent
   },
   {
     path: 'report-page',

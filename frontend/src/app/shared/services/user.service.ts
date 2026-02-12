@@ -4,6 +4,7 @@ import { ChangePasswordRequestDTO, UserProfileResponseDTO, UserProfileUpdateRequ
 import { Observable } from "rxjs";
 import { environment } from "../../../env/environment";
 import { ReportResponseDTO } from "../models/report.model";
+import { PassengerRideHistoryResponseDTO } from "../models/passenger-ride-history.model";
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
@@ -40,5 +41,20 @@ export class UserService {
     }
 
     return this.http.get<ReportResponseDTO>(`${this.baseUrl}/report`, { params });
+  }
+  getRidesHistory(params?: {
+    sortBy?: string;
+    sortDirection?: string;
+    from?: string; // ISO datetime
+    to?: string;   // ISO datetime
+  }) : Observable<PassengerRideHistoryResponseDTO[]>{
+    let httpParams = new HttpParams();
+
+    if (params?.sortBy) httpParams = httpParams.set('sortBy', params.sortBy);
+    if (params?.sortDirection) httpParams = httpParams.set('sortDirection', params.sortDirection);
+    if (params?.from) httpParams = httpParams.set('from', params.from);
+    if (params?.to) httpParams = httpParams.set('to', params.to);
+
+    return this.http.get<PassengerRideHistoryResponseDTO[]>(`${this.baseUrl}/history`, {params : httpParams});
   }
 }
