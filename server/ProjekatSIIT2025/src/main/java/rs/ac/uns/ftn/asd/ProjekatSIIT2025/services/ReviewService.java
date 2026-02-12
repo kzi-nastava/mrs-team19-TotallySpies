@@ -1,6 +1,7 @@
 package rs.ac.uns.ftn.asd.ProjekatSIIT2025.services;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,7 @@ import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.Passenger;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.Review;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.ReviewType;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.Ride;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.DriverRepository;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.PassengerRepository;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.ReviewRepository;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.RideRepository;
@@ -26,6 +28,8 @@ public class ReviewService {
     RideRepository rideRepository;
     @Autowired
     PassengerRepository passengerRepository;
+    @Autowired
+    DriverRepository driverRepository;
 
     @Transactional
     public Review saveReview (long rideId, ReviewRequestDTO request, ReviewType type) {
@@ -52,7 +56,27 @@ public class ReviewService {
         review.setPassenger(passenger);
         review.setType(type);
 
-        return reviewRepository.save(review);
+        Review savedReview = reviewRepository.save(review);
+
+        if (type == ReviewType.DRIVER && ride.getDriver() != null) {
+            updateDriverRating(ride.getDriver().getId());
+        }
+
+        return savedReview;
+    }
+
+    private void updateDriverRating(Long driverId) {
+        List<Review> reviews = reviewRepository.findAllDriverReviews(driverId);
+        if (reviews.isEmpty()) return;
+        double average = reviews.stream()
+                .mapToInt(Review::getGrade)
+                .average()
+                .orElse(0.0);
+
+        driverRepository.findById(driverId).ifPresent(driver -> {
+            driver.setAverageRating(average);
+            driverRepository.save(driver);
+        });
     }
 
     private void validateReviewTime(LocalDateTime endTime) {

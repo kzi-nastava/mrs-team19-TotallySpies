@@ -20,6 +20,7 @@ import { ChangePasswordComponent } from './core/auth/components/change-password/
 import { ActivateAccountComponent } from './core/auth/components/activate-account/activate-account.component';
 import { ChangeOldPasswordComponent } from './shared/components/change-old-password/change-old-password.component';
 import { ReportComponent } from './features/report/report.component';
+import { AdminRideTrackingComponent } from './features/admin-ride-tracking/admin-ride-tracking.component';
 
 export const routes: Routes = [
   {
@@ -108,5 +109,9 @@ export const routes: Routes = [
   {
     path: 'report-page',
     component: ReportComponent
+  }, 
+  {
+    path: 'admin-ride-tracking',
+    component: AdminRideTrackingComponent
   }
 ];
