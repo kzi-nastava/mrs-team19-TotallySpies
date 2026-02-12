@@ -11,7 +11,6 @@ import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.Ride;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.User;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.NotificationRepository;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.UserRepository;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,5 +63,18 @@ public class NotificationService {
                         notification.getCreatedAt()
                 )
         );
+    }
+
+    public void markAsRead(Long id) {
+        Notification notification;
+        try {
+            notification = notificationRepository.findById(id)
+                .orElseThrow(() -> new Exception("Notification not found with id: " + id));
+        notification.setRead(true);
+        notificationRepository.save(notification);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 }
