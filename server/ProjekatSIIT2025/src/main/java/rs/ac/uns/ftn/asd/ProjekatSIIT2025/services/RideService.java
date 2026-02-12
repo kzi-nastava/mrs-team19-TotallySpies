@@ -413,11 +413,13 @@ public class RideService {
         Passenger creator = passengerRepository.findByEmail(creatorEmail)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Passenger not found"));
 
+        if (creator.isBlocked()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You can't order a new ride! You are blocked:" + creator.getBlockReason());
+        }
+
         boolean creatorHasActiveRide = rideRepository.existsByPassengersContainingAndStatus(creator, RideStatus.ACTIVE);
         if (creatorHasActiveRide) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You already have an active ride");
-        } else if (creator.getBlocked()){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You are blocked! You can't order a new ride!");
         }
 
         boolean isScheduled = dto.getScheduledFor() != null;

@@ -52,7 +52,6 @@ export interface ProfileChangeRequestDTO {
     createdAt: string; 
 }
 
-// Mapirano prema tvojoj klasi CreateDriverRequestDTO
 export interface CreateDriverRequestDTO {
     // driver info
     email: string;
@@ -68,4 +67,18 @@ export interface CreateDriverRequestDTO {
     seats: number;
     babyFriendly: boolean;
     petFriendly: boolean;
+}
+
+export interface DriverBlockedStatusDTO {
+  blocked: boolean;
+  blockReason: string | null;
+}
+
+export interface AdminUserDTO {
+    id: number,
+    email: string,
+    name: string,
+    role: string,
+    blocked: boolean,
+    blockReason: string
 }

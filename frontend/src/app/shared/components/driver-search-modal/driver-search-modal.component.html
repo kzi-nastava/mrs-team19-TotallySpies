@@ -35,5 +35,14 @@
             <button (click)="closeModal()">Close</button>
         </ng-container>
 
+        <!-- BLOCKED -->
+        <ng-container *ngIf="status === 'BLOCKED'">
+            <h2 class="error-text">You are blocked!</h2>
+            <p *ngIf="errorMessage">
+                {{ errorMessage }}
+            </p>
+            <button (click)="closeModal()">OK</button>
+        </ng-container>
+
     </div>
 </div>

@@ -6,6 +6,7 @@ import {
   DriverActivityResponseDTO, 
   VehicleInfoResponseDTO, 
   UserProfileUpdateRequestDTO,
+  DriverBlockedStatusDTO,
 } from '../models/users/user.model';
 import {  DriverRideHistoryDTO } from '../models/ride.model'
 
@@ -39,5 +40,9 @@ export class DriverService {
     if (to) params = params.set('to', to);
 
     return this.http.get<DriverRideHistoryDTO[]>(`${this.baseUrl}/history`, { params });
+  }
+
+  getBlockedStatus(): Observable<DriverBlockedStatusDTO> {
+    return this.http.get<DriverBlockedStatusDTO>(`${this.baseUrl}/blocked-status`);
   }
 }

@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
-export type DriverSearchStatus = 'IDLE' | 'SEARCHING' | 'FOUND' | 'NOT_FOUND';
+export type DriverSearchStatus = 'IDLE' | 'SEARCHING' | 'FOUND' | 'NOT_FOUND' | 'BLOCKED';
 
 @Component({
   selector: 'app-driver-search-modal',

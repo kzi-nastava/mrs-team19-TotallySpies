@@ -11,9 +11,12 @@ import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.RidePreviewResponseDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.users.*;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.Driver;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.PanicNotification;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.User;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.UserRole;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.services.DriverService;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.services.PanicNotificationService;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.services.ProfileChangeService;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.services.UserService;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -31,6 +34,9 @@ public class AdminController {
 
     @Autowired
     PanicNotificationService panicNotificationService;
+
+    @Autowired
+    UserService userService;
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping(value = "/profile-change-requests")
@@ -58,43 +64,6 @@ public class AdminController {
         driverService.createDriver(dto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
-
-    /* @GetMapping("/{id}")
-    public ResponseEntity<UserProfileResponseDTO> getAdminProfile(@PathVariable Long id) {
-        UserProfileResponseDTO dto = new UserProfileResponseDTO();
-        dto.setName("Admin123");
-        dto.setLastName("Administrator");
-        dto.setEmail("admin@system.com");
-        dto.setProfilePicture("admin.png");
-
-        return ResponseEntity.ok(dto);
-    }
-
-    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> updateAdminProfile(
-            @PathVariable Long id,
-            @RequestBody UserProfileUpdateRequestDTO request) {
-
-        return ResponseEntity.noContent().build();
-    }
-
-    @PutMapping(value = "/{id}/image", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> updateAdminImage(
-            @PathVariable Long id,
-            @RequestBody UserImageUpdateDTO request) {
-
-        return ResponseEntity.noContent().build();
-    }
-
-    @PostMapping(value = "/drivers", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<UserProfileResponseDTO> createDriver(@RequestBody DriverRegisterRequestDTO request) {
-        UserProfileResponseDTO response = new UserProfileResponseDTO();
-        response.setEmail(request.getEmail());
-        response.setName(request.getName());
-        response.setLastName(request.getLastName());
-
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
-    }*/
 
     @GetMapping(value = "/users/{id}",consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ArrayList<RidePreviewResponseDTO>> getAll(@PathVariable Long id){
@@ -146,6 +115,30 @@ public class AdminController {
                 panicNotificationService.getPanicNotifications();
 
         return ResponseEntity.ok(panicNotifications);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/drivers")
+    public List<AdminUserDTO> getDrivers() {
+        return userService.findAllUsersByRole(UserRole.DRIVER);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/passengers")
+    public List<AdminUserDTO> getPassengers() {
+        return userService.findAllUsersByRole(UserRole.PASSENGER);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/block/{id}")
+    public void blockUser(@PathVariable Long id, @RequestBody BlockRequestDTO req) {
+        userService.blockUser(id, req.getReason());
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/unblock/{id}")
+    public void unblockUser(@PathVariable Long id) {
+        userService.unblockUser(id);
     }
 
 

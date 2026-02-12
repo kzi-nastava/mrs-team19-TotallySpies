@@ -9,6 +9,7 @@
     import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.User;
     import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.UserRole;
 
+    import java.util.List;
     import java.util.Optional;
 
     @Repository
@@ -23,5 +24,7 @@
 
         @Query("select u.role from User u where u.email = ?1")
         UserRole getRoleByEmail(String email);
+
+        List<User> findAllByRole(UserRole role);
     }
 

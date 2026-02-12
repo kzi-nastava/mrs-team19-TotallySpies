@@ -117,13 +117,17 @@
     </div>
 
     <div class="notes-section">
-      <h3>Driver Notes</h3>
-      <div class="notes-container">
-        <div class="note-card" *ngFor="let note of driverNotes">
-          <p>{{ note.text }}</p>
-        </div>
-        <div *ngIf="driverNotes.length === 0" class="note-card empty">No active notes.</div>
+      <h3>Blocked status</h3>
+      <div *ngIf="blockedStatus?.blocked; else notBlocked" class="note-card blocked">
+        <p>Your account is blocked</p>
+        <p>{{ blockedStatus.blockReason }}</p>
       </div>
+
+      <ng-template #notBlocked>
+        <div class="note-card ok">
+          <p>Your account is not blocked.</p>
+        </div>
+      </ng-template>
     </div>
   </div>
 
@@ -138,7 +142,7 @@
       <button class="tab-item" [class.active]="activeTab === 'approvals'"
         (click)="activeTab = 'approvals'">Approvals</button>
       <button class="tab-item" [class.active]="activeTab === 'drivers'" (click)="activeTab = 'drivers'">Drivers</button>
-      <button class="tab-item" [class.active]="activeTab === 'users'" (click)="activeTab = 'users'">Users</button>
+      <button class="tab-item" [class.active]="activeTab === 'users'" (click)="activeTab = 'users'">Passengers</button>
     </div>
 
     <!-- TAB CONTENT: APPROVALS -->
@@ -181,23 +185,27 @@
         <thead>
           <tr>
             <th>Email</th>
-            <th>Driver</th>
-            <th>Status</th>
-            <th>Change Status</th>
-            <th style="text-align: right;">Block</th>
+            <th>Name</th>
+            <th>Blocked Reason</th>
+            <th style="text-align: right;">Action</th>
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let driver of driversList">
             <td>{{ driver.email }}</td>
             <td>{{ driver.name }}</td>
-            <!--<td><span class="badge" [ngClass]="getStatusClass(driver.status)">{{ driver.status }}</span></td>-->
-            <td><span class="badge">Active</span></td>
-            <td><button class="change-status-btn">CHANGE</button></td>
-            <td style="text-align: right;"><button class="block-btn"><img src="icons/block-icon.png" /></button></td>
+            <td>
+              <div *ngIf="driver.blocked" class="block-reason">{{ driver.blockReason }}</div>
+            </td>
+            <td style="text-align: right;">
+              <button class="action-btn" (click)="toggleBlock(driver)" [ngClass]="driver.blocked ? 'btn-unblock' : 'btn-block'">
+                {{ driver.blocked ? 'UNBLOCK' : 'BLOCK' }}
+              </button>
+            </td>
           </tr>
         </tbody>
       </table>
+      <p *ngIf="driversList.length === 0" class="empty-msg">No drivers found.</p>
     </div>
 
     <!-- TAB CONTENT: USERS -->
@@ -206,18 +214,27 @@
         <thead>
           <tr>
             <th>Email</th>
-            <th>User</th>
-            <th style="text-align: right;">Block</th>
+            <th>Name</th>
+            <th>Blocked Reason</th>
+            <th style="text-align: right;">Action</th>
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let user of usersList">
             <td>{{ user.email }}</td>
             <td>{{ user.name }}</td>
-            <td style="text-align: right;"><button class="block-btn"><img src="icons/block-icon.png" /></button></td>
+            <td>
+              <div *ngIf="user.blocked" class="block-reason">{{ user.blockReason }}</div>
+            </td>
+            <td style="text-align: right;">
+              <button class="action-btn" (click)="toggleBlock(user)" [ngClass]="user.blocked ? 'btn-unblock' : 'btn-block'" >
+                {{ user.blocked ? 'UNBLOCK' : 'BLOCK' }}
+              </button>
+            </td>
           </tr>
         </tbody>
       </table>
+      <p *ngIf="usersList.length === 0" class="empty-msg">No users found.</p>
     </div>
 
   </div>

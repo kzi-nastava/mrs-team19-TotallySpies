@@ -1,0 +1,32 @@
+<div class="report-container">
+  <div class="header">
+    <h2>
+      {{ data.isBlocked ? 'Unblock User' : 'Block User' }}
+    </h2>
+    <button (click)="close()" class="close-btn">×</button>
+  </div>
+
+  <div *ngIf="!data.isBlocked">
+    <textarea 
+      [(ngModel)]="reason" 
+      placeholder="Enter reason for blocking..." 
+      class="report-input">
+    </textarea>
+  </div>
+
+  <div *ngIf="data.isBlocked">
+    <p class="confirm-text">
+      Are you sure you want to unblock <strong>{{ data.name }}</strong>?
+    </p>
+  </div>
+
+  <div class="actions">
+    <button class="cancel-btn" (click)="close()">Cancel</button>
+    
+    <button 
+      [class]="data.isBlocked ? 'unblock-btn' : 'send-btn'" 
+      (click)="submit()">
+      {{ data.isBlocked ? 'CONFIRM UNBLOCK' : 'BLOCK USER' }}
+    </button>
+  </div>
+</div>
