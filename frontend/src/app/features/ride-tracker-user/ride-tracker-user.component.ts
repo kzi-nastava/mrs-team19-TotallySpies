@@ -5,12 +5,13 @@ import { MapComponent } from '../../shared/components/map/map.component';
 import { CommonModule } from '@angular/common';
 import { RideTrackingDTO } from '../../shared/models/ride.model';
 import { RideService } from '../../shared/services/ride.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { PanicRideDTO } from '../../shared/models/panic-ride.model';
 import { MapService } from '../../shared/components/map/map.service';
 import { MatDialog } from '@angular/material/dialog';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
+import { AuthService } from '../../core/auth/services/auth.service';
 
 @Component({
   selector: 'app-ride-tracker-user',
@@ -44,13 +45,20 @@ export class RideTrackerUserComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private mapService : MapService,
     private dialog: MatDialog,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private authService: AuthService,
+    private router: Router
   ) {}
 
 
   ngOnInit() {
     this.route.params.subscribe(params => {
       this.rideId = +params['id'];
+      if (!this.authService.isLoggedIn()) {
+      alert("Please login to track your ride.");
+      this.router.navigate(['/login'], { queryParams: { returnUrl: '/ride-tracker-user/' + this.rideId } });
+      return;
+    }
       this.loadInitialData();
       this.connectToWebSocket(); 
     });

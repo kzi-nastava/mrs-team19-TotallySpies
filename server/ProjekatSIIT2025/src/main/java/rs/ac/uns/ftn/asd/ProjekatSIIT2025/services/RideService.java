@@ -70,19 +70,30 @@ public class RideService {
         ride.setFinishedAt(LocalDateTime.now());
         rideRepository.save(ride);
 
-        // send email to the passengers
-        for (Passenger passenger : ride.getPassengers()) {
-            MailBody mailBody = MailBody.builder()
-                    .to(passenger.getEmail())
-                    .subject("Ride Finished - SmartRide")
-                    .text("Dear " + passenger.getName() + ", your ride has successfully finished. " +
-                            "Total price: " + ride.getTotalPrice() + " RSD. You can now leave a review on the app!")
-                    .build();
+        // send email and notifications to the passengers
 
-            try {
-                emailService.sendSimpleMessage(mailBody);
-            } catch (Exception e) {
-                e.printStackTrace();
+        String message = "Your ride has finished. Thank you for riding with us!";
+
+        for (Passenger passenger : ride.getPassengers()) {
+            if (passenger != null) {
+                notificationService.notifyUser(
+                    passenger, 
+                    ride, 
+                    message, 
+                    NotificationType.RIDE_COMPLETED
+                );
+                MailBody mailBody = MailBody.builder()
+                        .to(passenger.getEmail())
+                        .subject("Ride Finished - SmartRide")
+                        .text("Dear " + passenger.getName() + ", your ride has successfully finished. " +
+                                "Total price: " + ride.getTotalPrice() + " RSD. You can now leave a review on the app!")
+                        .build();
+
+                try {
+                    emailService.sendSimpleMessage(mailBody);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
 
@@ -535,6 +546,31 @@ public class RideService {
             response.setDriverName(driver.getName() + " " + driver.getLastName());
             User driverUser = userRepository.findByEmail(driver.getEmail());
             notificationService.notifyUser(driverUser, ride, "You have a new ride in less than 15 minutes", NotificationType.NEW_RIDE);
+            
+            String currentPassenger = SecurityContextHolder.getContext().getAuthentication().getName();
+            String passengerMsg = "You've been added to ride to ride! Driver " + driver.getName() + " is at your service.";
+            String url = "http://localhost:4200/ride-tracker-user/"; 
+            String trackingLink = url + ride.getId();
+            for (Passenger p : ride.getPassengers()) {
+                if (p.getEmail().equals(currentPassenger)) {
+                    continue; 
+                }
+                notificationService.notifyUser(p, ride, passengerMsg, NotificationType.LINKED_TO_RIDE);
+                
+                MailBody mailBody = MailBody.builder()
+                        .to(p.getEmail())
+                        .subject("You've been added to ride - SmartRide")
+                        .text("Dear " + p.getName() + ", you are travelling soon. " +
+                                "When your ride starts, you can track it here: " + trackingLink)
+                        .build();
+
+                try {
+                    emailService.sendSimpleMessage(mailBody);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            
             response.setMessage("Ride successfully created and driver assigned.");
         }
         response.setDistanceKm(ride.getDistanceKm());
