@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.angus.mail.iap.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.*;
@@ -102,6 +104,15 @@ public class RideController {
     public ResponseEntity<PassengerRideDetailsResponseDTO> getRideDetails(@PathVariable Long id ){
         PassengerRideDetailsResponseDTO response = rideService.getRideDetails(id);
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping(value = "/active-admin", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<ActiveRideDTO>> getActiveRidesForAdmin(
+        @RequestParam(required = false) String driverName) {
+        
+        List<ActiveRideDTO> activeRides = rideService.findActiveRides(driverName);
+        return new ResponseEntity<>(activeRides, HttpStatus.OK);
     }
 
 }

@@ -1,0 +1,59 @@
+<div class="admin-tracking-page">
+  
+  <div class="header-section">
+    <h2>Live Ride Tracking</h2>
+    <div class="search-box">
+      <input 
+        type="text" 
+        placeholder="Search by driver name..." 
+        (input)="onSearch($event)"
+        class="search-input"
+        style="color: antiquewhite;"
+      >
+    </div>
+  </div>
+
+  <div class="rides-container">
+    <div class="ride-card" *ngFor="let ride of activeRides">
+      
+      <div class="card-info-row">
+        
+        <div class="info-column">
+          <app-ride-info [ride]="ride" [isUpcoming]="false"></app-ride-info>
+        </div>
+
+        <div class="info-column">
+          <h4 class="column-title">Passengers</h4>
+          <app-passenger-info [passengers]="ride.passengers || []"></app-passenger-info>
+        </div>
+
+        <div class="info-column">
+          <h4 class="column-title">Driver</h4>
+          <app-driver-info 
+            [driverName]="ride.driverName || ''"
+            [carModel]="ride.carModel || ''"
+            [rating]="ride.driverRating || 0"
+            [profileImageUrl]="ride.driverImage || 'assets/default-avatar.png'"
+            [showActions]="false"> </app-driver-info>
+        </div>
+
+      </div>
+
+      <div class="card-map-row">
+        <div class="map-wrapper">
+          <app-map 
+            [rideId]="ride.rideId"
+            [pickupAddress]="ride.startLocation"
+            [destinationAddress]="ride.endLocation">
+          </app-map>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div *ngIf="activeRides.length === 0" class="no-rides">
+    <p>No active rides found for this search.</p>
+  </div>
+
+</div>

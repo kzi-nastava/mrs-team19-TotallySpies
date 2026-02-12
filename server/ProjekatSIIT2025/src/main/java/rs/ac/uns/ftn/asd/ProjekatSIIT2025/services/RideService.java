@@ -297,6 +297,7 @@ public class RideService {
         ride.getStatus().toString(),
         ride.getDriver().getName(),
         vehicle.getModel(),
+        ride.getDriver().getAverageRating(),
         ride.getDriver().getProfilePicture(),
         ride.getStops().get(0).getAddress(),
         ride.getStops().get(ride.getStops().size() - 1).getAddress());
@@ -785,4 +786,55 @@ public class RideService {
         dto.setRideGrades(rideGrades);
         return dto;
     }
+
+    public List<ActiveRideDTO> findActiveRides(String driverName) {
+    List<Ride> rides;
+    if (driverName != null && !driverName.isEmpty()) {
+        rides = rideRepository.findActiveByDriverName(driverName, RideStatus.ACTIVE);
+    } else {
+        rides = rideRepository.findByStatus(RideStatus.ACTIVE);
+    }
+
+    return rides.stream().map(ride -> {
+        ActiveRideDTO dto = new ActiveRideDTO();
+        dto.setId(ride.getId());
+        dto.setStartTime(ride.getStartedAt());
+        dto.setEndTime(ride.getFinishedAt());
+        dto.setPrice(ride.getTotalPrice());
+        dto.setStatus(ride.getStatus());
+
+        dto.setPassengers(ride.getPassengers().stream()
+            .map(p -> p.getName() + " " + p.getLastName())
+            .collect(Collectors.toList()));
+
+        if (ride.getStops() != null && !ride.getStops().isEmpty()) {
+            dto.setStartLocation(ride.getStops().stream()
+                .min(Comparator.comparingInt(RideStop::getOrderIndex))
+                .map(RideStop::getAddress).orElse("Unknown"));
+            dto.setEndLocation(ride.getStops().stream()
+                .max(Comparator.comparingInt(RideStop::getOrderIndex))
+                .map(RideStop::getAddress).orElse("Unknown"));
+        }
+
+        if (ride.getPanicNotification() != null) {
+            dto.setPanicPressed(true);
+            dto.setPanicReason(ride.getPanicNotification().getReason());
+        } else {
+            dto.setPanicPressed(false);
+        }
+
+        if (ride.getDriver() != null) {
+            dto.setDriverId(ride.getDriver().getId());
+            dto.setDriverName(ride.getDriver().getName());
+            dto.setDriverPicture(ride.getDriver().getProfilePicture());
+            dto.setDriverAverageRating(ride.getDriver().getAverageRating());
+            
+            if (ride.getDriver().getVehicle() != null) {
+                dto.setVehicleModel(ride.getDriver().getVehicle().getModel());
+            }
+        }
+
+        return dto;
+    }).collect(Collectors.toList());
+}
 }
