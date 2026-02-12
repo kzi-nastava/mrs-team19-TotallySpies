@@ -7,6 +7,8 @@ import java.util.Optional;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.Driver;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.Passenger;
@@ -28,7 +30,27 @@ public interface RideRepository extends JpaRepository<Ride, Long> {
     List<Ride> findByPassengers_IdAndStatusInAndCreatedAtBetween(Long id, List<RideStatus> statuses, Sort sort, LocalDateTime from, LocalDateTime to);
     List<Ride> findByPassengers_IdAndStatusInAndCreatedAtBefore(Long id, List<RideStatus> statuses, Sort sort, LocalDateTime to);
     List<Ride> findByPassengers_IdAndStatusInAndCreatedAtAfter(Long id, List<RideStatus> statuses, Sort sort, LocalDateTime from);
+    @Query("SELECT r FROM Ride r WHERE " +
+           "(:name IS NULL OR :name = '' OR " +
+           " LOWER(r.driver.name) LIKE LOWER(CONCAT('%', :name, '%')) OR " +
+           " LOWER(r.driver.lastName) LIKE LOWER(CONCAT('%', :name, '%'))) " +
+           "AND r.status = :status")
+    List<Ride> findActiveByDriverName(@Param("name") String name, @Param("status") RideStatus status);
     List<Ride> findByStatusAndScheduledForBetween(RideStatus status, LocalDateTime from, LocalDateTime to);
 
     List<Ride> findByStatus(RideStatus rideStatus);
+
+    // lista validnih voznji koje ce se racunati u statistici
+    List<RideStatus> VALID_REPORT_STATUSES = List.of(RideStatus.COMPLETED, RideStatus.STOPPED);
+    List<Ride> findAllByStatusInAndStartedAtBetween(List<RideStatus> statuses, LocalDateTime from, LocalDateTime to);
+    List<Ride> findAllByDriverEmailAndStatusInAndStartedAtBetween(String email, List<RideStatus> statuses, LocalDateTime from, LocalDateTime to);
+    // Za Putnika (Kreatora)
+    @Query("SELECT r FROM Ride r WHERE r.creator.email = :email " +
+            "AND r.status IN :statuses " +
+            "AND r.startedAt BETWEEN :from AND :to")
+    List<Ride> findAllByCreatorEmailAndStatusInAndStartedAtBetween(
+            @Param("email") String email,
+            @Param("statuses") List<RideStatus> statuses,
+            @Param("from") LocalDateTime from,
+            @Param("to") LocalDateTime to);
 }

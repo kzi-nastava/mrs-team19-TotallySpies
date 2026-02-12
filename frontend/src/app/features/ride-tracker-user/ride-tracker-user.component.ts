@@ -30,7 +30,7 @@ export class RideTrackerUserComponent implements OnInit, OnDestroy {
   currentDriver = {
     driverName: '', 
     carModel: '',
-    rating: 4.9,
+    rating: 0.0,
     profileImageUrl: 'icons/person.png',
     isFinished: false
   };
@@ -100,6 +100,7 @@ export class RideTrackerUserComponent implements OnInit, OnDestroy {
         ...this.currentDriver,
         driverName: data.driverName,
         carModel: data.carModel,
+        rating: data.rating,
         profileImageUrl: data.profilePicture || 'icons/person.png',
         isFinished: data.status === 'COMPLETED'
     };

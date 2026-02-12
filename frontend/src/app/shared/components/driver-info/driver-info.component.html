@@ -5,8 +5,14 @@
     <h3 class="driver-name">{{ driverName }}</h3>
     <p class="car-model">{{ carModel }}</p>
     <div class="rating">
-        <span *ngFor="let star of [1,2,3,4,5]" class="star">★</span>
+        <span *ngFor="let star of [1,2,3,4,5]" 
+              class="star"
+              [class.filled]="star <= rating">
+            ★
+        </span>
+        <span class="rating-number">({{ rating | number:'1.1-1' }})</span>
     </div>
+    <ng-container *ngIf="showActions">
     <button *ngIf="!isFinished" class="report-btn" (click)="openReport()">
     Report
   </button>
@@ -14,4 +20,5 @@
     <button class="rate-btn" (click)="openReview('driver')">Rate Driver</button>
     <button class="rate-btn" (click)="openReview('vehicle')">Rate Vehicle</button>
   </div>
+  </ng-container>
 </div>

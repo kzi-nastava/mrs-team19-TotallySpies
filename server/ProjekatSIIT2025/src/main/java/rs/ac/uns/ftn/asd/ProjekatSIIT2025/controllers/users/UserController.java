@@ -1,7 +1,6 @@
 package rs.ac.uns.ftn.asd.ProjekatSIIT2025.controllers.users;
 
 import jakarta.validation.Valid;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -14,18 +13,14 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.auth.ChangePasswordRequestDTO;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.DriverRideHistoryResponseDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.PassengerRideHistoryResponseDTO;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.users.UserImageUpdateDTO;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.reports.ReportResponseDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.users.UserProfileResponseDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.users.UserProfileUpdateRequestDTO;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.Passenger;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.Ride;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.services.AuthService;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.services.RideService;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.services.UserService;
 import org.springframework.core.io.Resource;
-import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -71,11 +66,12 @@ public class UserController {
             LocalDateTime to )
 
     {
-        Set<String> allowedSorts = Set.of("startedAt", "finishedAt");
+        Set<String> allowedSorts = Set.of("startedAt", "finishedAt", "createdAt", "pickupAddress", "destinationAddress");
         if (!allowedSorts.contains(sortBy)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid sort field");
         }
         Sort sort = null;
+
         if(sortDirection.equals("ASC")){
             sort = Sort.by(sortBy).ascending();
         }
@@ -84,7 +80,6 @@ public class UserController {
         }
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         List<PassengerRideHistoryResponseDTO> history = rideService.getPassengerHistory(email,sort, from, to);
-
         return new ResponseEntity<>(history, HttpStatus.OK);
     }
 
@@ -138,5 +133,15 @@ public class UserController {
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }
+    }
+
+    @GetMapping(value = "/report")
+    public ResponseEntity<ReportResponseDTO> getReport(@RequestParam("from") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
+                                                       @RequestParam("to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to,
+                                                       @RequestParam(value = "targetEmail", required = false) String targetEmail,
+                                                       Authentication auth){
+        String email = auth.getName();
+        ReportResponseDTO dto = userService.generateReport(email, from, to, targetEmail);
+        return ResponseEntity.ok(dto);
     }
 }

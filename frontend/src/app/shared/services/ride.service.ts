@@ -1,11 +1,12 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { CreateRideRequestDTO, CreateRideResponseDTO, RideFinishResponseDTO, RideTrackingDTO } from '../models/ride.model';
+import { ActiveRideDTO, CreateRideRequestDTO, CreateRideResponseDTO, DriverRideHistoryDTO, RideFinishResponseDTO, RideTrackingDTO } from '../models/ride.model';
 import { environment } from '../../../env/environment';
 import { CancelRideDTO } from '../models/cancel-ride.model';
 import { PanicRideDTO } from '../models/panic-ride.model';
 import { StopRideDTO } from '../models/stop-ride.model';
+import { PassengerRideDetailsResponseDTO } from '../models/passenger-ride-details.model';
 
 @Injectable({
   providedIn: 'root',
@@ -59,4 +60,16 @@ export class RideService {
     { responseType: 'text' } 
   );
 }
+
+  getActiveRidesForAdmin(driverName: string = ''): Observable<ActiveRideDTO[]> {
+    let params = new HttpParams();
+    if (driverName) {
+      params = params.set('driverName', driverName);
+    }
+    return this.http.get<ActiveRideDTO[]>(`${environment.apiHost}/rides/active-admin`, { params });
+  }
+
+  getRideDetails(rideId : number){
+    return this.http.get<PassengerRideDetailsResponseDTO>(`${environment.apiHost}/rides/${rideId}/details`)
+  }
 }

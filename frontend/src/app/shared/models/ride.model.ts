@@ -45,7 +45,11 @@ export interface CreateRideResponseDTO {
   distanceKm: number,
   estimatedTime: number
 }
-
+export interface RideDetailsStopDTO{
+  address:string,
+  latitude :number,
+  longitude : number
+}
 export interface RideStopDTO {
   address: string,
   lat: number,
@@ -84,6 +88,7 @@ export interface RideTrackingDTO {
   status: 'ACTIVE' | 'SCHEDULED' | 'COMPLETED' | 'STOPPED';
   pickupAddress: string;
   destinationAddress: string;
+  rating: number;
 }
 
 export interface InconsistencyReportRequestDTO {
@@ -107,6 +112,10 @@ export interface RideDetailsDTO {
   cancellReason?: string | null;
   panicPressed?: boolean;
   panicReason?: string | null;
+  driverName?: string;
+  driverImage?: string;
+  carModel?: string;
+  driverRating?: number;
 }
 
 export interface DriverRideHistoryDTO {
@@ -122,4 +131,23 @@ export interface DriverRideHistoryDTO {
   cancellReason: string | null;
   panicPressed: boolean;
   panicReason: string | null;
+}
+
+export interface ActiveRideDTO {
+  id: number;
+  startTime: string; 
+  endTime: string;
+  price: number;
+  passengers: string[]; 
+  startLocation: string;
+  endLocation: string;
+  driverId: number;
+  driverName: string;
+  driverEmail: string;
+  driverPicture: string; 
+  vehicleModel: string; 
+  driverAverageRating: number;
+  panicPressed: boolean;
+  panicReason: string;
+  status: string; 
 }
