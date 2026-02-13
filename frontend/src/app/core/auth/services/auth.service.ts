@@ -23,6 +23,7 @@ export class AuthService {
   //behaviorSubject emits the current value to subscribers, it always remembers latest value
   userState = this.user$.asObservable(); //navbar is subscribed on userState(public observable)
   //  TODO :different navbar for every role
+  private authState = new BehaviorSubject<boolean>(this.isLoggedIn());
 
   constructor(private http: HttpClient) {
     this.user$.next(this.getRole()); //reads role from localStorage token,
@@ -31,6 +32,7 @@ export class AuthService {
 
   //this sends POST request to specific login endpoint with body {email, password}
   login(dto: UserLoginRequestDTO): Observable<UserTokenStateDTO> {
+    this.updateAuthState();
     return this.http.post<UserTokenStateDTO>(environment.apiHost + '/auth/login',
       dto,
       { headers: this.headers, }
@@ -45,6 +47,7 @@ export class AuthService {
         next: () => {
           localStorage.removeItem('token');
           this.user$.next(null);
+          this.updateAuthState();
         },
         error: (err) => {
           console.error("Backend logout failed:", err);
@@ -55,6 +58,7 @@ export class AuthService {
     } else {
       localStorage.removeItem('token');
       this.user$.next(null);
+      this.updateAuthState();
     }
   }
   verifyEmail(dto: VerifyEmailDTO): Observable<string> {
@@ -142,7 +146,15 @@ export class AuthService {
     }
   }
 
-    getToken(): string | null {
-    return localStorage.getItem('token');
+  getToken(): string | null {
+      return localStorage.getItem('token');
+    }
+
+  getAuthState(): Observable<boolean> {
+    return this.authState.asObservable();
+  }
+
+  private updateAuthState() {
+    this.authState.next(this.isLoggedIn());
   }
 }
