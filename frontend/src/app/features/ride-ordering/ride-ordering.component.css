@@ -254,6 +254,17 @@ input[type="checkbox"] {
 
 /* ========== TIME PICKER ========== */
 
+.time-input {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 28px;
+  font-weight: bold;
+  width: 50px;
+  text-align: center;
+  outline: none;
+}
+
 .time-picker-card {
   width: 220px;
   background: var(--bg-card);

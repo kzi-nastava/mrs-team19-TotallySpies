@@ -64,7 +64,8 @@ export interface CreateRideRequestDTO {
   estimatedTime: number,
   babyTransport: boolean,
   petTransport: boolean,
-  path: any[]
+  path: any[],
+  scheduledFor: string | null;
 }
 
 export interface FavouriteRideDTO {

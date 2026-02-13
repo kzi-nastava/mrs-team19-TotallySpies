@@ -44,5 +44,11 @@
             <button (click)="closeModal()">OK</button>
         </ng-container>
 
+        <ng-container *ngIf="status === 'SCHEDULED'">
+            <h2 class="success-text">Ride scheduled!</h2>
+            <p>{{ errorMessage }}</p>
+            <button (click)="closeModal()">OK</button>
+        </ng-container>
+
     </div>
 </div>
