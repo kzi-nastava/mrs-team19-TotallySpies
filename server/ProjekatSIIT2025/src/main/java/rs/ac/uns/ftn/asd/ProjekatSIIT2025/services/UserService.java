@@ -14,10 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.reports.DailyReportDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.reports.ReportResponseDTO;
 import org.springframework.web.server.ResponseStatusException;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.users.AdminUserDTO;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.users.UserImageUpdateDTO;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.users.UserProfileResponseDTO;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.users.UserProfileUpdateRequestDTO;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.users.*;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.*;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.RideRepository;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.UserRepository;
@@ -306,4 +303,14 @@ public class UserService implements UserDetailsService {
     }
 
     
+    public List<UserDTO> getAllUsers(){
+        List<User> users = userRepository.findAll();
+        List<UserDTO> allUsers = new ArrayList<>();
+        for (User user: users){
+            if(user.getRole()!= UserRole.ADMIN){
+                allUsers.add(new UserDTO(user.getId(),user.getRole().toString(),user.getName(),user.getLastName(),user.getEmail()));
+            }
+        }
+        return allUsers;
+    }
 }
