@@ -118,10 +118,13 @@
     </aside>
 
     <section class="map-view">
-      <app-map [pickupAddress]="pickupForMap" [destinationAddress]="destinationForMap"
+      <!--<app-map [pickupAddress]="pickupForMap" [destinationAddress]="destinationForMap"
         (routeInfo)="onRouteInfo($event)"
         (routeCoordinatesFound)="onRouteCoordinates($event)">
-      </app-map>
+      </app-map>-->
+      <app-map [pickupAddress]="pickupForMap" [destinationAddress]="destinationForMap" [stopAddresses]="stopsForMap"
+        [mode]="'ordering'" (routeInfo)="onRouteInfo($event)"
+        (routeCoordinatesFound)="onRouteCoordinates($event)"></app-map>
     </section>
   </main>
 </div>
@@ -131,21 +134,10 @@
     <h2 style="color: white;">Your favorites</h2>
 
     <div class="cards">
-      <div
-        class="fav-card"
-        *ngFor="let fav of favourites"
-        (click)="selectFavourite(fav)"
-      >
+      <div class="fav-card" *ngFor="let fav of favourites" (click)="selectFavourite(fav)">
         <div class="route">
-          <div
-            class="stop"
-            *ngFor="let loc of fav.locations; let i = index"
-          >
-            <span
-              class="dot"
-              [class.start]="i === 0"
-              [class.end]="i === fav.locations.length - 1"
-            ></span>
+          <div class="stop" *ngFor="let loc of fav.locations; let i = index">
+            <span class="dot" [class.start]="i === 0" [class.end]="i === fav.locations.length - 1"></span>
             {{ loc.address }}
           </div>
         </div>
@@ -156,10 +148,7 @@
   </div>
 </div>
 
-<app-driver-search-modal
-  [status]="driverSearchStatus"
-  [errorMessage]="driverErrorMessage"
-  (close)="closeDriverModal()">
+<app-driver-search-modal [status]="driverSearchStatus" [errorMessage]="driverErrorMessage" (close)="closeDriverModal()">
 </app-driver-search-modal>
 
 <!--

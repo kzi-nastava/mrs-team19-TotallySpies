@@ -31,6 +31,7 @@ export class RideOrderingComponent implements OnInit {
   driverSearchStatus: DriverSearchStatus = 'IDLE';
   driverErrorMessage: string | null = null;
   private detailedPath: any[] = [];
+  stopsForMap: string[] = [];
 
   constructor(private fb: FormBuilder, private mapService: MapService,
     private rideService: RideService, private favouriteService: FavouriteService, private cd: ChangeDetectorRef) {
@@ -188,6 +189,11 @@ export class RideOrderingComponent implements OnInit {
 
     this.pickupForMap = this.routeForm.value.start;
     this.destinationForMap = this.routeForm.value.end;
+
+    const stopsArray = this.routeForm.get('stops') as FormArray;
+    this.stopsForMap = stopsArray.value
+      .map((s: string) => s.trim())
+      .filter((s: string) => s.length > 0);
 
     this.showResults = true;
   }
