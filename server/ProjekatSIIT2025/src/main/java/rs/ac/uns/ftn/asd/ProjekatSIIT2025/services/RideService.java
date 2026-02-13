@@ -15,12 +15,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.event.TransactionalEventListener;
 import org.springframework.web.server.ResponseStatusException;
 
 import jakarta.transaction.Transactional;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.auth.MailBody;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.*;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.users.DriverActivityResponseDTO;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.users.PassengerInfoDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.users.UserProfileResponseDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.*;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.DriverRepository;
@@ -760,6 +762,146 @@ public class RideService {
         rideRepository.save(ride);
     }
 
+    @Transactional
+    public List<AdminRideHistoryResponseDTO>getAdminHistory(Long userId,int userIndicator,
+                                                            Sort sort,LocalDateTime from, LocalDateTime to){
+        List<RideStatus> statuses = List.of(
+                RideStatus.COMPLETED,
+                RideStatus.STOPPED,
+                RideStatus.CANCELLED);
+
+        List<Ride> rides = null;
+        String sortBy;
+        Sort.Direction direction = Sort.Direction.ASC;
+
+        if (sort != null && sort.iterator().hasNext()) {
+            Sort.Order order = sort.iterator().next();
+            sortBy = order.getProperty();
+            direction = order.getDirection();
+        } else { //default sorting
+            sortBy = "createdAt";
+            direction = Sort.Direction.DESC;
+        }
+        if ("startedAt".equals(sortBy) || "finishedAt".equals(sortBy) || "createdAt".equals(sortBy)
+                || "totalPrice".equals(sortBy) || "panic".equals(sortBy)) {
+            //db sorts
+            if(from != null && to != null){
+                if(userIndicator == 1){
+                    rides = rideRepository.findByDriverIdAndStatusInAndCreatedAtBetween(userId, statuses, sort,from,to);
+                }
+                else{
+                    rides = rideRepository.findByPassengers_IdAndStatusInAndCreatedAtBetween(userId, statuses, sort,from,to);
+                }
+            }
+            else if(from != null){
+                if(userIndicator == 1){
+                    rides = rideRepository.findByDriverIdAndStatusInAndCreatedAtAfter(userId, statuses, sort,from);
+                }
+                else{
+                    rides = rideRepository.findByPassengers_IdAndStatusInAndCreatedAtAfter(userId, statuses, sort, from);
+                }
+
+            }
+            else if(to != null){
+                if(userIndicator == 1){
+                    rides = rideRepository.findByDriverIdAndStatusInAndCreatedAtBefore(userId, statuses, sort, to);
+                }
+                else{
+                    rides = rideRepository.findByPassengers_IdAndStatusInAndCreatedAtBefore(userId, statuses, sort, to);
+                }
+
+            }
+            else{
+                if(userIndicator == 1){
+                    rides = rideRepository.findByDriverIdAndStatusIn(userId, statuses, sort);
+                }
+                rides = rideRepository.findByPassengers_IdAndStatusIn(userId, statuses, sort);
+            }
+        }
+        else{// custom sort for pickup/destination
+            if(from != null && to != null){
+                if(userIndicator == 1){
+                    rides = rideRepository.findByDriverIdAndStatusInAndCreatedAtBetween(userId, statuses,Sort.unsorted(),from,to);
+                }
+                else{
+                    rides = rideRepository.findByPassengers_IdAndStatusInAndCreatedAtBetween(userId, statuses, Sort.unsorted(),from,to);
+                }
+            }
+            else if(from != null){
+                if(userIndicator == 1){
+                    rides = rideRepository.findByDriverIdAndStatusInAndCreatedAtAfter(userId, statuses, Sort.unsorted(),from);
+                }
+                else{
+                    rides = rideRepository.findByPassengers_IdAndStatusInAndCreatedAtAfter(userId, statuses, Sort.unsorted(), from);
+                }
+
+            }
+            else if(to != null){
+                if(userIndicator == 1){
+                    rides = rideRepository.findByDriverIdAndStatusInAndCreatedAtBefore(userId, statuses, Sort.unsorted(), to);
+                }
+                else{
+                    rides = rideRepository.findByPassengers_IdAndStatusInAndCreatedAtBefore(userId, statuses, Sort.unsorted(), to);
+                }
+
+            }
+            else{
+                if(userIndicator == 1){
+                    rides = rideRepository.findByDriverIdAndStatusIn(userId, statuses, Sort.unsorted());
+                }
+                rides = rideRepository.findByPassengers_IdAndStatusIn(userId, statuses, Sort.unsorted());
+            }
+
+            if ("pickupAddress".equals(sortBy) || "destinationAddress".equals(sortBy)) {
+                Comparator<Ride> comparator = new RideComparator(sortBy);
+                if (direction == Sort.Direction.DESC) {
+                    rides.sort(comparator.reversed());
+                } else {
+                    rides.sort(comparator);
+                }
+            }
+        }
+        //map to dto
+        List<AdminRideHistoryResponseDTO> response = new ArrayList<>();
+        boolean isCancelled = false;
+        for (Ride ride : rides){
+            String userWhoCancelled = ride.getRideCancellation().getUser().getEmail();
+            if(ride.getStatus() == RideStatus.CANCELLED){
+                isCancelled  = true;
+            }
+            response.add(new AdminRideHistoryResponseDTO(
+                    ride.getFinishedAt(),
+                    ride.getStartedAt(),
+                    ride.getCreatedAt(),
+                    ride.getStops(),
+                    ride.getId(),
+                    ride.getTotalPrice(),
+                    ride.getIsPanic(),
+                    userWhoCancelled,
+                    isCancelled
+                    ));
+        }
+        //sorting by isCancelled and userWhoCancelled
+        if ("userWhoCancelled".equals(sortBy)) {
+            Comparator<AdminRideHistoryResponseDTO> comparator =
+                    Comparator.comparing(
+                            dto -> dto.getUserWhoCancelled() == null ? "" : dto.getUserWhoCancelled()
+                    );
+
+            response.sort(direction == Sort.Direction.DESC ?
+                    comparator.reversed() : comparator);
+        }
+
+        else if ("isCancelled".equals(sortBy)) {
+            Comparator<AdminRideHistoryResponseDTO> comparator =
+                    Comparator.comparing(AdminRideHistoryResponseDTO::isCancelled);
+
+            response.sort(direction == Sort.Direction.DESC ?
+                    comparator.reversed() : comparator);
+        }
+
+        return response;
+    }
 
     @Transactional
     public List<PassengerRideHistoryResponseDTO> getPassengerHistory(String email, Sort sort, LocalDateTime from, LocalDateTime to){
@@ -878,6 +1020,48 @@ public class RideService {
             }
         }
         dto.setRideGrades(rideGrades);
+        return dto;
+    }
+
+    @Transactional
+    public AdminRideDetailsResponseDTO getRideDetailsForAdmin(Long id){
+        Ride ride = rideRepository.findById(id).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Ride not found!"));
+        AdminRideDetailsResponseDTO dto = new AdminRideDetailsResponseDTO();
+        dto.setRideId(ride.getId());
+        dto.setRideStops(ride.getStops());
+        dto.setDistanceKm(ride.getDistanceKm());
+        dto.setTotalPrice(ride.getTotalPrice());
+        Driver driver = ride.getDriver();
+        dto.setDriverEmail(driver.getEmail());
+        dto.setDriverName(driver.getName());
+        dto.setDriverLastName(driver.getLastName());
+        dto.setDriverPhoneNumber(driver.getPhoneNumber());
+        Map<String, String> reportReasons = new HashMap<>();
+        List<RideGradeDTO> rideGrades = new ArrayList<>();
+        List<Report> reports=  reportRepository.findByRide_Id(id);
+        if(reports != null){
+            for (Report report : reports){
+                reportReasons.put(
+                        report.getPassenger().getEmail(),
+                        report.getReportReason());
+            }
+        }
+        dto.setReportReasons(reportReasons);
+        List<Review> reviews = reviewRepository.findByRide_Id(id);
+        if(reviews != null){
+            for(Review review : reviews){
+                rideGrades.add(
+                        new RideGradeDTO(review.getPassenger().getEmail(),
+                                review.getGrade(),review.getType().toString())
+                );
+            }
+        }
+        dto.setRideGrades(rideGrades);
+        List<PassengerInfoDTO> passengersInfo = new ArrayList<>();
+        for (Passenger passenger : ride.getPassengers()){
+            passengersInfo.add(new PassengerInfoDTO(passenger.getName(), passenger.getLastName(), passenger.getEmail()));
+        }
+        dto.setPassengersInfo(passengersInfo);
         return dto;
     }
 
