@@ -134,7 +134,7 @@ constructor(private router:Router, private adminService :AdminService, private r
     this.loadRides();
   }
   sortUserWhoCancelled(){
-    this.sortBy = "userWhoCanclled";
+    this.sortBy = "userWhoCancelled";
     this.sortDirection = this.sortDirection === 'ASC' ? 'DESC' : 'ASC';
     this.loadRides();
   }
