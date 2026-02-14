@@ -305,6 +305,7 @@ export class RideOrderingComponent implements OnInit {
       next: (favs) => {
         this.favourites = favs;
         this.showFavouritesModal = true;
+        this.cd.detectChanges();
       }, error: (err) => {
         console.error('Favourite load error:', err);
         alert('Failed to load favourite rides');
