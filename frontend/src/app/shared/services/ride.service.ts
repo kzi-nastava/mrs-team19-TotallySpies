@@ -7,6 +7,7 @@ import { CancelRideDTO } from '../models/cancel-ride.model';
 import { PanicRideDTO } from '../models/panic-ride.model';
 import { StopRideDTO } from '../models/stop-ride.model';
 import { PassengerRideDetailsResponseDTO } from '../models/passenger-ride-details.model';
+import { AdminRideDetailsResponseDTO } from '../models/admin-ride-details.model';
 
 @Injectable({
   providedIn: 'root',
@@ -71,5 +72,8 @@ export class RideService {
 
   getRideDetails(rideId : number){
     return this.http.get<PassengerRideDetailsResponseDTO>(`${environment.apiHost}/rides/${rideId}/details`)
+  }
+  getRideDetailsForAdmin(rideId : number){
+    return this.http.get<AdminRideDetailsResponseDTO>(`${environment.apiHost}/rides/${rideId}/details/admin`)
   }
 }

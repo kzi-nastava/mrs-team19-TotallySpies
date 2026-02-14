@@ -23,6 +23,8 @@ import { PassengerRidesHistoryComponent } from './features/passenger-rides-histo
 import { RideDetailsComponent } from './features/ride-details/ride-details.component';
 import { ReportComponent } from './features/report/report.component';
 import { AdminRideTrackingComponent } from './features/admin-ride-tracking/admin-ride-tracking.component';
+import { AdminRideHistoryComponent } from './features/admin-ride-history/admin-ride-history.component';
+import { RideDetailsAdminComponent } from './features/ride-details-admin/ride-details-admin.component';
 
 export const routes: Routes = [
   {
@@ -117,11 +119,19 @@ export const routes: Routes = [
     component : RideDetailsComponent
   },
   {
+    path : 'ride-details-admin/:id',
+    component : RideDetailsAdminComponent
+  },
+  {
     path: 'report-page',
     component: ReportComponent
   }, 
   {
     path: 'admin-ride-tracking',
     component: AdminRideTrackingComponent
+  },
+  {
+    path : 'admin-ride-history',
+    component : AdminRideHistoryComponent
   }
 ];

@@ -82,3 +82,10 @@ export interface AdminUserDTO {
     blocked: boolean,
     blockReason: string
 }
+export interface UserDTO{
+    id : number,
+    role : string, 
+    name : string,
+    lastName : string,
+    email : string
+}

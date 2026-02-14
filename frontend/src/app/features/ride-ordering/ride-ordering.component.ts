@@ -11,7 +11,7 @@ import { RideService } from '../../shared/services/ride.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FavouriteService } from '../../shared/services/favourite.service';
 import { DriverSearchModalComponent, DriverSearchStatus } from '../../shared/components/driver-search-modal/driver-search-modal.component';
-
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-ride-ordering',
   templateUrl: './ride-ordering.component.html',
@@ -32,7 +32,7 @@ export class RideOrderingComponent implements OnInit {
   driverErrorMessage: string | null = null;
   private detailedPath: any[] = [];
 
-  constructor(private fb: FormBuilder, private mapService: MapService,
+  constructor(private fb: FormBuilder, private mapService: MapService, private router : Router,
     private rideService: RideService, private favouriteService: FavouriteService, private cd: ChangeDetectorRef) {
     this.routeForm = this.fb.group({
       start: ['', Validators.required],
@@ -57,8 +57,39 @@ export class RideOrderingComponent implements OnInit {
     this.routeForm.get('vehicleType')?.valueChanges.subscribe(() => {
       this.calculatePrice();
     });
-  }
 
+    const nav = this.router.getCurrentNavigation();
+    const state = nav && nav.extras && nav.extras.state ? nav.extras.state : history.state;
+
+    const stops = state && state.stops ? state.stops : null;
+    if (stops && Array.isArray(stops) && stops.length >= 2) {
+      this.prefillFromStops(stops);
+    }
+  }
+  //prefills ride stops from passenger history page
+  private prefillFromStops(stops: any[]) {
+    // reset i ocisti dynamic stops
+    this.routeForm.reset({ vehicleType: 'standard', babyTransport: false, petTransport: false });
+    this.stops.clear();
+
+    // pickup
+    this.routeForm.get('start')?.setValue(stops[0].address);
+
+    // middle stops
+    for (let i = 1; i < stops.length - 1; i++) {
+      this.stops.push(this.fb.control(stops[i].address, Validators.required));
+    }
+
+    // destination stop
+    this.routeForm.get('end')?.setValue(stops[stops.length - 1].address);
+
+    // trigger map draw
+    this.pickupForMap = stops[0].address;
+    this.destinationForMap = stops[stops.length - 1].address;
+    this.showResults = true;
+
+    this.cd.detectChanges();
+  }
   // funkcija koja hvata podatke iz MapComponent-a
   onRouteInfo(info: RouteInfo) {
     this.distanceKm = info.distanceKm;
