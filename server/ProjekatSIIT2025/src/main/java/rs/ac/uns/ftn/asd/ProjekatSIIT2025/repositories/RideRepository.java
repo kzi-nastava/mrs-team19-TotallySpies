@@ -30,6 +30,11 @@ public interface RideRepository extends JpaRepository<Ride, Long> {
     List<Ride> findByPassengers_IdAndStatusInAndCreatedAtBetween(Long id, List<RideStatus> statuses, Sort sort, LocalDateTime from, LocalDateTime to);
     List<Ride> findByPassengers_IdAndStatusInAndCreatedAtBefore(Long id, List<RideStatus> statuses, Sort sort, LocalDateTime to);
     List<Ride> findByPassengers_IdAndStatusInAndCreatedAtAfter(Long id, List<RideStatus> statuses, Sort sort, LocalDateTime from);
+
+    List<Ride> findByDriverIdAndStatusInAndCreatedAtBetween(Long id,List<RideStatus> statuses,Sort sort,LocalDateTime from, LocalDateTime to);
+    List<Ride> findByDriverIdAndStatusInAndCreatedAtBefore(Long id,List<RideStatus> statuses,Sort sort,LocalDateTime to);
+    List<Ride> findByDriverIdAndStatusInAndCreatedAtAfter(Long id,List<RideStatus> statuses,Sort sort,LocalDateTime from);
+    List<Ride> findByDriverIdAndStatusIn(Long id,List<RideStatus> statuses, Sort sort);
     @Query("SELECT r FROM Ride r WHERE " +
            "(:name IS NULL OR :name = '' OR " +
            " LOWER(r.driver.name) LIKE LOWER(CONCAT('%', :name, '%')) OR " +

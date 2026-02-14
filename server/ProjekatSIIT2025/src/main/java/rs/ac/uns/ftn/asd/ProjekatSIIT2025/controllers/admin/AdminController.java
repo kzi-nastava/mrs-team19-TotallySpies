@@ -1,27 +1,32 @@
 package rs.ac.uns.ftn.asd.ProjekatSIIT2025.controllers.admin;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.AdminRideHistoryResponseDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.PanicNotificationDTO;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.PassengerRideHistoryResponseDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.RidePreviewResponseDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.users.*;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.Driver;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.PanicNotification;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.User;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.UserRole;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.services.DriverService;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.services.PanicNotificationService;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.services.ProfileChangeService;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.services.UserService;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.UserRepository;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.services.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping(value = "/api/v1/admin", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -37,6 +42,12 @@ public class AdminController {
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    RideService rideService;
+
+    @Autowired
+    UserRepository userRepository;
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping(value = "/profile-change-requests")
@@ -141,5 +152,37 @@ public class AdminController {
         userService.unblockUser(id);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping(value = "/{userId}/history")
+    public ResponseEntity<List<AdminRideHistoryResponseDTO>> getAdminRideHistory(
+            @PathVariable Long userId,
+            @RequestParam int userIndicator, //1 is driver , 2 is passenger
+            @RequestParam( defaultValue = "startedAt") String sortBy,
+            @RequestParam ( defaultValue = "DESC") String sortDirection,
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) //tells spring how to parse string from request to localDateTime
+            LocalDateTime from,   //for filtering by ride.createdAt
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+            LocalDateTime to )
+
+    {
+        Set<String> allowedSorts = Set.of("startedAt", "finishedAt", "createdAt", "pickupAddress",
+                "destinationAddress", "totalPrice", "userWhoCancelled", "isCancelled", "isPanic");
+        if (!allowedSorts.contains(sortBy)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid sort field");
+        }
+        Sort sort = null;
+
+        if(sortDirection.equals("ASC")){
+            sort = Sort.by(sortBy).ascending();
+        }
+        else{
+            sort = Sort.by(sortBy).descending();
+        }
+        List<AdminRideHistoryResponseDTO> history = rideService.getAdminHistory(userId, userIndicator,
+                sort, from, to);
+        return new ResponseEntity<>(history, HttpStatus.OK);
+    }
 
 }

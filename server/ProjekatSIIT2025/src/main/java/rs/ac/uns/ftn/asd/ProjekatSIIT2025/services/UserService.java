@@ -294,4 +294,16 @@ public class UserService implements UserDetailsService {
         user.setBlockReason(null);
         userRepository.save(user);
     }
+
+    public User findById(Long id) throws Exception {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new Exception("User with id " + id + " not found."));
+        return user;
+    }
+
+    public List<User> findAllById(List<Long> userIds) {
+        return userRepository.findAllById(userIds);
+    }
+
+    
 }

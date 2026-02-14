@@ -1,0 +1,63 @@
+<button class="chat-fab" (click)="toggleChat()" *ngIf="isUserLoggedIn() && !isOpen">
+  <img src="icons/cropped_circle_image.png" alt="Support Chat">
+</button>
+
+<div class="chat-window" *ngIf="isOpen" [ngClass]="{'open': isOpen}">
+  <!-- Admin: User List -->
+  <div *ngIf="userRole === 'ROLE_ADMIN' && adminView === 'user-list'">
+    <div class="chat-header">
+      <h3>Active Conversations</h3>
+      <button class="close-btn" (click)="toggleChat()">✕</button>
+    </div>
+    <div class="user-list">
+      <div *ngFor="let user of chatUsers" class="user-item" (click)="selectUser(user.id)">
+        <div class="avatar-circle">
+          <img src="icons/person.png" alt="User">
+        </div>
+        <div class="user-info">
+          <strong>{{ user.name || user.email }}</strong>
+          <p>User ID: {{ user.id }}</p>
+        </div>
+      </div>
+      <div *ngIf="chatUsers.length === 0" class="no-users">
+        No active conversations
+      </div>
+    </div>
+  </div>
+
+  <!-- Chat Window (for both admin & passenger) -->
+  <div class="chat-view-container" *ngIf="userRole !== 'ROLE_ADMIN' || adminView === 'chat'">
+    <div class="chat-header">
+      <div class="admin-info">
+        <!-- Back button for admin -->
+        <button *ngIf="userRole === 'ROLE_ADMIN'" class="back-btn" (click)="backToUserList()">←</button>
+        <div class="avatar-circle">
+          <img src="icons/person.png" alt="Avatar">
+          <span class="status-dot"></span>
+        </div>
+        <div class="text-info">
+          <h3>{{ userRole === 'ROLE_ADMIN' ? 'User ' + selectedChatUserId : 'Support Team' }}</h3>
+          <p>{{ userRole === 'ROLE_ADMIN' ? 'Replying to User' : 'Admin support' }}</p>
+        </div>
+      </div>
+      <button class="close-btn" (click)="toggleChat()">✕</button>
+    </div>
+
+    <div class="chat-body" #scrollMe>
+      <div class="message-wrapper" *ngFor="let msg of messages" 
+           [ngClass]="{'my-message': isMyMessage(msg), 'their-message': !isMyMessage(msg)}">
+        <div class="message-bubble">{{ msg.content }}</div>
+        <span class="timestamp" *ngIf="msg.timestamp">{{ msg.timestamp | date:'shortTime' }}</span>
+      </div>
+    </div>
+
+    <div class="chat-footer">
+      <input 
+        type="text" 
+        placeholder="Type a reply..." 
+        [(ngModel)]="newMessage" 
+        (keydown.enter)="sendMessage()">
+      <button (click)="sendMessage()" [disabled]="!newMessage.trim()">➤</button>
+    </div>
+  </div>
+</div>

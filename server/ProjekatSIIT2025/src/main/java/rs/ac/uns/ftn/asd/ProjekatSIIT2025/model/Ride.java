@@ -87,7 +87,7 @@ public class Ride {
         this.passengers = passengers;
     }
 
-    public boolean isPanic() {
+    public boolean getIsPanic() {
         return panic;
     }
 
