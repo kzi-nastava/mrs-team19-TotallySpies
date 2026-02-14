@@ -758,146 +758,157 @@ public class RideService {
         rideRepository.save(ride);
     }
 
-    @Transactional
-    public List<AdminRideHistoryResponseDTO>getAdminHistory(Long userId,int userIndicator,
-                                                            Sort sort,LocalDateTime from, LocalDateTime to){
-        List<RideStatus> statuses = List.of(
-                RideStatus.COMPLETED,
-                RideStatus.STOPPED,
-                RideStatus.CANCELLED);
+        @Transactional
+        public List<AdminRideHistoryResponseDTO>getAdminHistory(Long userId,int userIndicator,
+                                                                Sort sort,LocalDateTime from, LocalDateTime to){
+            List<RideStatus> statuses = List.of(
+                    RideStatus.COMPLETED,
+                    RideStatus.STOPPED,
+                    RideStatus.CANCELLED);
 
-        List<Ride> rides = null;
-        String sortBy;
-        Sort.Direction direction = Sort.Direction.ASC;
+            List<Ride> rides = null;
+            String sortBy;
+            Sort.Direction direction = Sort.Direction.ASC;
 
-        if (sort != null && sort.iterator().hasNext()) {
-            Sort.Order order = sort.iterator().next();
-            sortBy = order.getProperty();
-            direction = order.getDirection();
-        } else { //default sorting
-            sortBy = "createdAt";
-            direction = Sort.Direction.DESC;
-        }
-        if ("startedAt".equals(sortBy) || "finishedAt".equals(sortBy) || "createdAt".equals(sortBy)
-                || "totalPrice".equals(sortBy) || "panic".equals(sortBy)) {
-            //db sorts
-            if(from != null && to != null){
-                if(userIndicator == 1){
-                    rides = rideRepository.findByDriverIdAndStatusInAndCreatedAtBetween(userId, statuses, sort,from,to);
+            if (sort != null && sort.iterator().hasNext()) {
+                Sort.Order order = sort.iterator().next();
+                sortBy = order.getProperty();
+                direction = order.getDirection();
+            } else { //default sorting
+                sortBy = "createdAt";
+                direction = Sort.Direction.DESC;
+            }
+            if ("startedAt".equals(sortBy) || "finishedAt".equals(sortBy) || "createdAt".equals(sortBy)
+                    || "totalPrice".equals(sortBy) || "panic".equals(sortBy)) {
+                //db sorts
+                if(from != null && to != null){
+                    if(userIndicator == 1){
+                        rides = rideRepository.findByDriverIdAndStatusInAndCreatedAtBetween(userId, statuses, sort,from,to);
+                    }
+                    else{
+                        rides = rideRepository.findByPassengers_IdAndStatusInAndCreatedAtBetween(userId, statuses, sort,from,to);
+                    }
+                }
+                else if(from != null){
+                    if(userIndicator == 1){
+                        rides = rideRepository.findByDriverIdAndStatusInAndCreatedAtAfter(userId, statuses, sort,from);
+                    }
+                    else{
+                        rides = rideRepository.findByPassengers_IdAndStatusInAndCreatedAtAfter(userId, statuses, sort, from);
+                    }
+
+                }
+                else if(to != null){
+                    if(userIndicator == 1){
+                        rides = rideRepository.findByDriverIdAndStatusInAndCreatedAtBefore(userId, statuses, sort, to);
+                    }
+                    else{
+                        rides = rideRepository.findByPassengers_IdAndStatusInAndCreatedAtBefore(userId, statuses, sort, to);
+                    }
+
                 }
                 else{
-                    rides = rideRepository.findByPassengers_IdAndStatusInAndCreatedAtBetween(userId, statuses, sort,from,to);
+                    if(userIndicator == 1){
+                        rides = rideRepository.findByDriverIdAndStatusIn(userId, statuses, sort);
+                    }
+                    else{
+                        rides = rideRepository.findByPassengers_IdAndStatusIn(userId, statuses, sort);
+                    }
+
                 }
             }
-            else if(from != null){
-                if(userIndicator == 1){
-                    rides = rideRepository.findByDriverIdAndStatusInAndCreatedAtAfter(userId, statuses, sort,from);
+            else{// custom sort for pickup/destination
+                if(from != null && to != null){
+                    if(userIndicator == 1){
+                        rides = rideRepository.findByDriverIdAndStatusInAndCreatedAtBetween(userId, statuses,Sort.unsorted(),from,to);
+                    }
+                    else{
+                        rides = rideRepository.findByPassengers_IdAndStatusInAndCreatedAtBetween(userId, statuses, Sort.unsorted(),from,to);
+                    }
+                }
+                else if(from != null){
+                    if(userIndicator == 1){
+                        rides = rideRepository.findByDriverIdAndStatusInAndCreatedAtAfter(userId, statuses, Sort.unsorted(),from);
+                    }
+                    else{
+                        rides = rideRepository.findByPassengers_IdAndStatusInAndCreatedAtAfter(userId, statuses, Sort.unsorted(), from);
+                    }
+
+                }
+                else if(to != null){
+                    if(userIndicator == 1){
+                        rides = rideRepository.findByDriverIdAndStatusInAndCreatedAtBefore(userId, statuses, Sort.unsorted(), to);
+                    }
+                    else{
+                        rides = rideRepository.findByPassengers_IdAndStatusInAndCreatedAtBefore(userId, statuses, Sort.unsorted(), to);
+                    }
+
                 }
                 else{
-                    rides = rideRepository.findByPassengers_IdAndStatusInAndCreatedAtAfter(userId, statuses, sort, from);
+                    if(userIndicator == 1){
+                        rides = rideRepository.findByDriverIdAndStatusIn(userId, statuses, Sort.unsorted());
+                    }
+                    else{
+                        rides = rideRepository.findByPassengers_IdAndStatusIn(userId, statuses, Sort.unsorted());
+                    }
+
                 }
 
-            }
-            else if(to != null){
-                if(userIndicator == 1){
-                    rides = rideRepository.findByDriverIdAndStatusInAndCreatedAtBefore(userId, statuses, sort, to);
+                if ("pickupAddress".equals(sortBy) || "destinationAddress".equals(sortBy)) {
+                    Comparator<Ride> comparator = new RideComparator(sortBy);
+                    if (direction == Sort.Direction.DESC) {
+                        rides.sort(comparator.reversed());
+                    } else {
+                        rides.sort(comparator);
+                    }
                 }
-                else{
-                    rides = rideRepository.findByPassengers_IdAndStatusInAndCreatedAtBefore(userId, statuses, sort, to);
+            }
+            //map to dto
+            List<AdminRideHistoryResponseDTO> response = new ArrayList<>();
+
+            boolean isCancelled = false;
+            for (Ride ride : rides){
+                if(ride.getStatus() == RideStatus.CANCELLED)
+                    isCancelled = true;
+                else isCancelled = false;
+                String userWhoCancelled = null;
+                if (ride.getRideCancellation() != null && ride.getRideCancellation().getUser() != null) {
+                    userWhoCancelled = ride.getRideCancellation().getUser().getEmail();
                 }
 
+                response.add(new AdminRideHistoryResponseDTO(
+                        ride.getFinishedAt(),
+                        ride.getStartedAt(),
+                        ride.getCreatedAt(),
+                        ride.getStops(),
+                        ride.getId(),
+                        ride.getTotalPrice(),
+                        ride.getIsPanic(),
+                        userWhoCancelled,
+                        isCancelled
+                        ));
             }
-            else{
-                if(userIndicator == 1){
-                    rides = rideRepository.findByDriverIdAndStatusIn(userId, statuses, sort);
-                }
-                rides = rideRepository.findByPassengers_IdAndStatusIn(userId, statuses, sort);
+            //sorting by isCancelled and userWhoCancelled
+            if ("userWhoCancelled".equals(sortBy)) {
+                Comparator<AdminRideHistoryResponseDTO> comparator =
+                        Comparator.comparing(
+                                dto -> dto.getUserWhoCancelled() == null ? "" : dto.getUserWhoCancelled()
+                        );
+
+                response.sort(direction == Sort.Direction.DESC ?
+                        comparator.reversed() : comparator);
             }
+
+            else if ("isCancelled".equals(sortBy)) {
+                Comparator<AdminRideHistoryResponseDTO> comparator =
+                        Comparator.comparing(AdminRideHistoryResponseDTO::getCancelled);
+
+                response.sort(direction == Sort.Direction.DESC ?
+                        comparator.reversed() : comparator);
+            }
+
+            return response;
         }
-        else{// custom sort for pickup/destination
-            if(from != null && to != null){
-                if(userIndicator == 1){
-                    rides = rideRepository.findByDriverIdAndStatusInAndCreatedAtBetween(userId, statuses,Sort.unsorted(),from,to);
-                }
-                else{
-                    rides = rideRepository.findByPassengers_IdAndStatusInAndCreatedAtBetween(userId, statuses, Sort.unsorted(),from,to);
-                }
-            }
-            else if(from != null){
-                if(userIndicator == 1){
-                    rides = rideRepository.findByDriverIdAndStatusInAndCreatedAtAfter(userId, statuses, Sort.unsorted(),from);
-                }
-                else{
-                    rides = rideRepository.findByPassengers_IdAndStatusInAndCreatedAtAfter(userId, statuses, Sort.unsorted(), from);
-                }
-
-            }
-            else if(to != null){
-                if(userIndicator == 1){
-                    rides = rideRepository.findByDriverIdAndStatusInAndCreatedAtBefore(userId, statuses, Sort.unsorted(), to);
-                }
-                else{
-                    rides = rideRepository.findByPassengers_IdAndStatusInAndCreatedAtBefore(userId, statuses, Sort.unsorted(), to);
-                }
-
-            }
-            else{
-                if(userIndicator == 1){
-                    rides = rideRepository.findByDriverIdAndStatusIn(userId, statuses, Sort.unsorted());
-                }
-                rides = rideRepository.findByPassengers_IdAndStatusIn(userId, statuses, Sort.unsorted());
-            }
-
-            if ("pickupAddress".equals(sortBy) || "destinationAddress".equals(sortBy)) {
-                Comparator<Ride> comparator = new RideComparator(sortBy);
-                if (direction == Sort.Direction.DESC) {
-                    rides.sort(comparator.reversed());
-                } else {
-                    rides.sort(comparator);
-                }
-            }
-        }
-        //map to dto
-        List<AdminRideHistoryResponseDTO> response = new ArrayList<>();
-        boolean isCancelled = false;
-        for (Ride ride : rides){
-            String userWhoCancelled = ride.getRideCancellation().getUser().getEmail();
-            if(ride.getStatus() == RideStatus.CANCELLED){
-                isCancelled  = true;
-            }
-            response.add(new AdminRideHistoryResponseDTO(
-                    ride.getFinishedAt(),
-                    ride.getStartedAt(),
-                    ride.getCreatedAt(),
-                    ride.getStops(),
-                    ride.getId(),
-                    ride.getTotalPrice(),
-                    ride.getIsPanic(),
-                    userWhoCancelled,
-                    isCancelled
-                    ));
-        }
-        //sorting by isCancelled and userWhoCancelled
-        if ("userWhoCancelled".equals(sortBy)) {
-            Comparator<AdminRideHistoryResponseDTO> comparator =
-                    Comparator.comparing(
-                            dto -> dto.getUserWhoCancelled() == null ? "" : dto.getUserWhoCancelled()
-                    );
-
-            response.sort(direction == Sort.Direction.DESC ?
-                    comparator.reversed() : comparator);
-        }
-
-        else if ("isCancelled".equals(sortBy)) {
-            Comparator<AdminRideHistoryResponseDTO> comparator =
-                    Comparator.comparing(AdminRideHistoryResponseDTO::isCancelled);
-
-            response.sort(direction == Sort.Direction.DESC ?
-                    comparator.reversed() : comparator);
-        }
-
-        return response;
-    }
 
     @Transactional
     public List<PassengerRideHistoryResponseDTO> getPassengerHistory(String email, Sort sort, LocalDateTime from, LocalDateTime to){
@@ -909,7 +920,7 @@ public class RideService {
                 RideStatus.COMPLETED,
                 RideStatus.STOPPED);
 
-        List<Ride> rides = null;
+        List<Ride> rides = new ArrayList<>();
         String sortBy;
         Sort.Direction direction = Sort.Direction.ASC;
 
@@ -1111,4 +1122,48 @@ public class RideService {
         return dto;
     }).collect(Collectors.toList());
 }
+
+    public List<PassengerUpcomingRideDTO> findUpcomingRides(String email) {
+        User user = userRepository.findByEmail(email);
+        if (user == null) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Passenger not found!");
+
+        List<RideStatus> statuses = new ArrayList<>();
+        statuses.add(RideStatus.PENDING);
+        statuses.add(RideStatus.SCHEDULED);
+        List<Ride> rides = rideRepository.findAllByCreatorEmailAndStatusIn(email, statuses);
+
+        List<PassengerUpcomingRideDTO> upcomingRides = new ArrayList<>();
+        for(Ride ride : rides){
+            upcomingRides.add(mapToUpcomingRide(ride));
+        }
+        return upcomingRides;
+    }
+
+    private PassengerUpcomingRideDTO mapToUpcomingRide(Ride ride) {
+        PassengerUpcomingRideDTO dto = new PassengerUpcomingRideDTO();
+
+        dto.setRideId(ride.getId());
+        dto.setStatus(ride.getStatus());
+        dto.setPrice(ride.getTotalPrice());
+
+        if (ride.getDriver() != null) {
+            dto.setDriverName(ride.getDriver().getName() + " " + ride.getDriver().getLastName());
+        }
+
+        List<RideStopDTO> stops = ride.getStops().stream()
+                .sorted(Comparator.comparingInt(RideStop::getOrderIndex))
+                .map(s -> {
+                    RideStopDTO rs = new RideStopDTO();
+                    rs.setAddress(s.getAddress());
+                    rs.setLat(s.getLatitude());
+                    rs.setLng(s.getLongitude());
+                    rs.setOrderIndex(s.getOrderIndex());
+                    return rs;
+                })
+                .toList();
+
+        dto.setLocations(stops);
+
+        return dto;
+    }
 }

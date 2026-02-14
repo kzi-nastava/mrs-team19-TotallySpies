@@ -14,6 +14,7 @@ import 'leaflet-routing-machine';
 import { RideDetailsStopDTO, RideStopDTO, RideTrackingDTO } from '../../models/ride.model';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
+import { forkJoin } from 'rxjs';
 
 export type RouteInfo = { distanceKm: number; estimatedTime: number };
 
@@ -34,6 +35,7 @@ export class MapComponent implements AfterViewInit, OnDestroy, OnChanges {
   @Input() mode = '';
   @Input() rideStops: RideDetailsStopDTO[] = [];
   @Input() rideId: number | null = null;
+  @Input() stopAddresses: string[] = [];
   @Output() routeInfo = new EventEmitter<RouteInfo>();
   @Output() rideUpdate = new EventEmitter<RideTrackingDTO>();
   @Output() routeCoordinatesFound = new EventEmitter<any[]>();  // emitt coordinates of route when found
@@ -51,7 +53,7 @@ export class MapComponent implements AfterViewInit, OnDestroy, OnChanges {
     iconAnchor: [16, 16]
   });
 
-  constructor(private mapService: MapService) {}
+  constructor(private mapService: MapService) { }
 
   private subscribeToWebsocket(): void {
     const socket = new SockJS('http://localhost:8080/ws-transport');
@@ -60,7 +62,7 @@ export class MapComponent implements AfterViewInit, OnDestroy, OnChanges {
       reconnectDelay: 5000, // try again if connection is lost
       onConnect: () => {
         console.log('Connected to WebSocket for Map Updates');
-        
+
         // if we are tracking specific ride
         if (this.rideId) {
           console.log(`Subscribing to specific ride: ${this.rideId}`);
@@ -68,7 +70,7 @@ export class MapComponent implements AfterViewInit, OnDestroy, OnChanges {
             const data: RideTrackingDTO = JSON.parse(message.body);
             this.handleSingleRideUpdate(data);
           });
-        } 
+        }
         // all vehicles map
         else {
           console.log('Subscribing to all map updates');
@@ -84,8 +86,33 @@ export class MapComponent implements AfterViewInit, OnDestroy, OnChanges {
 
   setRoute(): void {
     if (!this.pickupAddress?.trim() || !this.destinationAddress?.trim()) return;
+
+    const allAddresses = [
+      this.pickupAddress,
+      ...this.stopAddresses,
+      this.destinationAddress
+    ];
+
+    const geocodeRequests = allAddresses.map(address => this.mapService.search(address));
+
+    forkJoin(geocodeRequests).subscribe((results: any[]) => {
+      // Filtriramo rezultate (uzimamo samo validne koordinate)
+      const waypoints = results
+        .map(res => {
+          if (res && res.length > 0) {
+            return L.latLng(+res[0].lat, +res[0].lon);
+          }
+          return null;
+        })
+        .filter(wp => wp !== null) as L.LatLng[];
+
+      // Ako imamo barem 2 tačke (start i kraj), crtamo rutu
+      if (waypoints.length >= 2) {
+        this.drawRouteWithWaypoints(waypoints);
+      }
+    });
     // geocode pickup
-    this.mapService.search(this.pickupAddress).subscribe((p: any) => {
+    /*this.mapService.search(this.pickupAddress).subscribe((p: any) => {
       if (!p?.length) return;
 
       const pickupLatitude = +p[0].lat; //takes the first result(because it expects array of results)p[0]
@@ -99,6 +126,57 @@ export class MapComponent implements AfterViewInit, OnDestroy, OnChanges {
 
         this.drawRoute(pickupLatitude, pickupLongitude, destinationLatitude, destinationLongitude);
       });
+    });*/
+  }
+  private drawRouteWithWaypoints(waypoints: L.LatLng[]) {
+    // Ukloni prethodnu rutu
+    if (this.routeControl) {
+      this.map.removeControl(this.routeControl);
+      this.routeControl = undefined;
+    }
+
+    this.routeControl = L.Routing.control({
+      waypoints: waypoints,
+      router: L.routing.mapbox(
+        'pk.eyJ1IjoidG90YWxseS1zcGllczMzIiwiYSI6ImNtanpxYm54dzV1MTEzZnF4M3c4ejZ0c28ifQ.iwa5IGW8kqTBZtwXvVTQcQ',
+        { profile: 'mapbox/driving' }
+      ),
+      fitSelectedRoutes: true,
+      show: false,
+      addWaypoints: false,
+      routeWhileDragging: false,
+
+      createMarker: (i: number, wp: any, nWps: number) => {
+        if (i === 0) {
+          return L.marker(wp.latLng, { draggable: false }).bindPopup("Starting point");
+        }
+
+        if (i === nWps - 1) {
+          return L.marker(wp.latLng, { draggable: false }).bindPopup("Destination");
+        }
+
+        return L.circleMarker(wp.latLng, {
+          radius: 8,
+          fillColor: "#1da93b",
+          color: "#ffffff",
+          weight: 2,
+          opacity: 1,
+          fillOpacity: 1,
+          pane: 'markerPane'
+        }).bindPopup("Stop " + i);
+      }
+    } as any).addTo(this.map);
+
+    this.routeControl.on('routesfound', (e: any) => {
+      const route = e.routes[0];
+      this.coordinates = route.coordinates;
+      this.routeCoordinatesFound.emit(this.coordinates);
+
+      const summary = route.summary;
+      const distanceKm = Math.round((summary.totalDistance / 1000) * 10) / 10;
+      const estimatedTime = Math.round(summary.totalTime / 60);
+
+      this.routeInfo.emit({ distanceKm, estimatedTime });
     });
   }
 
@@ -131,7 +209,7 @@ export class MapComponent implements AfterViewInit, OnDestroy, OnChanges {
 
     this.routeControl.on('routesfound', (e: any) => {
       const route = e.routes[0];
-      this.coordinates = route.coordinates; 
+      this.coordinates = route.coordinates;
       this.routeCoordinatesFound.emit(this.coordinates);
       //creating a rectangle around the route
       const bounds = L.latLngBounds(route.coordinates as any);
@@ -200,14 +278,14 @@ export class MapComponent implements AfterViewInit, OnDestroy, OnChanges {
     });
   }
   ngOnChanges(changes: SimpleChanges): void {
-    if(!this.map)
+    if (!this.map)
       return;
 
     if (this.mode === 'static' && changes['rideStops']) {
       this.drawRouteFromStops();
     }
-    if (this.map && (changes['pickupAddress'] || changes['destinationAddress'])) {
-        this.setRoute();
+    if (this.map && (changes['pickupAddress'] || changes['destinationAddress'] || changes['stopAddresses'])) {
+      this.setRoute();
     }
   }
 
@@ -227,11 +305,11 @@ export class MapComponent implements AfterViewInit, OnDestroy, OnChanges {
     L.Marker.prototype.options.icon = DefaultIcon;
     this.initMap();
 
-    if (this.mode === 'static'){
-      this.drawRouteFromStops(); 
+    if (this.mode === 'static') {
+      this.drawRouteFromStops();
       return;
     }
-    
+
     this.subscribeToWebsocket();
     if (this.pickupAddress.trim() && this.destinationAddress.trim()) {
       this.setRoute();
@@ -253,13 +331,13 @@ export class MapComponent implements AfterViewInit, OnDestroy, OnChanges {
         const marker = L.marker(latLng, { icon: iconToUse })
           .addTo(this.map)
           .bindPopup(`vehicle: ${v.id} <br> status: ${v.busy ? 'occupied' : 'free'}`);
-        
+
         this.vehicleMarkers.set(v.id, marker);
       }
     });
   }
 
-// update map for specific ride tracking
+  // update map for specific ride tracking
   private handleSingleRideUpdate(data: RideTrackingDTO): void {
     this.rideUpdate.emit(data);
 
@@ -275,7 +353,7 @@ export class MapComponent implements AfterViewInit, OnDestroy, OnChanges {
       const marker = L.marker(latLng, { icon: this.redIcon })
         .addTo(this.map)
         .bindPopup(`Vehicle arrived in: ${data.eta} min`);
-      
+
       this.vehicleMarkers.set(data.rideId, marker);
     }
   }

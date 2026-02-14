@@ -1,0 +1,156 @@
+.ride-card {
+  background-color: rgba(110, 88, 198, 0.19); /* #6E58C630 konvertovano radi citljivosti */
+  border-radius: 15px;
+  padding: 1.5rem; /* Malo smanjeno da bude kompaktnije */
+  color: white;
+  margin-bottom: 20px;
+  /* Popravljena greska u rgba sintaksi */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.05); /* Suptilan border za tamnu temu */
+}
+
+.ride-details-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+/* --- Timeline Styles --- */
+.route-info {
+  flex: 1;
+}
+
+.timeline {
+  display: flex;
+  flex-direction: column;
+}
+
+.timeline-row {
+  display: flex;
+  gap: 15px;
+  /* Ovo osigurava da red zauzme visinu koliko treba tekstu */
+  min-height: 3rem; 
+}
+
+.visual-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* Fiksna sirina da bi tačkice bile vertikalno poravnate */
+  width: 20px; 
+  padding-top: 8px; /* Offset da se tačkica poravna sa sredinom teksta u prvom redu */
+}
+
+.address-col {
+  flex: 1;
+  padding-bottom: 1rem; /* Razmak do sledece adrese */
+}
+
+/* Tačkice */
+.dot {
+  border-radius: 50%;
+  flex-shrink: 0; /* Da se ne spljošti */
+  z-index: 2;
+}
+
+.dot.start {
+  width: 12px;
+  height: 12px;
+  background-color: #a3cf62; /* Zelena */
+  box-shadow: 0 0 5px #a3cf62;
+}
+
+.dot.mid {
+  width: 8px;
+  height: 8px;
+  background-color: #aaa;
+}
+
+.dot.end {
+  width: 16px;
+  height: 16px;
+  /* Preporuka: Koristi SVG ili background-image */
+  background: url('/assets/icons/location-pin.png') no-repeat center;
+  background-size: contain;
+  /* Fallback ako nema slike - crveni marker */
+  background-color: #ff6b6b; 
+}
+
+/* Linija */
+.location-line {
+  width: 2px;
+  /* Flex grow je kljucan - linija raste da popuni prostor do sledece tačke */
+  flex-grow: 1; 
+  background-color: #7a7495;
+  margin-top: 4px;
+  margin-bottom: 4px;
+  min-height: 20px; /* Minimalna visina ako nema teksta */
+  opacity: 0.5;
+}
+
+.address-pill {
+  background: #4a4466;
+  padding: 8px 15px;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  display: inline-block; /* Da se pill ne siri preko cele sirine ako je tekst kratak */
+}
+
+/* --- Right Side (Status) --- */
+.status-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+  min-width: 120px;
+}
+
+.price-tag {
+  font-weight: 700;
+  font-size: 1.3rem;
+  color: #fff;
+  margin-bottom: 0.5rem;
+}
+
+.alert-tag {
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.1);
+}
+
+.alert-tag.pending {
+  color: #facc15;
+  background: rgba(250, 204, 21, 0.1);
+}
+
+.alert-tag.scheduled {
+  color: #C5B6FF;
+  background: rgba(197, 182, 255, 0.1);
+}
+
+.driver-info {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 1.5rem;
+}
+
+.driver-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #C5B6FF;
+}
+
+.driver-name {
+    font-size: 0.9rem;
+    font-weight: 500;
+}

@@ -14,12 +14,12 @@ public class AdminRideHistoryResponseDTO {
     private LocalDateTime createdAt;
     private double totalPrice;
     private String userWhoCancelled;
-    private boolean isCancelled;
+    private boolean cancelled;
     private boolean panic;
 
     public AdminRideHistoryResponseDTO(LocalDateTime finishedAt, LocalDateTime startedAt, LocalDateTime createdAt,
                                        List<RideStop> stops, Long id, double totalPrice, boolean panic,
-                                       String userWhoCancelled, boolean isCancelled) {
+                                       String userWhoCancelled, boolean cancelled) {
         this.finishedAt = finishedAt;
         this.startedAt = startedAt;
         this.createdAt = createdAt;
@@ -28,7 +28,7 @@ public class AdminRideHistoryResponseDTO {
         this.totalPrice = totalPrice;
         this.panic = panic;
         this.userWhoCancelled = userWhoCancelled;
-        this.isCancelled = isCancelled;
+        this.cancelled = cancelled;
     }
 
     public Long getRideId() {
@@ -87,12 +87,12 @@ public class AdminRideHistoryResponseDTO {
         this.userWhoCancelled = userWhoCancelled;
     }
 
-    public boolean isCancelled() {
-        return isCancelled;
+    public boolean getCancelled() {
+        return cancelled;
     }
 
     public void setCancelled(boolean cancelled) {
-        isCancelled = cancelled;
+        cancelled = cancelled;
     }
 
     public boolean getPanic() {
