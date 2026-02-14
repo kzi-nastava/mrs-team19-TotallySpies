@@ -25,6 +25,9 @@ import { ReportComponent } from './features/report/report.component';
 import { AdminRideTrackingComponent } from './features/admin-ride-tracking/admin-ride-tracking.component';
 import { UpcomingRidesComponent } from './features/upcoming-rides/upcoming-rides.component';
 import { UpcomingRideCardComponent } from './shared/components/upcoming-ride-card/upcoming-ride-card.component';
+import { AdminRideHistoryComponent } from './features/admin-ride-history/admin-ride-history.component';
+import { RideDetailsAdminComponent } from './features/ride-details-admin/ride-details-admin.component';
+
 export const routes: Routes = [
   {
     path: 'login',
@@ -118,6 +121,10 @@ export const routes: Routes = [
     component : RideDetailsComponent
   },
   {
+    path : 'ride-details-admin/:id',
+    component : RideDetailsAdminComponent
+  },
+  {
     path: 'report-page',
     component: ReportComponent
   }, 
@@ -128,5 +135,9 @@ export const routes: Routes = [
   {
     path: 'upcoming-rides',
     component: UpcomingRidesComponent
+  },
+  {
+    path : 'admin-ride-history',
+    component : AdminRideHistoryComponent
   }
 ];

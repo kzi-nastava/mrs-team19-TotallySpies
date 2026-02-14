@@ -64,6 +64,25 @@
         </tbody>
         </table>
     </div>
-    <button class = "ride-btn" type = "button" (click) = "bookRoute()">Book route</button>
+    <div class="passengers-box">
+        <h1 class="header">Passengers</h1>
+        <table class="reports-table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Last name</th>
+                <th>Email</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let passenger of passengersInfo">
+                <td>{{ passenger.name }}</td>
+                <td>{{ passenger.lastName }}</td>
+                <td>{{ passenger.email }}</td>  
+            </tr>
+        </tbody>
+        </table>
+    </div>
 </div>
+
 
