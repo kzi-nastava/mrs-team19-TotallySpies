@@ -102,8 +102,13 @@
             </td>
 
             <td class="cell-actions">
-              <button class="view-btn" type="button" (click)="showMore(ride.rideId)" >View more</button>
-            </td>
+              <div *ngIf="canRateRide(ride.finishedAt)" class="history-rate-actions">
+                  <button class="rate-small-btn" (click)="openReview('driver', ride.rideId)">Rate Driver</button>
+                  <button class="rate-small-btn" (click)="openReview('vehicle', ride.rideId)">Rate Vehicle</button>
+              </div>
+              
+              <button class="view-btn" type="button" (click)="showMore(ride.rideId)">View more</button>
+          </td>
           </tr>
 
           <tr *ngIf="rides.length === 0">

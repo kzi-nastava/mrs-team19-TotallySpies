@@ -184,3 +184,26 @@ tbody td {
     width: 140px;
   }
 }
+
+.history-rate-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-bottom: 5px;
+}
+
+.rate-small-btn {
+    background-color: transparent;
+    border: 1px solid #c8e261;
+    color: #c8e261;
+    font-size: 11px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.rate-small-btn:hover {
+    background-color: #c8e261;
+    color: #261f32;
+}
