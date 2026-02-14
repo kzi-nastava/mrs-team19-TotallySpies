@@ -18,4 +18,8 @@ export class NavBar {
     this.authService.logout();
     this.router.navigate(['login']);
   }
+
+  get isPassenger(): boolean {
+    return this.authService.getRole() === 'ROLE_PASSENGER';
+  }
 }

@@ -186,40 +186,5 @@
   </div>
 </div>
 
-<app-driver-search-modal [status]="driverSearchStatus" [errorMessage]="driverErrorMessage" (close)="closeDriverModal()">
+<app-driver-search-modal [status]="driverSearchStatus" [errorMessage]="driverErrorMessage" (close)="handleModalClose()">
 </app-driver-search-modal>
-
-<!--
-        za zakazivanje voznje, koristice se kasnije
-        <div class="section">
-          <label>Schedule ride</label>
-          <div class="radio-vertical">
-            <label class="custom-radio">
-              <input type="radio" name="time" value="now">
-              <span class="radio-mark"></span> Now
-            </label>
-            <label class="custom-radio">
-              <input type="radio" name="time" value="later" checked>
-              <span class="radio-mark"></span> Later
-            </label>
-          </div>
-
-          <div class="time-picker-card">
-            <p class="picker-title">Enter time</p>
-            <div class="time-selector">
-              <div class="time-unit">
-                <span class="val">20</span>
-                <span class="unit-label">Hour</span>
-              </div>
-              <span class="time-separator">:</span>
-              <div class="time-unit">
-                <span class="val">00</span>
-                <span class="unit-label">Minute</span>
-              </div>
-            </div>
-            <div class="picker-actions">
-              <button class="flat-btn">Cancel</button>
-              <button class="flat-btn">OK</button>
-            </div>
-          </div>
-        </div>-->

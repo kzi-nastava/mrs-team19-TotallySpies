@@ -1,0 +1,11 @@
+h2 {
+  color: #C5B6FF;
+  font-size: 2.5rem;
+}
+
+.page {
+  background-color: #261F32;
+  min-height: 100vh;
+  padding: 1.3rem 8rem;
+  font-family: 'Montserrat', sans-serif;
+}

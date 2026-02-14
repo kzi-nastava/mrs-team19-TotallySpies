@@ -115,4 +115,11 @@ public class RideController {
         return new ResponseEntity<>(activeRides, HttpStatus.OK);
     }
 
+    @GetMapping(value = "/passenger-upcoming")
+    public ResponseEntity<List<PassengerUpcomingRideDTO>> getUpcomingRidesForPassenger(Authentication auth){
+        String email = auth.getName();
+        List<PassengerUpcomingRideDTO> upcomingRides = rideService.findUpcomingRides(email);
+        return ResponseEntity.ok(upcomingRides);
+    }
+
 }

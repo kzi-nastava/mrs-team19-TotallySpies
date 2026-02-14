@@ -1,0 +1,44 @@
+<div class="ride-card">
+  <div class="ride-details-section">
+
+    <div class="route-info">
+
+      <div class="timeline">
+
+        <div *ngFor="let loc of orderedStops; let i = index; let isLast = last" class="timeline-row">
+
+          <div class="visual-col">
+            <div class="dot" [ngClass]="{
+                   'start': i === 0, 
+                   'end': isLast, 
+                   'mid': i > 0 && !isLast
+                 }">
+            </div>
+
+            <div *ngIf="!isLast" class="location-line"></div>
+          </div>
+
+          <div class="address-col">
+            <div class="address-pill">
+              {{ loc.address }}
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="status-container">
+      <div class="price-tag">{{ ride.price }} din</div>
+
+      <div class="alert-tag" [ngClass]="ride.status.toLowerCase()">
+        {{ ride.status }}
+      </div>
+
+      <div class="driver-info" *ngIf="ride.driverName">
+        <span>Driver: {{ ride.driverName }}</span>
+      </div>
+    </div>
+
+  </div>
+</div>

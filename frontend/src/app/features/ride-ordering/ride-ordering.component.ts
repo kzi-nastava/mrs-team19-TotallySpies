@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, NgZone, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
@@ -12,6 +12,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { FavouriteService } from '../../shared/services/favourite.service';
 import { DriverSearchModalComponent, DriverSearchStatus } from '../../shared/components/driver-search-modal/driver-search-modal.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-ride-ordering',
@@ -35,7 +36,9 @@ export class RideOrderingComponent implements OnInit {
   stopsForMap: string[] = [];
 
   constructor(private fb: FormBuilder, private mapService: MapService,
-    private rideService: RideService, private favouriteService: FavouriteService, private cd: ChangeDetectorRef, private snackBar: MatSnackBar,) {
+    private rideService: RideService, private favouriteService: FavouriteService, 
+    private cd: ChangeDetectorRef, private snackBar: MatSnackBar,
+    private router: Router, private ngZone: NgZone) {
     this.routeForm = this.fb.group({
       start: ['', Validators.required],
       stops: this.fb.array([]),
@@ -313,10 +316,27 @@ export class RideOrderingComponent implements OnInit {
 
     this.showFavouritesModal = false;
   }
-  closeDriverModal() {
+handleModalClose() {
+  console.log('Status pre zatvaranja:', this.driverSearchStatus);
+  
+  if (this.driverSearchStatus === 'FOUND' || this.driverSearchStatus === 'SCHEDULED') {
     this.driverSearchStatus = 'IDLE';
-    this.driverErrorMessage = null;
+    this.cd.detectChanges();
+
+    // Pokreni navigaciju unutar zone
+    this.ngZone.run(() => {
+      this.router.navigate(['/upcoming-rides']).then(success => {
+        if (success) {
+          console.log('Navigacija uspešna!');
+        } else {
+          console.error('Navigacija nije uspela. Proveri putanju u app.routes.ts');
+        }
+      });
+    });
+  } else {
+    this.driverSearchStatus = 'IDLE';
   }
+}
 
   validateAndGetScheduledTime(): string | null {
     if (!this.routeForm.value.isScheduled) return null;

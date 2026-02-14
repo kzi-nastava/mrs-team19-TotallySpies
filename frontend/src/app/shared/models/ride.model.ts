@@ -53,7 +53,8 @@ export interface RideDetailsStopDTO{
 export interface RideStopDTO {
   address: string,
   lat: number,
-  lng: number
+  lng: number,
+  orderIndex: number
 }
 
 export interface CreateRideRequestDTO {
@@ -151,4 +152,14 @@ export interface ActiveRideDTO {
   panicPressed: boolean;
   panicReason: string;
   status: string; 
+}
+
+export interface PassengerUpcomingRideDTO {
+  rideId: number;
+  status: 'PENDING' | 'SCHEDULED';
+  price: number;
+
+  driverName?: string;
+
+  locations: RideStopDTO[];
 }

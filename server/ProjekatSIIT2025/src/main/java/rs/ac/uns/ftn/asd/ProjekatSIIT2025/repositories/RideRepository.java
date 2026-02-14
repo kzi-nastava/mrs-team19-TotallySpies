@@ -53,4 +53,6 @@ public interface RideRepository extends JpaRepository<Ride, Long> {
             @Param("statuses") List<RideStatus> statuses,
             @Param("from") LocalDateTime from,
             @Param("to") LocalDateTime to);
+
+    List<Ride> findAllByCreatorEmailAndStatusIn(String email, List<RideStatus> stuteses);
 }
