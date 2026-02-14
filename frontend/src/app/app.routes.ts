@@ -23,6 +23,7 @@ import { PassengerRidesHistoryComponent } from './features/passenger-rides-histo
 import { RideDetailsComponent } from './features/ride-details/ride-details.component';
 import { ReportComponent } from './features/report/report.component';
 import { AdminRideTrackingComponent } from './features/admin-ride-tracking/admin-ride-tracking.component';
+import { AdminPricingComponent } from './features/admin-pricing/admin-pricing.component';
 
 export const routes: Routes = [
   {
@@ -123,5 +124,9 @@ export const routes: Routes = [
   {
     path: 'admin-ride-tracking',
     component: AdminRideTrackingComponent
+  },
+  {
+    path: 'admin-pricing',
+    component: AdminPricingComponent
   }
 ];
