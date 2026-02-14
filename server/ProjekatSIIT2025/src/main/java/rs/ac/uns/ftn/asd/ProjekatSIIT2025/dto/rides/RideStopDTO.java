@@ -4,6 +4,7 @@ public class RideStopDTO {
     private String address;
     private Double lat;
     private Double lng;
+    private int orderIndex;
 
     public RideStopDTO(Double latitude, Double longitude, String address) {
         this.address = address;
@@ -35,5 +36,13 @@ public class RideStopDTO {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public int getOrderIndex() {
+        return orderIndex;
+    }
+
+    public void setOrderIndex(int orderIndex) {
+        this.orderIndex = orderIndex;
     }
 }

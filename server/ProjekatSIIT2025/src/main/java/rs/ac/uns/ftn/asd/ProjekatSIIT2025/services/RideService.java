@@ -1126,4 +1126,48 @@ public class RideService {
         return dto;
     }).collect(Collectors.toList());
 }
+
+    public List<PassengerUpcomingRideDTO> findUpcomingRides(String email) {
+        User user = userRepository.findByEmail(email);
+        if (user == null) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Passenger not found!");
+
+        List<RideStatus> statuses = new ArrayList<>();
+        statuses.add(RideStatus.PENDING);
+        statuses.add(RideStatus.SCHEDULED);
+        List<Ride> rides = rideRepository.findAllByCreatorEmailAndStatusIn(email, statuses);
+
+        List<PassengerUpcomingRideDTO> upcomingRides = new ArrayList<>();
+        for(Ride ride : rides){
+            upcomingRides.add(mapToUpcomingRide(ride));
+        }
+        return upcomingRides;
+    }
+
+    private PassengerUpcomingRideDTO mapToUpcomingRide(Ride ride) {
+        PassengerUpcomingRideDTO dto = new PassengerUpcomingRideDTO();
+
+        dto.setRideId(ride.getId());
+        dto.setStatus(ride.getStatus());
+        dto.setPrice(ride.getTotalPrice());
+
+        if (ride.getDriver() != null) {
+            dto.setDriverName(ride.getDriver().getName() + " " + ride.getDriver().getLastName());
+        }
+
+        List<RideStopDTO> stops = ride.getStops().stream()
+                .sorted(Comparator.comparingInt(RideStop::getOrderIndex))
+                .map(s -> {
+                    RideStopDTO rs = new RideStopDTO();
+                    rs.setAddress(s.getAddress());
+                    rs.setLat(s.getLatitude());
+                    rs.setLng(s.getLongitude());
+                    rs.setOrderIndex(s.getOrderIndex());
+                    return rs;
+                })
+                .toList();
+
+        dto.setLocations(stops);
+
+        return dto;
+    }
 }

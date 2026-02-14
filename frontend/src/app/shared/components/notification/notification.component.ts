@@ -4,6 +4,7 @@ import { NotificationDTO } from '../../models/notification.model';
 import { NotificationService } from '../../services/notification.service';
 import { SocketService } from '../../services/socket.service';
 import { CommonModule } from '@angular/common';
+import { AuthService } from '../../../core/auth/services/auth.service';
 
 @Component({
   selector: 'app-notification',
@@ -11,8 +12,8 @@ import { CommonModule } from '@angular/common';
   templateUrl: './notification.component.html',
   styleUrl: './notification.component.css',
 })
-export class NotificationComponent implements OnInit{
-notifications: NotificationDTO[] = [];
+export class NotificationComponent implements OnInit {
+  notifications: NotificationDTO[] = [];
   unreadCount: number = 0;
   isOpen: boolean = false;  // is dropdown opened
 
@@ -20,8 +21,9 @@ notifications: NotificationDTO[] = [];
     private notificationService: NotificationService,
     private socketService: SocketService,
     private router: Router,
-    private cdr: ChangeDetectorRef
-  ) {}
+    private cdr: ChangeDetectorRef,
+    private authService: AuthService,
+  ) { }
 
   ngOnInit(): void {
     this.loadHistory();
@@ -32,8 +34,8 @@ notifications: NotificationDTO[] = [];
     this.notificationService.getNotifications().subscribe(data => {
       // newswst first
       this.notifications = data
-      .filter(n => !n.read)
-      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        .filter(n => !n.read)
+        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
       this.updateUnreadCount();
       this.cdr.detectChanges();
     });
@@ -45,7 +47,7 @@ notifications: NotificationDTO[] = [];
       if (notif) {
         this.notifications.unshift(notif);
         this.updateUnreadCount();
-        
+
         const audio = new Audio('sound/notification.mp3');
         audio.play();
       }
@@ -65,7 +67,7 @@ notifications: NotificationDTO[] = [];
     if (!notif.read) {
       this.notificationService.markAsRead(notif.id).subscribe({
         next: () => {
-          notif.read = true; 
+          notif.read = true;
           this.updateUnreadCount();
           this.cdr.detectChanges();
         },
@@ -77,10 +79,22 @@ notifications: NotificationDTO[] = [];
 
     if (notif.rideId) {
       if (notif.type === 'LINKED_TO_RIDE') {
-        this.router.navigate(['ride-tracker-user', notif.rideId]); 
-      } 
+        this.router.navigate(['ride-tracker-user', notif.rideId]);
+      }
       else if (notif.type === 'RIDE_COMPLETED') {
-        this.router.navigate(['ride-tracker-user', notif.rideId ]);
+        this.router.navigate(['ride-tracker-user', notif.rideId]);
+      }
+      else if (notif.type === 'NEW_RIDE') {
+        const userRole = this.authService.getRole();
+        console.log(userRole);
+        if (userRole === 'ROLE_DRIVER') {
+          this.router.navigate(['scheduled-rides']);
+        } else {
+          this.router.navigate(['upcoming-rides']);
+        }
+      }
+      else if (notif.type === 'RIDE_REMINDER') {
+        this.router.navigate(['upcoming-rides']);
       }
     }
   }
