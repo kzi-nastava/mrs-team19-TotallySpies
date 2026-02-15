@@ -62,9 +62,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".presentation.view.ProfileActivity"
-            android:exported="false" />
-        <activity
             android:name=".presentation.view.AdminListActivity"
             android:exported="false" />
     </application>

@@ -33,16 +33,6 @@
                     app:layout_constraintTop_toTopOf="parent"
                     app:srcCompat="@drawable/edit_icon" />
 
-                <ImageView
-                    android:id="@+id/btnBack"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="20dp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/baseline_arrow_back_24" />
-
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -124,14 +114,15 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
-                    android:layout_marginTop="40dp"
                     android:layout_marginEnd="10dp"
                     android:background="@drawable/user_profile_rectangle"
                     android:paddingTop="10dp"
                     android:paddingBottom="10dp"
+                    android:layout_marginTop="15dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/btnBack">
+                    app:layout_constraintTop_toBottomOf="@id/btnEdit"
+                    tools:layout_editor_absoluteY="60dp">
 
                     <com.google.android.material.imageview.ShapeableImageView
                         android:id="@+id/imgUser"
@@ -155,6 +146,7 @@
                         android:layout_marginEnd="-5dp"
                         android:backgroundTint="#00FFFFFF"
                         android:scaleType="centerCrop"
+                        android:contentDescription="Update profile image"
                         app:layout_constraintEnd_toEndOf="@+id/imgUser"
                         app:layout_constraintTop_toBottomOf="@+id/imgUser"
                         app:srcCompat="@drawable/add_circle_icon" />
