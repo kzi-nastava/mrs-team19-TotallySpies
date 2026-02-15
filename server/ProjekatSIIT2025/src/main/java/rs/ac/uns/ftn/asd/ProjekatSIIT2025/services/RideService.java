@@ -25,16 +25,10 @@ import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.users.DriverActivityResponseDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.users.PassengerInfoDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.users.UserProfileResponseDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.*;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.DriverRepository;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.RideRepository;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.*;
 
 import static java.awt.geom.Point2D.distance;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.PanicNotificationRepository;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.PassengerRepository;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.ReportRepository;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.RideCancellationRepository;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.UserRepository;
+
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.utils.RideComparator;
 
 @Service
@@ -66,6 +60,13 @@ public class RideService {
     @Transactional
     public RideFinishResponseDTO finishRide(Long rideId) {
         Ride ride = rideRepository.findById(rideId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "ride is not found"));
+        String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        Driver currentDriver = Optional.ofNullable(driverRepository.findByEmail(currentUserEmail))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Driver not found"));
+        
+        if (!currentDriver.getId().equals(ride.getDriver().getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not the driver of this ride");
+        }
 
         // update ride
         ride.setStatus(RideStatus.COMPLETED);

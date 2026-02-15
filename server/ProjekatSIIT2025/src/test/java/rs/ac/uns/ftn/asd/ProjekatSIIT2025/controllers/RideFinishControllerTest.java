@@ -30,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class RideControllerIntegrationTest {
+class RideFinishControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -129,5 +129,35 @@ class RideControllerIntegrationTest {
     void getFutureRides_wrongMethod_405() throws Exception {
         mockMvc.perform(post("/api/v1/rides/scheduled"))
                 .andExpect(status().isMethodNotAllowed());
+    }
+
+    @Test
+    @DisplayName("2.7.8 - driver tries to finish another driver's ride -> 403")
+    @WithMockUser(username = "other.driver@gmail.com", roles = "DRIVER")
+    void finishRide_WrongDriver_403() throws Exception {
+        Long rideId = 1L;
+        when(rideService.finishRide(rideId))
+                .thenThrow(new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not the driver of this ride"));
+
+        mockMvc.perform(put("/api/v1/rides/{id}/end", rideId)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("2.7.9 - driver tries to finish ride that is already completed -> 200 (ili 400 ako je zabranjeno)")
+    @WithMockUser(username = "driver@gmail.com", roles = "DRIVER")
+    void finishRide_AlreadyCompleted_StillOk() throws Exception {
+        Long rideId = 1L;
+        RideFinishResponseDTO response = new RideFinishResponseDTO();
+        response.setRideId(rideId);
+        response.setStatus(RideStatus.COMPLETED);
+
+        when(rideService.finishRide(rideId)).thenReturn(response);
+
+        mockMvc.perform(put("/api/v1/rides/{id}/end", rideId)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("COMPLETED"));
     }
 }

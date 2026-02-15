@@ -45,14 +45,18 @@ class RideServiceTest {
     @DisplayName("2.7.1 - succsesfully finish ride and find next one")
     void finishRide_SuccessWithNextRide() {
         Long rideId = 1L;
-        Driver driver = new Driver(); driver.setId(100L);
+        Driver driver = new Driver(); 
+        driver.setId(100L);
+        driver.setEmail("driver@gmail.com");
         Ride ride = createRide(rideId, RideStatus.ACTIVE, driver);
         Ride nextRide = createRide(2L, RideStatus.SCHEDULED, driver);
 
         when(rideRepository.findById(rideId)).thenReturn(Optional.of(ride));
+        when(driverRepository.findByEmail("driver@gmail.com")).thenReturn(driver);
         when(rideRepository.findFirstByDriverIdAndStatusOrderByStartedAtAsc(100L, RideStatus.SCHEDULED))
                 .thenReturn(Optional.of(nextRide));
 
+        mockSecurityContext("driver@gmail.com");
         RideFinishResponseDTO response = rideService.finishRide(rideId);
 
         assertEquals(RideStatus.COMPLETED, response.getStatus());
@@ -63,14 +67,18 @@ class RideServiceTest {
     @Test
     @DisplayName("2.7.2 - successfully finish ride and no next ride")
     void finishRide_NoNextRide_NextIdIsNull() {
-        Long rideId = 1L;
-        Driver driver = new Driver(); driver.setId(100L);
+                Long rideId = 1L;
+        Driver driver = new Driver(); 
+        driver.setId(100L);
+        driver.setEmail("driver@gmail.com");
         Ride ride = createRide(rideId, RideStatus.ACTIVE, driver);
 
         when(rideRepository.findById(rideId)).thenReturn(Optional.of(ride));
+        when(driverRepository.findByEmail("driver@gmail.com")).thenReturn(driver);
         when(rideRepository.findFirstByDriverIdAndStatusOrderByStartedAtAsc(100L, RideStatus.SCHEDULED))
                 .thenReturn(Optional.empty());
 
+        mockSecurityContext("driver@gmail.com");
         RideFinishResponseDTO response = rideService.finishRide(rideId);
 
         assertNull(response.getNextRideId());
@@ -88,12 +96,18 @@ class RideServiceTest {
     @Test
     @DisplayName("2.7.4 - no passengers")
     void finishRide_NoPassengers_NoNotifications() {
-        Ride ride = createRide(1L, RideStatus.ACTIVE, new Driver());
+                Long rideId = 1L;
+        Driver driver = new Driver();
+        driver.setId(100L);
+        driver.setEmail("driver@gmail.com");
+        Ride ride = createRide(rideId, RideStatus.ACTIVE, driver);
         ride.setPassengers(new ArrayList<>()); 
 
-        when(rideRepository.findById(1L)).thenReturn(Optional.of(ride));
+        when(rideRepository.findById(rideId)).thenReturn(Optional.of(ride));
+        when(driverRepository.findByEmail("driver@gmail.com")).thenReturn(driver);
 
-        rideService.finishRide(1L);
+        mockSecurityContext("driver@gmail.com");
+        rideService.finishRide(rideId);
 
         verify(notificationService, never()).notifyUser(any(), any(), any(), any());
         verify(emailService, never()).sendSimpleMessage(any());
@@ -102,15 +116,25 @@ class RideServiceTest {
     @Test
     @DisplayName("2.7.5 - error while sending mail but ride still completes")
     void finishRide_EmailFails_StillCompletes() {
-        Ride ride = createRide(1L, RideStatus.ACTIVE, new Driver());
+                Long rideId = 1L;
+        Driver driver = new Driver();
+        driver.setId(100L);
+        driver.setEmail("driver@gmail.com");
+        Ride ride = createRide(rideId, RideStatus.ACTIVE, driver);
+        
         List<Passenger> passengers = new ArrayList<>();
-        passengers.add(new Passenger());
+        Passenger passenger = new Passenger();
+        passenger.setEmail("passenger@example.com");
+        passenger.setName("Test Passenger");
+        passengers.add(passenger);
         ride.setPassengers(passengers);
 
-        when(rideRepository.findById(1L)).thenReturn(Optional.of(ride));
+        when(rideRepository.findById(rideId)).thenReturn(Optional.of(ride));
+        when(driverRepository.findByEmail("driver@gmail.com")).thenReturn(driver);
         doThrow(new RuntimeException("mail error")).when(emailService).sendSimpleMessage(any());
 
-        RideFinishResponseDTO response = rideService.finishRide(1L);
+        mockSecurityContext("driver@gmail.com");
+        RideFinishResponseDTO response = rideService.finishRide(rideId);
 
         assertEquals(RideStatus.COMPLETED, response.getStatus());
         verify(rideRepository).save(any());
@@ -166,6 +190,89 @@ class RideServiceTest {
 
         assertEquals(now, result.get(0).getDisplayTime()); // StartedAt
         assertEquals(now.plusHours(1), result.get(1).getDisplayTime()); // ScheduledFor
+    }
+
+    @Test
+    @DisplayName("2.7.9 - finish ride that is SCHEDULED (not ACTIVE) - still completes")
+    void finishRide_RideNotActive_StillCompletes() {
+        Long rideId = 1L;
+        Driver driver = new Driver();
+        driver.setId(100L);
+        driver.setEmail("driver@gmail.com");
+        Ride ride = createRide(rideId, RideStatus.SCHEDULED, driver); // nije ACTIVE
+
+        when(rideRepository.findById(rideId)).thenReturn(Optional.of(ride));
+        when(driverRepository.findByEmail("driver@gmail.com")).thenReturn(driver);
+
+        RideFinishResponseDTO response = rideService.finishRide(rideId);
+
+        assertEquals(RideStatus.COMPLETED, response.getStatus());
+        verify(rideRepository).save(rideArgumentCaptor.capture());
+        assertEquals(RideStatus.COMPLETED, rideArgumentCaptor.getValue().getStatus());
+    }
+
+    @Test
+    @DisplayName("2.7.10 - different driver tries to finish ride -> 403 FORBIDDEN")
+    void finishRide_DifferentDriver_ThrowsForbidden() {
+        Long rideId = 1L;
+        Driver rideDriver = new Driver();
+        rideDriver.setId(100L);
+        rideDriver.setEmail("driver.owner@gmail.com");
+        
+        Driver currentDriver = new Driver();
+        currentDriver.setId(200L);
+        currentDriver.setEmail("driver.other@gmail.com");
+
+        Ride ride = createRide(rideId, RideStatus.ACTIVE, rideDriver);
+
+        when(rideRepository.findById(rideId)).thenReturn(Optional.of(ride));
+        when(driverRepository.findByEmail("driver.other@gmail.com")).thenReturn(currentDriver);
+
+        mockSecurityContext("driver.other@gmail.com");
+
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class,
+                () -> rideService.finishRide(rideId));
+        assertEquals(HttpStatus.FORBIDDEN, ex.getStatusCode());
+    }
+
+    @Test
+    @DisplayName("2.7.11 - findScheduledRides with null stops - no NPE")
+    void findScheduledRides_NullStops_HandledGracefully() {
+        mockSecurityContext("driver@gmail.com");
+        Driver driver = new Driver();
+        driver.setId(100L);
+        
+        Ride ride = createRide(1L, RideStatus.ACTIVE, driver);
+        ride.setStops(null);
+
+        when(driverRepository.findByEmail("driver@gmail.com")).thenReturn(driver);
+        when(rideRepository.findByDriverIdAndStatusIn(eq(100L), anyList())).thenReturn(List.of(ride));
+
+        List<RideFinishResponseDTO> result = rideService.findScheduledRides();
+
+        assertEquals(1, result.size());
+        assertNull(result.get(0).getStartLocation());
+        assertNull(result.get(0).getEndLocation());
+    }
+
+    @Test
+    @DisplayName("2.7.12 - findScheduledRides with empty stops - start/end location null")
+    void findScheduledRides_EmptyStops_LocationNull() {
+        mockSecurityContext("driver@gmail.com");
+        Driver driver = new Driver();
+        driver.setId(100L);
+        
+        Ride ride = createRide(1L, RideStatus.ACTIVE, driver);
+        ride.setStops(new ArrayList<>());
+
+        when(driverRepository.findByEmail("driver@gmail.com")).thenReturn(driver);
+        when(rideRepository.findByDriverIdAndStatusIn(eq(100L), anyList())).thenReturn(List.of(ride));
+
+        List<RideFinishResponseDTO> result = rideService.findScheduledRides();
+
+        assertEquals(1, result.size());
+        assertNull(result.get(0).getStartLocation());
+        assertNull(result.get(0).getEndLocation());
     }
 
     // helper methods

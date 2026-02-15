@@ -20,7 +20,7 @@ import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.RideStatus;
 public class RideRepositoryTestEmbedded {
 
     @Autowired
-    private RideRepository rideRepository;  // DA LI TREBA PREKO SQL ILI NE
+    private RideRepository rideRepository;
 
     @Test
     public void shouldFindScheduledRidesForDriver() {
@@ -48,5 +48,29 @@ public class RideRepositoryTestEmbedded {
         assertThat(result).isPresent();
         assertThat(result.get().getId()).isEqualTo(2L);
         assertThat(result.get().getStatus()).isEqualTo(RideStatus.SCHEDULED);
+    }
+    
+    @Test
+    public void shouldReturnEmptyListWhenNoScheduledRides() {
+        Long driverId = 999L; // driver without rides
+        
+        List<Ride> result = rideRepository.findByDriverIdAndStatusIn(
+            driverId, 
+            List.of(RideStatus.ACTIVE, RideStatus.SCHEDULED)
+        );
+        
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    public void shouldReturnEmptyOptionalWhenNoScheduledRide() {
+        Long driverId = 999L;
+        
+        Optional<Ride> result = rideRepository.findFirstByDriverIdAndStatusOrderByStartedAtAsc(
+            driverId, 
+            RideStatus.SCHEDULED
+        );
+        
+        assertThat(result).isEmpty();
     }
 }
