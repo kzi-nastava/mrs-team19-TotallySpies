@@ -18,6 +18,7 @@ import com.ftn.mobile.R;
 import com.ftn.mobile.data.local.TokenStorage;
 import com.ftn.mobile.data.local.UserRoleManger;
 import com.ftn.mobile.presentation.fragments.DriverHistoryFragment;
+import com.ftn.mobile.presentation.fragments.profile.ProfileFragment;
 import com.google.android.material.navigation.NavigationView;
 
 public class MainActivity extends AppCompatActivity {
@@ -86,9 +87,8 @@ public class MainActivity extends AppCompatActivity {
             } else if (id == R.id.nav_home) {
                 removeCurrentFragment();
                 getSupportActionBar().setTitle("SmartRide");
-            } else if (id == R.id.nav_profile) {
-                Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
-                startActivity(intent);
+            } else if (id == R.id.nav_profile){
+                openFragment(new ProfileFragment(), "Profile");
             } else if (id == R.id.nav_register) {
                 Intent intent = new Intent(MainActivity.this, RegisterActivity.class);
                 startActivity(intent);

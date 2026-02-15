@@ -51,6 +51,8 @@ public class RideService {
     private ReportRepository reportRepository;
     @Autowired
     private ReviewRepository reviewRepository;
+    @Autowired
+    private PricingService pricingService;
 
     @Autowired
     DriverActivityService driverActivityService;
@@ -479,9 +481,9 @@ public class RideService {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No available drivers");
             }
         }
-
-        double basePrice = priceByVehicleType(dto.getVehicleType());
-        double totalPrice = basePrice + dto.getDistanceKm() * 120;
+        double calculatedPrice = pricingService.calculatePrice(dto.getVehicleType(), dto.getDistanceKm());
+        //double basePrice = priceByVehicleType(dto.getVehicleType());
+        //double totalPrice = basePrice + dto.getDistanceKm() * 120;
 
         Ride ride = new Ride();
         ride.setCreator(creator);
@@ -501,7 +503,7 @@ public class RideService {
         ride.setVehicleType(dto.getVehicleType());
         ride.setBabiesTransport(dto.isBabyTransport());
         ride.setPetsTransport(dto.isPetTransport());
-        ride.setTotalPrice(totalPrice);
+        ride.setTotalPrice(calculatedPrice);
         ride.setDistanceKm(dto.getDistanceKm());
         ride.setEstimatedTime(dto.getEstimatedTime());
 
@@ -710,13 +712,13 @@ public class RideService {
         return Math.max(0, Math.round(activeRide.getEstimatedTime() - passed));
     }
 
-    private double priceByVehicleType(VehicleType type) {
-        return switch (type) {
-            case STANDARD -> 300;
-            case VAN -> 500;
-            case LUXURIOUS -> 800;
-        };
-    }
+    // private double priceByVehicleType(VehicleType type) {
+    //     return switch (type) {
+    //         case STANDARD -> 300;
+    //         case VAN -> 500;
+    //         case LUXURIOUS -> 800;
+    //     };
+    // }
 
     private boolean canDriverTakeRide(Driver driver, DriverSearchContext context, long remainingMinutesOfCurrentRide, double startLat, double startLng) {
         // minutes worked in the last 24h

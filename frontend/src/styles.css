@@ -8,6 +8,7 @@ html, body {
     padding: 0;
     height: 100%;
     overflow-x: hidden;
+    background-color: #261F32;
 }
 .cdk-overlay-backdrop {
   background: rgba(0, 0, 0, 0.7) !important;

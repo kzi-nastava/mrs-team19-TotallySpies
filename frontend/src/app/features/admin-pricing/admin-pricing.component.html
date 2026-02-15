@@ -1,0 +1,16 @@
+<div class="pricing-container">
+  <h2>Update Ride Price</h2>
+
+  <div class="price-card" *ngFor="let p of prices">
+    <h3>{{ p.vehicleType }}</h3>
+    <div class="form-group">
+      <label>Starting price (RSD):</label>
+      <input type="number" [(ngModel)]="p.basePrice">
+    </div>
+    <button (click)="updatePrice(p)">Save</button>
+  </div>
+  
+  <div class="info-box">
+    <p>Disclamer: price per km is constant (120 RSD).</p>
+  </div>
+</div>

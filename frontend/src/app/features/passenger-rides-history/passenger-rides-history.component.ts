@@ -6,6 +6,8 @@ import { PassengerRideHistoryResponseDTO } from '../../shared/models/passenger-r
 import { ChangeDetectorRef } from '@angular/core';
 import { RideService } from '../../shared/services/ride.service';
 import { Router, RouterLink } from '@angular/router';
+import { ReviewDialogComponent } from '../../shared/components/review-dialog/review-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-passenger-rides-history',
@@ -15,7 +17,7 @@ import { Router, RouterLink } from '@angular/router';
   styleUrl: './passenger-rides-history.component.css',
 })
 export class PassengerRidesHistoryComponent implements OnInit{
-  constructor(private router:Router, private userService :UserService, private rideService : RideService, private cdr: ChangeDetectorRef){}
+  constructor(private router:Router, private userService :UserService, private rideService : RideService, private cdr: ChangeDetectorRef, private dialog: MatDialog){}
   //changeDetectorRef -manual control over angular change detection cycle 
 
   filterForm = new FormGroup({
@@ -108,6 +110,24 @@ export class PassengerRidesHistoryComponent implements OnInit{
 
   showMore(rideId : number){
     this.router.navigate(['ride-details', rideId]);
+  }
+
+  canRateRide(finishedAt: string | Date | null): boolean {
+      if (!finishedAt) return false;
+
+      const finishDate = new Date(finishedAt).getTime();
+      const currentDate = new Date().getTime();
+      const threeDaysInMillis = 3 * 24 * 60 * 60 * 1000;
+
+      return (currentDate - finishDate) <= threeDaysInMillis;
+  }
+
+  // Metoda za otvaranje dijaloga (moraš ubaciti MatDialog u konstruktor kao i u prethodnoj komponenti)
+  openReview(type: 'driver' | 'vehicle', rideId: number): void {
+      this.dialog.open(ReviewDialogComponent, { 
+          width: '25rem', 
+          data: { type, rideId } 
+      });
   }
 
 }
