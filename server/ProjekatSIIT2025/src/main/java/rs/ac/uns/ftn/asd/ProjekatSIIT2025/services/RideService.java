@@ -25,16 +25,10 @@ import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.users.DriverActivityResponseDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.users.PassengerInfoDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.users.UserProfileResponseDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.*;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.DriverRepository;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.RideRepository;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.*;
 
 import static java.awt.geom.Point2D.distance;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.PanicNotificationRepository;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.PassengerRepository;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.ReportRepository;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.RideCancellationRepository;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.UserRepository;
+
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.utils.RideComparator;
 
 @Service
@@ -57,6 +51,8 @@ public class RideService {
     private ReportRepository reportRepository;
     @Autowired
     private ReviewRepository reviewRepository;
+    @Autowired
+    private PricingService pricingService;
 
     @Autowired
     DriverActivityService driverActivityService;
@@ -478,9 +474,9 @@ public class RideService {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No available drivers");
             }
         }
-
-        double basePrice = priceByVehicleType(dto.getVehicleType());
-        double totalPrice = basePrice + dto.getDistanceKm() * 120;
+        double calculatedPrice = pricingService.calculatePrice(dto.getVehicleType(), dto.getDistanceKm());
+        //double basePrice = priceByVehicleType(dto.getVehicleType());
+        //double totalPrice = basePrice + dto.getDistanceKm() * 120;
 
         Ride ride = new Ride();
         ride.setCreator(creator);
@@ -500,7 +496,7 @@ public class RideService {
         ride.setVehicleType(dto.getVehicleType());
         ride.setBabiesTransport(dto.isBabyTransport());
         ride.setPetsTransport(dto.isPetTransport());
-        ride.setTotalPrice(totalPrice);
+        ride.setTotalPrice(calculatedPrice);
         ride.setDistanceKm(dto.getDistanceKm());
         ride.setEstimatedTime(dto.getEstimatedTime());
 
@@ -709,13 +705,13 @@ public class RideService {
         return Math.max(0, Math.round(activeRide.getEstimatedTime() - passed));
     }
 
-    private double priceByVehicleType(VehicleType type) {
-        return switch (type) {
-            case STANDARD -> 300;
-            case VAN -> 500;
-            case LUXURIOUS -> 800;
-        };
-    }
+    // private double priceByVehicleType(VehicleType type) {
+    //     return switch (type) {
+    //         case STANDARD -> 300;
+    //         case VAN -> 500;
+    //         case LUXURIOUS -> 800;
+    //     };
+    // }
 
     private boolean canDriverTakeRide(Driver driver, DriverSearchContext context, long remainingMinutesOfCurrentRide, double startLat, double startLng) {
         // minutes worked in the last 24h

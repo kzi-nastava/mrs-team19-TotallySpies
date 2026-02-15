@@ -26,9 +26,9 @@ public class Ride {
     @Enumerated(EnumType.STRING)
     private RideStatus status;
 
+    @Column(nullable = false)
     private double distanceKm;
     private double estimatedTime;
-    private double totalPrice; //cijena_po_tipu + kilometri * 120
 
     private boolean babiesTransport;
     private boolean petsTransport;
@@ -63,6 +63,9 @@ public class Ride {
     @ElementCollection
     private List<Integer> sentNotificationMinutes;
 
+    @Column(nullable = false)
+    private Double totalPrice;
+    
     public Long getId() {
         return id;
     }
@@ -246,4 +249,13 @@ public class Ride {
     public void setSentNotificationMinutes(List<Integer> sentNotificationMinutes) {
         this.sentNotificationMinutes = sentNotificationMinutes;
     }
+
+    public boolean isPanic() {
+        return panic;
+    }
+
+    public void setTotalPrice(Double totalPrice) {
+        this.totalPrice = totalPrice;
+    }
+
 }
