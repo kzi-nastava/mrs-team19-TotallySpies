@@ -1,4 +1,4 @@
-package com.ftn.mobile.presentation.fragments;
+package com.ftn.mobile.presentation.fragments.profile;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
