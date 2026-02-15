@@ -20,7 +20,7 @@ import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.RideStatus;
 public class RideRepositoryTestEmbedded {
 
     @Autowired
-    private RideRepository rideRepository;
+    private RideRepository rideRepository;  // DA LI TREBA PREKO SQL ILI NE
 
     @Test
     public void shouldFindScheduledRidesForDriver() {
