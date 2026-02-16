@@ -122,7 +122,6 @@ export class PassengerRidesHistoryComponent implements OnInit{
       return (currentDate - finishDate) <= threeDaysInMillis;
   }
 
-  // Metoda za otvaranje dijaloga (moraš ubaciti MatDialog u konstruktor kao i u prethodnoj komponenti)
   openReview(type: 'driver' | 'vehicle', rideId: number): void {
       this.dialog.open(ReviewDialogComponent, { 
           width: '25rem', 

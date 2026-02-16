@@ -18,6 +18,24 @@
     <string name="address">Address</string>
     <string name="enter_address">Enter address</string>
     <string name="phone_number">Phone number</string>
+    <string name="enter_phone_number">Enter phone number</string>
+    <!-- driver registration -->
+    <string name="register_driver_title">Register Driver</string>
+    <string name="vehicle_info_title">Vehicle info</string>
+    <string name="vehicle_model_label">Vehicle model</string>
+    <string name="vehicle_model_hint">Enter vehicle model</string>
+    <string name="vehicle_type_label">Vehicle type</string>
+    <string name="vehicle_type_hint">Select vehicle type</string>
+    <string name="licence_plate_label">Licence plate</string>
+    <string name="licence_plate_hint">Enter licence plate</string>
+    <string name="seats_label">Number of seats</string>
+    <string name="seats_hint">Enter number of seats</string>
+    <string name="baby_friendly_label">Baby Friendly</string>
+    <string name="pet_friendly_label">Pet Friendly</string>
+    <string name="register_driver_button">Register driver</string>
+    <string name="confirm_password_label">Confirm password</string>
+    <string name="confirm_password_hint">Enter password again</string>
+    <string name="activate">Activate</string>
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>
     <string name="second_fragment_label">Second Fragment</string>
@@ -156,4 +174,10 @@
     </string-array>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string-array name="vehicle_types">
+        <item>Standard</item>
+        <item>Luxury</item>
+        <item>Van</item>
+    </string-array>
 </resources>

@@ -19,6 +19,7 @@ import com.ftn.mobile.data.local.TokenStorage;
 import com.ftn.mobile.data.local.UserRoleManger;
 import com.ftn.mobile.presentation.fragments.DriverHistoryFragment;
 import com.ftn.mobile.presentation.fragments.RideOrderingFragment;
+import com.ftn.mobile.presentation.fragments.DriverRegistrationFragment;
 import com.ftn.mobile.presentation.fragments.profile.ProfileFragment;
 import com.google.android.material.navigation.NavigationView;
 
@@ -67,6 +68,12 @@ public class MainActivity extends AppCompatActivity {
                 boolean isDriver = "ROLE_DRIVER".equals(role);
                 historyItem.setVisible(isDriver);
             }
+
+            MenuItem registerDriverItem = menu.findItem(R.id.nav_register_driver);
+            if(profileItem != null){
+                boolean isAdmin = "ROLE_ADMIN".equals(role);
+                registerDriverItem.setVisible(isAdmin);
+            }
         });
 
         String token = TokenStorage.get(this);
@@ -104,6 +111,8 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             } else if (id == R.id.nav_ride_ordering) {
                 openFragment(new RideOrderingFragment(), "Ride ordering");
+            } else if (id == R.id.nav_register_driver){
+                openFragment(new DriverRegistrationFragment(), "Driver registration");
             }
             drawerLayout.closeDrawers();
             return true;
