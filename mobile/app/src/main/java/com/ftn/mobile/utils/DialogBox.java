@@ -13,4 +13,12 @@ public class DialogBox {
                 .setPositiveButton("OK", null)
                 .show();
     }
+
+    public static void showDialog(Context context, String title, String message, android.content.DialogInterface.OnClickListener listener) {
+        new androidx.appcompat.app.AlertDialog.Builder(context)
+                .setTitle(title)
+                .setMessage(message)
+                .setPositiveButton("OK", listener)
+                .show();
+    }
 }
