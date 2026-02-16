@@ -62,6 +62,13 @@ public class RideService {
     @Transactional
     public RideFinishResponseDTO finishRide(Long rideId) {
         Ride ride = rideRepository.findById(rideId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "ride is not found"));
+        String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        Driver currentDriver = Optional.ofNullable(driverRepository.findByEmail(currentUserEmail))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Driver not found"));
+        
+        if (!currentDriver.getId().equals(ride.getDriver().getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not the driver of this ride");
+        }
 
         // update ride
         ride.setStatus(RideStatus.COMPLETED);
