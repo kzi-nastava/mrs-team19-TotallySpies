@@ -33,6 +33,9 @@
     <string name="baby_friendly_label">Baby Friendly</string>
     <string name="pet_friendly_label">Pet Friendly</string>
     <string name="register_driver_button">Register driver</string>
+    <string name="confirm_password_label">Confirm password</string>
+    <string name="confirm_password_hint">Enter password again</string>
+    <string name="activate">Activate</string>
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>
     <string name="second_fragment_label">Second Fragment</string>

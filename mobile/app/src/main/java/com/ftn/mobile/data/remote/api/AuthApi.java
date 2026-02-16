@@ -1,5 +1,6 @@
 package com.ftn.mobile.data.remote.api;
 
+import com.ftn.mobile.data.remote.dto.DriverActivationRequestDTO;
 import com.ftn.mobile.data.remote.dto.UserLoginRequestDTO;
 import com.ftn.mobile.data.remote.dto.UserTokenStateDTO;
 
@@ -33,4 +34,7 @@ public interface AuthApi {
 
     @POST("api/v1/auth/activate")
     Call<Void> activate(@Query("token") String token);
+
+    @POST("api/v1/auth/activate-driver")
+    Call<Void> activateDriver(@Body DriverActivationRequestDTO dto);
 }
