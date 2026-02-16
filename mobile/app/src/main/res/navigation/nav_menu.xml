@@ -20,4 +20,8 @@
         android:id="@+id/nav_register"
         android:title="Register" />
 
+    <item
+        android:id="@+id/nav_ride_ordering"
+        android:title="Order ride" />
+
 </menu>
