@@ -18,6 +18,7 @@ import com.ftn.mobile.R;
 import com.ftn.mobile.data.local.TokenStorage;
 import com.ftn.mobile.data.local.UserRoleManger;
 import com.ftn.mobile.presentation.fragments.DriverHistoryFragment;
+import com.ftn.mobile.presentation.fragments.ReportFragment;
 import com.ftn.mobile.presentation.fragments.RideOrderingFragment;
 import com.ftn.mobile.presentation.fragments.DriverRegistrationFragment;
 import com.ftn.mobile.presentation.fragments.PricingFragment;
@@ -81,6 +82,11 @@ public class MainActivity extends AppCompatActivity {
                 boolean isAdmin = "ROLE_ADMIN".equals(role);
                 pricingItem.setVisible(isAdmin);
             }
+
+            MenuItem reportItem = menu.findItem(R.id.nav_report);
+            if (reportItem != null){
+                reportItem.setVisible(isLoggedIn);
+            }
         });
 
         String token = TokenStorage.get(this);
@@ -124,6 +130,9 @@ public class MainActivity extends AppCompatActivity {
             }
             else if (id == R.id.nav_pricing) {
                 openFragment(new PricingFragment(), "Pricing");
+            }
+            else if (id == R.id.nav_report) {
+                openFragment(new ReportFragment(), "Reports");
             }
             drawerLayout.closeDrawers();
             return true;
