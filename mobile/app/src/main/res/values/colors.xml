@@ -10,4 +10,5 @@
     <color name="card_color">#3c305e</color>
     <color name="text">#E8EDFC</color>
     <color name="error">#EA4A7A</color>
+    <color name="text_hint">#959BA9</color>
 </resources>
