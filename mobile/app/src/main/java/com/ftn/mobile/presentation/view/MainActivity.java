@@ -18,6 +18,7 @@ import com.ftn.mobile.R;
 import com.ftn.mobile.data.local.TokenStorage;
 import com.ftn.mobile.data.local.UserRoleManger;
 import com.ftn.mobile.presentation.fragments.DriverHistoryFragment;
+import com.ftn.mobile.presentation.fragments.DriverScheduledRidesFragment;
 import com.ftn.mobile.presentation.fragments.RideOrderingFragment;
 import com.ftn.mobile.presentation.fragments.DriverRegistrationFragment;
 import com.ftn.mobile.presentation.fragments.PricingFragment;
@@ -68,6 +69,12 @@ public class MainActivity extends AppCompatActivity {
             if (historyItem != null) {
                 boolean isDriver = "ROLE_DRIVER".equals(role);
                 historyItem.setVisible(isDriver);
+
+            }
+            MenuItem scheduledItem = menu.findItem(R.id.nav_scheduled);
+            if (scheduledItem != null) {
+                boolean isDriver = "ROLE_DRIVER".equals(role);
+                scheduledItem.setVisible(isDriver);
             }
 
             MenuItem registerDriverItem = menu.findItem(R.id.nav_register_driver);
@@ -124,6 +131,9 @@ public class MainActivity extends AppCompatActivity {
             }
             else if (id == R.id.nav_pricing) {
                 openFragment(new PricingFragment(), "Pricing");
+            }
+            else if (id == R.id.nav_scheduled) {
+                openFragment(new DriverScheduledRidesFragment(), "My Rides");
             }
             drawerLayout.closeDrawers();
             return true;

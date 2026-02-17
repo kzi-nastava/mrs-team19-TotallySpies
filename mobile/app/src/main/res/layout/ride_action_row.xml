@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="4dp">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="4dp"
+        app:cardUseCompatPadding="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/card_color"
+            android:padding="12dp">
+
+            <TextView
+                android:id="@+id/txtPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/accent"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="1200 RSD" />
+
+            <ImageButton
+                android:id="@+id/btnNextPassenger"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_arrow_right"
+                app:layout_constraintBottom_toBottomOf="@id/imgPassenger"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/imgPassenger" />
+
+            <ImageView
+                android:id="@+id/imgPassenger"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_marginTop="36dp"
+                android:layout_marginEnd="8dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_passenger_placeholder"
+                app:layout_constraintEnd_toStartOf="@id/btnNextPassenger"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageButton
+                android:id="@+id/btnPrevPassenger"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginEnd="4dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_arrow_left"
+                app:layout_constraintBottom_toBottomOf="@id/imgPassenger"
+                app:layout_constraintEnd_toStartOf="@id/imgPassenger"
+                app:layout_constraintTop_toTopOf="@id/imgPassenger" />
+
+            <TextView
+                android:id="@+id/txtPassengerName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:gravity="center"
+                android:textColor="@color/text"
+                android:textSize="12sp"
+                app:layout_constraintEnd_toEndOf="@id/btnNextPassenger"
+                app:layout_constraintStart_toStartOf="@id/btnPrevPassenger"
+                app:layout_constraintTop_toBottomOf="@id/imgPassenger"
+                tools:text="Petar Petrović" />
+
+            <ImageView
+                android:id="@+id/lblStart"
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:layout_marginTop="12dp"
+                android:src="@drawable/ic_start"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/txtPrice" />
+
+            <TextView
+                android:id="@+id/txtStartLocation"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:textColor="@color/text"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="@id/btnPrevPassenger"
+                app:layout_constraintStart_toEndOf="@id/lblStart"
+                app:layout_constraintTop_toTopOf="@id/lblStart"
+                tools:text="Bulevar Oslobodjenja 12" />
+
+            <TextView
+                android:id="@+id/txtStartTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text"
+                android:textSize="12sp"
+                app:layout_constraintStart_toStartOf="@id/txtStartLocation"
+                app:layout_constraintTop_toBottomOf="@id/txtStartLocation"
+                tools:text="14:30" />
+
+            <View
+                android:layout_width="2dp"
+                android:layout_height="0dp"
+                android:background="@color/primary"
+                app:layout_constraintBottom_toTopOf="@id/lblEnd"
+                app:layout_constraintEnd_toEndOf="@id/lblStart"
+                app:layout_constraintStart_toStartOf="@id/lblStart"
+                app:layout_constraintTop_toBottomOf="@id/lblStart" />
+
+            <ImageView
+                android:id="@+id/lblEnd"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginTop="16dp"
+                android:src="@drawable/ic_end"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/txtStartTime" />
+
+            <TextView
+                android:id="@+id/txtEndLocation"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:textColor="@color/text"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="@id/btnPrevPassenger"
+                app:layout_constraintStart_toEndOf="@id/lblEnd"
+                app:layout_constraintTop_toTopOf="@id/lblEnd"
+                tools:text="Futoška 44" />
+
+            <TextView
+                android:id="@+id/txtEndTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text"
+                android:textSize="12sp"
+                app:layout_constraintStart_toStartOf="@id/txtEndLocation"
+                app:layout_constraintTop_toBottomOf="@id/txtEndLocation"
+                tools:text="14:55" />
+
+            <LinearLayout
+                android:id="@+id/layoutStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/txtEndTime">
+
+                <ImageView
+                    android:id="@+id/imgPanic"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginEnd="8dp"
+                    android:src="@drawable/ic_warning"
+                    android:visibility="gone"
+                    app:tint="@color/error" />
+
+                <TextView
+                    android:id="@+id/txtStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/primary"
+                    android:textStyle="bold"
+                    tools:text="ACTIVE" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layoutActions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal"
+                app:layout_constraintTop_toBottomOf="@id/layoutStatus"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent">
+
+                <Button
+                    android:id="@+id/btnStartRide"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="4dp"
+                    android:text="START"
+                    android:backgroundTint="@color/primary"
+                    android:visibility="gone"
+                    tools:visibility="visible"/>
+
+                <Button
+                    android:id="@+id/btnEndRide"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="4dp"
+                    android:text="FINISH"
+                    android:backgroundTint="@color/accent"
+                    android:visibility="gone"
+                    tools:visibility="visible"/>
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+</androidx.constraintlayout.widget.ConstraintLayout>
