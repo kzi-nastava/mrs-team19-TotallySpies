@@ -25,7 +25,6 @@ public class RideController {
     RideService rideService;
 
     @GetMapping(value = "/{id}/location", produces = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasRole('PASSENGER')")
     public ResponseEntity<RideTrackingDTO> getRideLocation(@PathVariable Long id) {
         RideTrackingDTO response = rideService.getRideTrackingInfo(id);
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -66,15 +65,14 @@ public class RideController {
         rideService.startRide(rideId, email);
         return ResponseEntity.ok("Ride successfully started!");
     }
-    @PreAuthorize("hasRole('DRIVER', 'PASSENGER')")
+    @PreAuthorize("hasRole('DRIVER')")
     @PutMapping("/cancel-ride")
     public ResponseEntity<String> cancelRide(@RequestBody CancelRideDTO request){
         rideService.cancelRide(request);
         return ResponseEntity.ok("Ride cancelled!");
     }
-    @PreAuthorize("hasRole('DRIVER', 'PASSENGER')")
     @PutMapping("/panic")
-    public ResponseEntity<String> panic(@RequestBody PanicNotificationDTO request){
+    public ResponseEntity<String> panic(@RequestBody PanicRideDTO request){
         rideService.handlePanicNotification(request);
         return ResponseEntity.ok("PANIC button activated!");
     }

@@ -13,7 +13,13 @@
       (click)="openPanicDialog(rideId)">
       PANIC
     </button>
-  
+    <button 
+      class="stop-btn" *ngIf="!currentDriver.isFinished"
+      (click)="stopRide()">
+      Stop ride 
+    </button>
+
+
     <div class="timer-section">
       <app-timer-card *ngIf="!currentDriver.isFinished"
         [minutes]="minutesRemaining" 

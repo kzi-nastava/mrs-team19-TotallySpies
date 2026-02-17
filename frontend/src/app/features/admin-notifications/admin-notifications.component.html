@@ -1,0 +1,28 @@
+<div class="page">
+  <div class="topbar">
+    <h1 class="title">Admin notifications</h1>
+  </div>
+  <div class="table-container">
+    <table class="notifications-table">
+      <thead>
+        <tr>
+          <th>Ride id</th>
+          <th>Reason</th>
+          <th>User email</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr *ngFor="let notification of notifications">
+            <td>{{ notification.rideId }}</td>
+            <td>{{ notification.reason }}</td>
+            <td>{{ notification.userEmail }}</td>
+          </tr>
+
+          <tr *ngIf="notifications.length === 0">
+            <td colspan="3" >No notifications found.</td>
+          </tr>
+        </tbody>
+    </table>
+  </div>
+</div>
+

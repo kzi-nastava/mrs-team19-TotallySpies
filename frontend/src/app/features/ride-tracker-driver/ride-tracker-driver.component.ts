@@ -12,14 +12,14 @@ import { MatDialog } from '@angular/material/dialog';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import { AuthService } from '../../core/auth/services/auth.service';
-
+import { StopRideDTO } from '../../shared/models/stop-ride.model';
 @Component({
-  selector: 'app-ride-tracker-user',
+  selector: 'app-ride-tracker-driver',
   imports: [DriverInfoComponent, TimerCardComponent, MapComponent, CommonModule,],
-  templateUrl: './ride-tracker-user.component.html',
-  styleUrl: './ride-tracker-user.component.css',
+  templateUrl: './ride-tracker-driver.component.html',
+  styleUrl: './ride-tracker-driver.component.css',
 })
-export class RideTrackerUserComponent implements OnInit, OnDestroy {
+export class RideTrackerDriverComponent implements OnInit, OnDestroy {
   private stompClient: Client | null = null;
   rideId!: number;
   minutesRemaining: number = 0;
@@ -35,7 +35,6 @@ export class RideTrackerUserComponent implements OnInit, OnDestroy {
     isFinished: false
   };
   rideStatus: string = '';
-
   routeDistanceKm: number = 0;
   vehicleType: string = 'STANDARD'; // set from backend later!!
 
@@ -56,7 +55,7 @@ export class RideTrackerUserComponent implements OnInit, OnDestroy {
       this.rideId = +params['id'];
       if (!this.authService.isLoggedIn()) {
       alert("Please login to track your ride.");
-      this.router.navigate(['/login'], { queryParams: { returnUrl: '/ride-tracker-user/' + this.rideId } });
+      this.router.navigate(['/login'], { queryParams: { returnUrl: '/ride-tracker-driver/' + this.rideId } });
       return;
     }
       this.loadInitialData();
@@ -95,6 +94,7 @@ export class RideTrackerUserComponent implements OnInit, OnDestroy {
 
     this.pickupAddress = data.pickupAddress;
     this.destinationAddress = data.destinationAddress;
+    this.currentVehicleLocation = { lat: data.vehicleLat, lng: data.vehicleLng };
     
     this.currentDriver = {
         ...this.currentDriver,
@@ -161,5 +161,93 @@ export class RideTrackerUserComponent implements OnInit, OnDestroy {
     return this.basePriceByType(vehicleType) + distanceKm * 120;
   }
 
+  stopRide() {
+    if (!this.rideId) return;
+
+    const stopLat = this.currentVehicleLocation.lat;
+    const stopLng = this.currentVehicleLocation.lng;
+    if (!Number.isFinite(stopLat) || !Number.isFinite(stopLng) || (stopLat === 0 && stopLng === 0)) {
+      alert('Current vehicle location not available yet.');
+      return;
+    }
+    if (!this.pickupAddress?.trim()) {
+      alert('Pickup address is missing.');
+      return;
+    }
+    const newEndTime = new Date().toISOString().replace('Z', '');
+    // 1) pickup address -> koordinate
+    this.mapService.search(this.pickupAddress.trim()).subscribe({
+      next: (pickupResults: any[]) => {
+        if (!pickupResults?.length) {
+          alert('Could not geocode pickup address.');
+          return;
+        }
+        const pickupLat = Number(pickupResults[0].lat);
+        const pickupLng = Number(pickupResults[0].lon);
+        if (!Number.isFinite(pickupLat) || !Number.isFinite(pickupLng)) {
+          alert('Invalid pickup coordinates.');
+          return;
+        }
+        // 2) distanca pickup -> stop
+        this.mapService.getRouteInfo(pickupLat, pickupLng, stopLat, stopLng).subscribe({
+          next: (routeInfo) => {
+            const distanceKm = routeInfo?.distanceKm ?? 0;
+            if (distanceKm <= 0) {
+              alert('Could not calculate driven distance.');
+              return;
+            }
+            const newTotalPrice = this.calcTotalPrice(this.vehicleType ?? 'STANDARD', distanceKm);
+            // 3) stop coords -> adresa
+            this.mapService.reverseSearch(stopLat, stopLng).subscribe({
+              next: (rev: any) => {
+                const address = (rev?.display_name ?? '').trim();
+                if (!address) {
+                  alert('Could not resolve stop address.');
+                  return;
+                }
+                const dto: StopRideDTO = {
+                  rideId: this.rideId,
+                  newEndTime,
+                  newTotalPrice,
+                  newDestination: {
+                    address,
+                    latitude: stopLat,
+                    longitude: stopLng
+                  }
+                };
+
+                this.rideService.stopRide(dto).subscribe({
+                  next: (msg: string) => {
+                    alert(msg || 'Ride stopped!');
+                    this.currentDriver.isFinished = true;
+                    this.stompClient?.deactivate();
+                    this.cdr.detectChanges();
+                  },
+                  error: (err) => {
+                    console.error('Stop ride failed:', err);
+                    alert('Failed to stop ride.');
+                  }
+                });
+              },
+              error: (err) => {
+                console.error('Reverse search failed:', err);
+                alert('Failed to resolve stop address.');
+              }
+            });
+          },
+          error: (err) => {
+            console.error('Route info failed:', err);
+            alert('Failed to calculate driven distance.');
+          }
+        });
+      },
+      error: (err) => {
+        console.error('Pickup geocode failed:', err);
+        alert('Failed to geocode pickup address.');
+      }
+    });
+  }
+
   
+
 }

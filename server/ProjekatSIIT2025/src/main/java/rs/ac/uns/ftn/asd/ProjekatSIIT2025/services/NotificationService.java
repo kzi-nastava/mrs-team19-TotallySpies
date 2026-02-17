@@ -34,6 +34,7 @@ public class NotificationService {
         List<Notification> notificationsByUser = notificationRepository.findByUserOrderByCreatedAtDesc(user);
         List<NotificationDTO> notificationDTOList = new ArrayList<>();
         for (Notification notification : notificationsByUser){
+            System.out.println(notification.getMessage());
             notificationDTOList.add(new NotificationDTO(notification.getId(), notification.getRide().getId(),
                     notification.getMessage(), notification.getType().toString(),
                     notification.isRead(), notification.getCreatedAt()));

@@ -5,6 +5,7 @@ import { AdminUserDTO, CreateDriverRequestDTO, ProfileChangeRequestDTO, UserDTO 
 import { Observable } from "rxjs";
 import { PassengerRideHistoryResponseDTO } from "../models/passenger-ride-history.model";
 import { AdminRideHistoryResponseDTO } from "../models/admin-ride-history.model";
+import { PanicNotificationDTO } from "../models/panic-notification.model";
 
 @Injectable({ providedIn: 'root' })
 export class AdminService {
@@ -46,6 +47,9 @@ export class AdminService {
 
   unblockUser(id: number): Observable<void> {
     return this.http.put<void>(`${this.baseUrl}/unblock/${id}`, {});
+  }
+  getNotifications() : Observable<PanicNotificationDTO[]>{
+    return this.http.get<PanicNotificationDTO[]>(`${this.baseUrl}/panic-notifications`, {});
   }
   getRidesHistory(params: {
     userId: number;           
