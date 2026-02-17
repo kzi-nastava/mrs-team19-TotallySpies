@@ -52,7 +52,9 @@ export class RideService {
   }
 
   panicRide(dto: PanicRideDTO) {
-    return this.http.put<string>(`${environment.apiHost}/rides/panic`, dto);
+    return this.http.put(`${environment.apiHost}/rides/panic`, dto,
+      {responseType: 'text'}
+    );
   }
   stopRide(dto: StopRideDTO) {
     return this.http.put(

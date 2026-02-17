@@ -27,6 +27,8 @@ import { AdminPricingComponent } from './features/admin-pricing/admin-pricing.co
 import { UpcomingRidesComponent } from './features/upcoming-rides/upcoming-rides.component';
 import { AdminRideHistoryComponent } from './features/admin-ride-history/admin-ride-history.component';
 import { RideDetailsAdminComponent } from './features/ride-details-admin/ride-details-admin.component';
+import { RideTrackerDriverComponent } from './features/ride-tracker-driver/ride-tracker-driver.component';
+import { AdminNotificationsComponent } from './features/admin-notifications/admin-notifications.component';
 
 export const routes: Routes = [
   {
@@ -101,6 +103,9 @@ export const routes: Routes = [
   { path: 'ride-tracker-user/:id',
     component: RideTrackerUserComponent 
   },
+   { path: 'ride-tracker-driver/:id',
+    component: RideTrackerDriverComponent 
+  },
   {
     path: 'ride-ordering',
     component: RideOrderingComponent
@@ -131,6 +136,10 @@ export const routes: Routes = [
   {
     path: 'admin-ride-tracking',
     component: AdminRideTrackingComponent
+  },
+  {
+    path: 'admin-notifications',
+    component: AdminNotificationsComponent
   },
   {
     path: 'admin-pricing',

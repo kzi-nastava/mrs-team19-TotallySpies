@@ -7,17 +7,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.PanicNotificationDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.AdminRideHistoryResponseDTO;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.PanicNotificationDTO;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.PassengerRideHistoryResponseDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.RidePreviewResponseDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.users.*;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.Driver;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.PanicNotification;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.User;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.UserRole;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.UserRepository;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.services.*;
@@ -121,8 +116,8 @@ public class AdminController {
     }
 
     @GetMapping("/panic-notifications")
-    public ResponseEntity<List<PanicNotification>> getPanicNotifications() {
-        List<PanicNotification> panicNotifications =
+    public ResponseEntity<List<PanicNotificationDTO>> getPanicNotifications() {
+        List<PanicNotificationDTO> panicNotifications =
                 panicNotificationService.getPanicNotifications();
 
         return ResponseEntity.ok(panicNotifications);
