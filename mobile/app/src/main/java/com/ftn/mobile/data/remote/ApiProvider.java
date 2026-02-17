@@ -5,7 +5,6 @@ import com.ftn.mobile.data.remote.api.AuthApi;
 
 import com.ftn.mobile.data.remote.api.DriverApi;
 import com.ftn.mobile.data.remote.api.ForgotPasswordApi;
-import com.ftn.mobile.data.remote.api.PriceApi;
 import com.ftn.mobile.data.remote.api.UserApi;
 
 public final class ApiProvider {
@@ -19,7 +18,6 @@ public final class ApiProvider {
     private static DriverApi driverApi;
 
     private static AdminApi adminApi;
-    private static PriceApi priceApi;
 
     private ApiProvider() {}
 
@@ -55,13 +53,6 @@ public final class ApiProvider {
             adminApi = RetrofitClient.getRetrofit().create(AdminApi.class);
         }
         return adminApi;
-    }
-
-    public static PriceApi price() {
-        if (priceApi == null) {
-            priceApi = RetrofitClient.getRetrofit().create(PriceApi.class);
-        }
-        return priceApi;
     }
 }
 

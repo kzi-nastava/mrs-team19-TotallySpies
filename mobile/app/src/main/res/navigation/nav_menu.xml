@@ -21,6 +21,10 @@
         android:title="Register" />
 
     <item
+        android:id="@+id/nav_ride_ordering"
+        android:title="Order ride" />
+
+    <item
         android:id="@+id/nav_register_driver"
         android:title="Register driver" />
 

@@ -18,6 +18,7 @@ import com.ftn.mobile.R;
 import com.ftn.mobile.data.local.TokenStorage;
 import com.ftn.mobile.data.local.UserRoleManger;
 import com.ftn.mobile.presentation.fragments.DriverHistoryFragment;
+import com.ftn.mobile.presentation.fragments.RideOrderingFragment;
 import com.ftn.mobile.presentation.fragments.DriverRegistrationFragment;
 import com.ftn.mobile.presentation.fragments.PricingFragment;
 import com.ftn.mobile.presentation.fragments.profile.ProfileFragment;
@@ -55,6 +56,12 @@ public class MainActivity extends AppCompatActivity {
             MenuItem profileItem = menu.findItem(R.id.nav_profile);
             if (profileItem != null) {
                 profileItem.setVisible(isLoggedIn);
+            }
+
+            MenuItem orderRideItem = menu.findItem(R.id.nav_ride_ordering);
+            if (orderRideItem != null) {
+                boolean isPassenger = "ROLE_PASSENGER".equals(role);
+                orderRideItem.setVisible(isPassenger);
             }
 
             MenuItem historyItem = menu.findItem(R.id.nav_history);
@@ -110,6 +117,8 @@ public class MainActivity extends AppCompatActivity {
             else if (id == R.id.nav_login) {
                 Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                 startActivity(intent);
+            } else if (id == R.id.nav_ride_ordering) {
+                openFragment(new RideOrderingFragment(), "Ride ordering");
             } else if (id == R.id.nav_register_driver){
                 openFragment(new DriverRegistrationFragment(), "Driver registration");
             }
