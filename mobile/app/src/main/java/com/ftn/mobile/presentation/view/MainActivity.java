@@ -20,6 +20,7 @@ import com.ftn.mobile.data.local.UserRoleManger;
 import com.ftn.mobile.presentation.fragments.DriverHistoryFragment;
 import com.ftn.mobile.presentation.fragments.RideOrderingFragment;
 import com.ftn.mobile.presentation.fragments.DriverRegistrationFragment;
+import com.ftn.mobile.presentation.fragments.PricingFragment;
 import com.ftn.mobile.presentation.fragments.profile.ProfileFragment;
 import com.google.android.material.navigation.NavigationView;
 
@@ -74,6 +75,12 @@ public class MainActivity extends AppCompatActivity {
                 boolean isAdmin = "ROLE_ADMIN".equals(role);
                 registerDriverItem.setVisible(isAdmin);
             }
+
+            MenuItem pricingItem = menu.findItem(R.id.nav_pricing);
+            if (pricingItem != null) {
+                boolean isAdmin = "ROLE_ADMIN".equals(role);
+                pricingItem.setVisible(isAdmin);
+            }
         });
 
         String token = TokenStorage.get(this);
@@ -106,13 +113,17 @@ public class MainActivity extends AppCompatActivity {
             } else if (id == R.id.nav_register) {
                 Intent intent = new Intent(MainActivity.this, RegisterActivity.class);
                 startActivity(intent);
-            }else if (id == R.id.nav_login) {
+            }
+            else if (id == R.id.nav_login) {
                 Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                 startActivity(intent);
             } else if (id == R.id.nav_ride_ordering) {
                 openFragment(new RideOrderingFragment(), "Ride ordering");
             } else if (id == R.id.nav_register_driver){
                 openFragment(new DriverRegistrationFragment(), "Driver registration");
+            }
+            else if (id == R.id.nav_pricing) {
+                openFragment(new PricingFragment(), "Pricing");
             }
             drawerLayout.closeDrawers();
             return true;

@@ -63,6 +63,9 @@ dependencies {
 
     //Glide - for image
     implementation("com.github.bumptech.glide:glide:4.15.1")
+    implementation(libs.legacy.support.v4)
+    implementation(libs.lifecycle.livedata.ktx)
+    implementation(libs.lifecycle.viewmodel.ktx)
     annotationProcessor("com.github.bumptech.glide:compiler:4.15.1")
 
     implementation("com.google.android.material:material:1.9.0")
