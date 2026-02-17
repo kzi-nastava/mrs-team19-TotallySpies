@@ -1,0 +1,47 @@
+*{
+    background-color: #261F32;
+    height: 100%;
+
+}
+.main-container {
+  display: flex;
+  width: 100%;
+}
+.info-panel {
+  margin-top: 4rem;
+  align-items: center;
+  width: 25rem; 
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto; 
+}
+
+.map-container {
+  flex: 1; 
+  position: relative;
+  border-left: 1px solid #3b3654;
+}
+.panic-btn{
+  padding: 12px 16px;
+  width: 100px;
+  height: 100px;
+  margin-bottom: 20px;
+  color : white;
+  border: none;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  background-color: red;
+}
+.stop-btn{
+  padding: 12px 16px;
+  width: 100px;
+  height: 100px;
+  margin-bottom: 20px;
+  color : white;
+  border: none;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  background-color: #6e58c6;
+}

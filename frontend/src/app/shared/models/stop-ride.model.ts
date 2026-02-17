@@ -1,7 +1,7 @@
 export interface RideStopDTO {
   address: string;
-  lat: number;
-  lng: number;
+  latitude: number;
+  longitude: number;
 }
 
 export interface StopRideDTO {

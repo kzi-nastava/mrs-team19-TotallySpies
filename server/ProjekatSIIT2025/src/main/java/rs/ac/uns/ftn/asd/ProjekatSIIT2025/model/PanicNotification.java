@@ -13,7 +13,6 @@ public class PanicNotification {
     User user;
     @OneToOne
     Ride ride;
-    LocalDateTime time;
     String reason;
 
     public Long getId() {
@@ -40,14 +39,6 @@ public class PanicNotification {
         this.ride = ride;
     }
 
-    public LocalDateTime getTime() {
-        return time;
-    }
-
-    public void setTime(LocalDateTime time) {
-        this.time = time;
-    }
-
     public String getReason() {
         return reason;
     }
@@ -56,10 +47,9 @@ public class PanicNotification {
         this.reason = reason;
     }
 
-    public PanicNotification(User user, Ride ride, LocalDateTime time, String reason) {
+    public PanicNotification(User user, Ride ride, String reason) {
         this.user = user;
         this.ride = ride;
-        this.time = time;
         this.reason = reason;
     }
 

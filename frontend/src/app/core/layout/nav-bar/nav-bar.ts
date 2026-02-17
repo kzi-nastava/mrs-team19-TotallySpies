@@ -22,4 +22,13 @@ export class NavBar {
   get isPassenger(): boolean {
     return this.authService.getRole() === 'ROLE_PASSENGER';
   }
+  get isLoggedIn(): boolean{
+    return this.authService.isLoggedIn() === true;
+  }
+  get isAdmin(): boolean {
+    return this.authService.getRole() === 'ROLE_ADMIN';
+  }
+  get isDriver(): boolean {
+    return this.authService.getRole() === 'ROLE_DRIVER';
+  }
 }
