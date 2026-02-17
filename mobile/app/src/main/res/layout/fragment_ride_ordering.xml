@@ -43,6 +43,26 @@
                 android:textSize="22sp"
                 android:textStyle="bold"/>
 
+            <LinearLayout
+                android:id="@+id/btnOpenFavorites"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackground">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="★ Pick from favorites"
+                    android:textColor="@color/accent"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
             <EditText
                 android:id="@+id/etStart"
                 android:layout_width="match_parent"

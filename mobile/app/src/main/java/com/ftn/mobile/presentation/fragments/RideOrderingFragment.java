@@ -18,6 +18,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.ftn.mobile.BuildConfig;
 import com.ftn.mobile.R;
@@ -25,6 +26,7 @@ import com.ftn.mobile.data.model.VehicleType;
 import com.ftn.mobile.data.remote.ApiProvider;
 import com.ftn.mobile.data.remote.dto.CreateRideRequestDTO;
 import com.ftn.mobile.data.remote.dto.CreateRideResponseDTO;
+import com.ftn.mobile.data.remote.dto.FavouriteRideDTO;
 import com.ftn.mobile.data.remote.dto.RideStopDTO;
 import com.ftn.mobile.data.remote.dto.RoutePointDTO;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
@@ -137,6 +139,8 @@ public class RideOrderingFragment extends Fragment {
         });
 
         btnPickTime.setOnClickListener(v -> showTimePicker());
+
+        view.findViewById(R.id.btnOpenFavorites).setOnClickListener(v -> fetchAndShowFavorites());
 
         return view;
     }
@@ -458,5 +462,92 @@ public class RideOrderingFragment extends Fragment {
 
             btnOrder.setText("BOOK FOR " + String.format("%02d:%02d", hourOfDay, minute));
         }, now.get(java.util.Calendar.HOUR_OF_DAY), now.get(java.util.Calendar.MINUTE), true).show();
+    }
+
+    private void fetchAndShowFavorites() {
+        ApiProvider.favourite().getFavourites().enqueue(new Callback<List<FavouriteRideDTO>>() {
+            @Override
+            public void onResponse(Call<List<FavouriteRideDTO>> call, Response<List<FavouriteRideDTO>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    showFavoritesSelectionDialog(response.body());
+                }
+            }
+            @Override
+            public void onFailure(Call<List<FavouriteRideDTO>> call, Throwable t) {
+                Toast.makeText(getContext(), "Failed to load favorites", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void showFavoritesSelectionDialog(List<FavouriteRideDTO> favorites) {
+        if (favorites.isEmpty()) {
+            Toast.makeText(getContext(), "No favorites found", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_favourites_list, null);
+
+        LinearLayout listContainer = dialogView.findViewById(R.id.favoritesListContainer);
+
+        AlertDialog customFavDialog = builder.setView(dialogView)
+                .setNegativeButton("Close", (d, w) -> d.dismiss())
+                .create();
+
+        for (FavouriteRideDTO fav : favorites) {
+            View itemView = getLayoutInflater().inflate(R.layout.item_favourite_route, null);
+            LinearLayout stopsSummary = itemView.findViewById(R.id.stopsSummaryContainer);
+
+            List<RideStopDTO> locs = fav.getLocations();
+            for (int i = 0; i < locs.size(); i++) {
+                TextView tvStop = new TextView(getContext());
+                String prefix = (i == 0) ? "● " : (i == locs.size() - 1) ? "■ " : "○ ";
+                tvStop.setText(prefix + locs.get(i).getAddress());
+                tvStop.setTextColor(android.graphics.Color.WHITE);
+                tvStop.setPadding(0, 4, 0, 4);
+                stopsSummary.addView(tvStop);
+            }
+
+            itemView.setOnClickListener(v -> {
+                applyFavoriteRoute(fav);
+                customFavDialog.dismiss();
+            });
+
+            listContainer.addView(itemView);
+        }
+
+        if (customFavDialog.getWindow() != null) {
+            customFavDialog.getWindow().setBackgroundDrawableResource(R.drawable.car_info_rectangle);
+        }
+        customFavDialog.show();
+    }
+
+
+    private void applyFavoriteRoute(FavouriteRideDTO fav) {
+        List<RideStopDTO> locations = fav.getLocations();
+        if (locations == null || locations.size() < 2) return;
+
+        etStart.setText("");
+        etEnd.setText("");
+        stopsContainer.removeAllViews();
+
+        etStart.setText(locations.get(0).getAddress());
+
+        for (int i = 1; i < locations.size() - 1; i++) {
+            addStopFieldWithAddress(locations.get(i).getAddress());
+        }
+
+        etEnd.setText(locations.get(locations.size() - 1).getAddress());
+
+        Toast.makeText(getContext(), "Favorite route loaded. You can now customize your ride.", Toast.LENGTH_SHORT).show();
+    }
+
+    private void addStopFieldWithAddress(String address) {
+        addStopField();
+        View lastRow = stopsContainer.getChildAt(stopsContainer.getChildCount() - 1);
+        if (lastRow instanceof LinearLayout) {
+            EditText et = (EditText) ((LinearLayout) lastRow).getChildAt(1);
+            et.setText(address);
+        }
     }
 }
