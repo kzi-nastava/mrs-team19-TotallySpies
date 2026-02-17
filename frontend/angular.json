@@ -74,7 +74,10 @@
             "include": [
               "src/app/shared/services/review.service.spec.ts",
               "src/app/shared/components/review-dialog/review-dialog.component.spec.ts",
-              "src/app/features/passenger-rides-history/passenger-rides-history.component.spec.ts"
+              "src/app/features/passenger-rides-history/passenger-rides-history.component.spec.ts",
+              "src/app/core/auth/components/register/register.component.spec.ts",
+              "src/app/core/auth/services/auth.service.spec.ts"
+
             ]
           }
         }
