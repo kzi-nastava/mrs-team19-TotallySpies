@@ -1,15 +1,11 @@
 package rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides;
 
-import java.time.LocalDateTime;
-
-public class PanicNotificationDTO {
+public class PanicRideDTO {
     private Long rideId;
-    LocalDateTime time;
-    String reason;
+    private String reason;
 
-    public PanicNotificationDTO( Long rideId, LocalDateTime time, String reason) {
+    public PanicRideDTO(Long rideId, String reason) {
         this.rideId = rideId;
-        this.time = time;
         this.reason = reason;
     }
 
@@ -19,14 +15,6 @@ public class PanicNotificationDTO {
 
     public void setRideId(Long rideId) {
         this.rideId = rideId;
-    }
-
-    public LocalDateTime getTime() {
-        return time;
-    }
-
-    public void setTime(LocalDateTime time) {
-        this.time = time;
     }
 
     public String getReason() {

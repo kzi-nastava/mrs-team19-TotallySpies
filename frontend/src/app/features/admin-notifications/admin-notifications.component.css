@@ -1,0 +1,50 @@
+.page {
+  min-height: 100vh;
+  padding: 26px 28px 40px;
+  background: radial-gradient(1200px 600px at 50% 50%, #463678 0%, #241b33 50%, #1b1427 100%);
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+  color : white
+}   
+
+.table-container {
+  overflow: auto;
+  padding-top: 6px;
+}
+.notifications-table {
+  width: 100%;
+  border-radius : 12px;
+  min-width: 980px;
+}
+
+thead th {
+  text-align: center;
+  font-size: 14px;
+  font-weight: 400;
+  color: #c8e261;
+  padding: 0 14px 6px;
+}
+
+tbody tr {
+  background: #6E58C6;
+  
+}
+
+tbody td {
+  padding: 14px;
+  font-size: 13px;
+  color: #f2effa;
+  vertical-align: middle;
+}

@@ -19,6 +19,7 @@ import org.springframework.transaction.event.TransactionalEventListener;
 import org.springframework.web.server.ResponseStatusException;
 
 import jakarta.transaction.Transactional;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.PanicNotificationDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.auth.MailBody;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.*;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.users.DriverActivityResponseDTO;
@@ -200,27 +201,25 @@ public class RideService {
             rideRepository.save(ride);
         }
     }
-    public void handlePanicNotification(PanicNotificationDTO dto){
-        //administrators get notification
+    public void handlePanicNotification(PanicRideDTO dto){
         Ride ride = rideRepository.findById(dto.getRideId())
                 .orElseThrow(() ->
                         new ResponseStatusException(HttpStatus.NOT_FOUND, "Ride not found!")
                 );
         String email = SecurityContextHolder.getContext().getAuthentication().getName(); // == user.getEmail()
         User user = userRepository.findByEmail(email);
+        User admin = userRepository.findByEmail("admin@gmail.com");
         if(user == null)
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found!");
-        if(dto.getTime() == null){
-            dto.setTime(LocalDateTime.now());
-        }
         if(dto.getReason() == null){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Panic reason can not be null!");
         }
         PanicNotification panicNotification = new PanicNotification(user,
-                ride, dto.getTime(), dto.getReason());
+                ride, dto.getReason());
         panicNotificationRepository.save(panicNotification);
         ride.setPanic(true);
         rideRepository.save(ride);
+        notificationService.notifyUser(admin,ride,dto.getReason(),NotificationType.PANIC_ALERT);
     }
 
     @Transactional
