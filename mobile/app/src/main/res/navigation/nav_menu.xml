@@ -24,4 +24,8 @@
         android:id="@+id/nav_register_driver"
         android:title="Register driver" />
 
+    <item
+        android:id="@+id/nav_pricing"
+        android:title="Pricing Settings" />
+
 </menu>
