@@ -5,6 +5,7 @@ import { RideFinishResponseDTO, RideDetailsDTO } from '../../shared/models/ride.
 import { CommonModule } from '@angular/common';
 import { RideService } from '../../shared/services/ride.service';
 import { CancelRideDTO } from '../../shared/models/cancel-ride.model';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-scheduled-rides',
@@ -29,7 +30,7 @@ export class ScheduledRidesComponent implements OnInit{
 }
 
   rides: RideFinishResponseDTO[] = [];
-  constructor(private rideService: RideService, 
+  constructor(private router : Router, private rideService: RideService, 
     private cdr: ChangeDetectorRef
   ) {}
   ngOnInit() {
@@ -84,7 +85,9 @@ export class ScheduledRidesComponent implements OnInit{
 
     this.cancelRide(cancelRideDTO);
   }
-
+  trackRide(rideId : number){
+    this.router.navigate(['ride-tracker-driver', rideId]);
+  }
   handleStart(rideId: number) {
   this.rideService.startRide(rideId).subscribe({
     next: () => {
