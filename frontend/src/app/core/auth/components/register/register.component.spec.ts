@@ -26,7 +26,7 @@ describe('RegisterComponent', () => {
     snackBarSpy = jasmine.createSpyObj<MatSnackBar>('MatSnackBar', ['open']);
 
     await TestBed.configureTestingModule({
-      imports: [RegisterComponent], // standalone component
+      imports: [RegisterComponent],
       providers: [
         provideRouter([]),
 
@@ -35,7 +35,6 @@ describe('RegisterComponent', () => {
         { provide: Router, useValue: routerSpy },
         { provide: MatSnackBar, useValue: snackBarSpy },
 
-        // ActivatedRoute mock (ako komponenta čita nešto iz route-a)
         {
           provide: ActivatedRoute,
           useValue: {
@@ -69,7 +68,6 @@ describe('RegisterComponent', () => {
   }
 
   function submitForm() {
-    // stabilnije od klika: gađa ngSubmit na <form>
     const formDe = fixture.debugElement.query(By.css('form'));
     expect(formDe).toBeTruthy();
     formDe.triggerEventHandler('submit', {});
@@ -126,8 +124,6 @@ describe('RegisterComponent', () => {
     expect(appendSpy).toHaveBeenCalledWith('lastName', 'Anić');
     expect(appendSpy).toHaveBeenCalledWith('address', 'Ulica 1');
     expect(appendSpy).toHaveBeenCalledWith('phoneNumber', '12345678901');
-
-    // ako ti komponenta stvarno dodaje client=web
     expect(appendSpy).toHaveBeenCalledWith('client', 'web');
   });
 
