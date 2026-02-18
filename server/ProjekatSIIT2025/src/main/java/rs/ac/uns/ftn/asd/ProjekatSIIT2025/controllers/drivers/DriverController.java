@@ -78,17 +78,4 @@ public class DriverController {
         driverService.setInactiveDriver(email);
         return ResponseEntity.ok().build();
     }
-
-    @GetMapping(value = "/{id}")
-    public ResponseEntity<DriverProfileResponseDTO> getDriverProfile(@PathVariable Long id) {
-        DriverProfileResponseDTO dto = new DriverProfileResponseDTO();
-        dto.setId(id);
-        dto.setName("DriverName");
-        dto.setLastName("DriverLast");
-        dto.setEmail("driver@gmail.com");
-        dto.setProfilePicture("driver.png");
-        dto.setVehicleModel("Skoda Octavia");
-        dto.setLicensePlate("NS-123-YY");
-        return ResponseEntity.ok(dto);
-    }
 }

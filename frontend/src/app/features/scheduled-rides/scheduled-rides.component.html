@@ -23,6 +23,11 @@
                     (click)="handleFinish(ride.rideId)">
                 End Ride
             </button>
+            <button *ngIf="ride.status === 'ACTIVE'" 
+                    class="start-btn" 
+                    (click)="trackRide(ride.rideId)">
+                Track Ride
+            </button>
         </div>
 
         <div class="right-section">
