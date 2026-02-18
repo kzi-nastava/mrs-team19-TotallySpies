@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import jakarta.validation.Valid;
 import org.eclipse.angus.mail.iap.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -85,7 +86,7 @@ public class RideController {
 
 
     @PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<CreateRideResponseDTO> createRide(@RequestBody CreateRideRequestDTO requestDTO, Authentication auth){
+    public ResponseEntity<CreateRideResponseDTO> createRide(@Valid @RequestBody CreateRideRequestDTO requestDTO, Authentication auth){
         String email = auth.getName(); //email passengera, odnoson usera, koji je porucio voznju
         CreateRideResponseDTO responseDTO = rideService.createRide(requestDTO, email);
         return ResponseEntity.ok(responseDTO);
