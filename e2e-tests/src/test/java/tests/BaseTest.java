@@ -33,4 +33,14 @@ public abstract class BaseTest {
         loginPage.waitUntilLoggedIn();
         wait.until(d -> !d.getCurrentUrl().contains("/login"));
     }
+
+    protected void loginAsPassenger(String email, String password) {
+        LoginPage loginPage = new LoginPage(driver);
+        loginPage.open(FRONT_URL);
+        loginPage.typeEmail(email);
+        loginPage.typePassword(password);
+        loginPage.submit();
+        loginPage.waitUntilLoggedIn();
+        wait.until(d -> !d.getCurrentUrl().contains("/login"));
+    }
 }
