@@ -1,11 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { UserLoginRequestDTO } from '../../model/user-login-request.model';
 import { UserTokenStateDTO } from '../../model/user-token-state.model';
 import { CommonModule } from '@angular/common';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { SocketService } from '../../../../shared/services/socket.service';
 
 @Component({
   selector: 'app-login',
@@ -13,8 +14,11 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
 })
-export class LoginComponent {
-  constructor(private authService: AuthService, private router: Router, private snackBar : MatSnackBar) {}
+export class LoginComponent implements OnInit{
+
+  returnUrl: string = '/display-info';
+
+  constructor(private authService: AuthService, private router: Router, private route: ActivatedRoute, private snackBar : MatSnackBar, private socketService: SocketService) {}
 
   loginForm = new FormGroup({
     email: new FormControl('', [Validators.required, Validators.email]),
@@ -37,6 +41,10 @@ export class LoginComponent {
     );
   }
 
+  ngOnInit() {
+    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/display-info';
+  }
+
   login(): void {
 
     //this.error = null; //reset field
@@ -56,6 +64,7 @@ export class LoginComponent {
           localStorage.setItem('token', response.accessToken); //get token from response and store it in
           // browser storage, token will be used later for authenticated requests
           this.authService.setUser(); //notify app that new user is logged in
+          this.socketService.initializeWebSocketConnection();
           // alert("Successfully logged in!")
           // this.router.navigate(['home']);
           this.snackBar.open('Login successful', 'OK', {
@@ -64,8 +73,9 @@ export class LoginComponent {
             verticalPosition : 'top',
             panelClass : ['confirm-snackbar']
           });
-
-          this.router.navigate(['display-info']);
+          
+          this.router.navigateByUrl(this.returnUrl);
+          //this.router.navigate(['ride-ordering'])
         },
         error: (err) => {
           this.snackBar.open(this.extractErrorMessage(err), 'OK', {

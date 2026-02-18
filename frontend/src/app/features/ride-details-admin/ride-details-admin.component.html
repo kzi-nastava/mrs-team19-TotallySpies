@@ -1,0 +1,88 @@
+<div class="map-container" *ngIf="rideStops.length >= 2">
+  <app-map
+    [rideStops]="rideStops"
+    [mode]="'static'"
+  >
+  </app-map>
+  <div class = "main-box">
+    <div class="ride-box">
+        <div class="row">
+            <h1 class="header">Ride details</h1>
+            <img src="icons/distance-icon.png" alt="Distance icon" />
+        </div>
+        <div class="driver-info-container">
+            <p><span class = "info-header">Total price :</span> {{totalPrice}}</p>
+            <p><span class = "info-header">Distance : </span>{{distanceKm}} km</p>
+        </div>
+    </div>
+    <div class="driver-box">    
+        <div class = "row">
+            <h1 class="header">Driver details</h1>
+            <img src="icons/profile-icon.png" alt="Driver icon" />
+        </div>
+        <div class="driver-info-container">
+            <p><span class = "info-header">Name :</span> {{driverName}}</p>
+            <p><span class = "info-header">Last name : </span>{{driverLastName}}</p>
+            <p><span class = "info-header">Email :</span> {{driverEmail}}</p>
+            <p><span class = "info-header">Phone number :</span> {{driverPhoneNumber}} km</p>
+        </div>
+    </div>
+    <div class="reports-box">
+        <h1 class="header">Ride reports</h1>
+        <table class="reports-table">
+        <thead>
+            <tr>
+                <th>Passenger email</th>
+                <th>Report reason</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let report of reportReasons | keyvalue">
+                <td>{{ report.key }}</td>
+                <td>{{ report.value }}</td>
+            </tr>
+        </tbody>
+        </table>
+    </div>
+
+    <div class="grades-box">
+        <h1 class="header">Ride grades</h1>
+        <table class="reports-table">
+        <thead>
+            <tr>
+                <th>Passenger email</th>
+                <th>Ride grade</th>
+                <th>Grade type</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let grade of rideGrades">
+                <td>{{ grade.email }}</td>
+                <td>{{ grade.grade }}</td>
+                <td>{{ grade.gradeType }}</td>  
+            </tr>
+        </tbody>
+        </table>
+    </div>
+    <div class="passengers-box">
+        <h1 class="header">Passengers</h1>
+        <table class="reports-table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Last name</th>
+                <th>Email</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let passenger of passengersInfo">
+                <td>{{ passenger.name }}</td>
+                <td>{{ passenger.lastName }}</td>
+                <td>{{ passenger.email }}</td>  
+            </tr>
+        </tbody>
+        </table>
+    </div>
+</div>
+
+

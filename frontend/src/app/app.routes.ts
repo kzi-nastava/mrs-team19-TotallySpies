@@ -19,6 +19,16 @@ import { VerifyOtpComponent } from './core/auth/components/verify-otp/verify-otp
 import { ChangePasswordComponent } from './core/auth/components/change-password/change-password.component';
 import { ActivateAccountComponent } from './core/auth/components/activate-account/activate-account.component';
 import { ChangeOldPasswordComponent } from './shared/components/change-old-password/change-old-password.component';
+import { PassengerRidesHistoryComponent } from './features/passenger-rides-history/passenger-rides-history.component';
+import { RideDetailsComponent } from './features/ride-details/ride-details.component';
+import { ReportComponent } from './features/report/report.component';
+import { AdminRideTrackingComponent } from './features/admin-ride-tracking/admin-ride-tracking.component';
+import { AdminPricingComponent } from './features/admin-pricing/admin-pricing.component';
+import { UpcomingRidesComponent } from './features/upcoming-rides/upcoming-rides.component';
+import { AdminRideHistoryComponent } from './features/admin-ride-history/admin-ride-history.component';
+import { RideDetailsAdminComponent } from './features/ride-details-admin/ride-details-admin.component';
+import { RideTrackerDriverComponent } from './features/ride-tracker-driver/ride-tracker-driver.component';
+import { AdminNotificationsComponent } from './features/admin-notifications/admin-notifications.component';
 
 export const routes: Routes = [
   {
@@ -93,6 +103,9 @@ export const routes: Routes = [
   { path: 'ride-tracker-user/:id',
     component: RideTrackerUserComponent 
   },
+   { path: 'ride-tracker-driver/:id',
+    component: RideTrackerDriverComponent 
+  },
   {
     path: 'ride-ordering',
     component: RideOrderingComponent
@@ -103,5 +116,40 @@ export const routes: Routes = [
   },
   { path: 'change-old-password', 
     component: ChangeOldPasswordComponent 
+  },
+  {
+    path : 'passenger-ride-history',
+    component : PassengerRidesHistoryComponent
+  },
+  {
+    path : 'ride-details/:id',
+    component : RideDetailsComponent
+  },
+  {
+    path : 'ride-details-admin/:id',
+    component : RideDetailsAdminComponent
+  },
+  {
+    path: 'report-page',
+    component: ReportComponent
+  }, 
+  {
+    path: 'admin-ride-tracking',
+    component: AdminRideTrackingComponent
+  },
+  {
+    path: 'admin-notifications',
+    component: AdminNotificationsComponent
+  },
+  {
+    path: 'admin-pricing',
+    component: AdminPricingComponent},
+  {
+    path: 'upcoming-rides',
+    component: UpcomingRidesComponent
+  },
+  {
+    path : 'admin-ride-history',
+    component : AdminRideHistoryComponent
   }
 ];

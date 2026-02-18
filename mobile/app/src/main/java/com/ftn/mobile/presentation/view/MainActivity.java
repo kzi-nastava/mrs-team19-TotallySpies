@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -18,6 +19,14 @@ import com.ftn.mobile.R;
 import com.ftn.mobile.data.local.TokenStorage;
 import com.ftn.mobile.data.local.UserRoleManger;
 import com.ftn.mobile.presentation.fragments.DriverHistoryFragment;
+import com.ftn.mobile.presentation.fragments.DriverScheduledRidesFragment;
+import com.ftn.mobile.presentation.fragments.HomeFragment;
+import com.ftn.mobile.presentation.fragments.ReportFragment;
+import com.ftn.mobile.presentation.fragments.RideFormUnregisteredFragment;
+import com.ftn.mobile.presentation.fragments.RideOrderingFragment;
+import com.ftn.mobile.presentation.fragments.DriverRegistrationFragment;
+import com.ftn.mobile.presentation.fragments.PricingFragment;
+import com.ftn.mobile.presentation.fragments.profile.ProfileFragment;
 import com.google.android.material.navigation.NavigationView;
 
 public class MainActivity extends AppCompatActivity {
@@ -49,15 +58,60 @@ public class MainActivity extends AppCompatActivity {
         UserRoleManger.getRoleLiveData().observe(this, role -> {
             boolean isLoggedIn = (role != null);
 
+            MenuItem loginItem = menu.findItem(R.id.nav_login);
+            if (loginItem != null) loginItem.setVisible(!isLoggedIn);
+
+            MenuItem registerItem = menu.findItem(R.id.nav_register);
+            if (registerItem != null) registerItem.setVisible(!isLoggedIn);
+
+            MenuItem logoutItem = menu.findItem(R.id.nav_logout);
+            if (logoutItem != null) logoutItem.setVisible(isLoggedIn);
+
             MenuItem profileItem = menu.findItem(R.id.nav_profile);
             if (profileItem != null) {
                 profileItem.setVisible(isLoggedIn);
+            }
+
+            MenuItem orderRideItem = menu.findItem(R.id.nav_ride_ordering);
+            if (orderRideItem != null) {
+                boolean isPassenger = "ROLE_PASSENGER".equals(role);
+                orderRideItem.setVisible(isPassenger);
             }
 
             MenuItem historyItem = menu.findItem(R.id.nav_history);
             if (historyItem != null) {
                 boolean isDriver = "ROLE_DRIVER".equals(role);
                 historyItem.setVisible(isDriver);
+
+            }
+            MenuItem scheduledItem = menu.findItem(R.id.nav_scheduled);
+            if (scheduledItem != null) {
+                boolean isDriver = "ROLE_DRIVER".equals(role);
+                scheduledItem.setVisible(isDriver);
+            }
+
+            MenuItem registerDriverItem = menu.findItem(R.id.nav_register_driver);
+            if(profileItem != null){
+                boolean isAdmin = "ROLE_ADMIN".equals(role);
+                registerDriverItem.setVisible(isAdmin);
+            }
+
+            MenuItem pricingItem = menu.findItem(R.id.nav_pricing);
+            if (pricingItem != null) {
+                boolean isAdmin = "ROLE_ADMIN".equals(role);
+                pricingItem.setVisible(isAdmin);
+            }
+
+            MenuItem reportItem = menu.findItem(R.id.nav_report);
+            if (reportItem != null){
+                reportItem.setVisible(isLoggedIn);
+            }
+
+            if(!isLoggedIn){
+                showRideFormUnregistered();
+            }
+            else{
+                hideRideFormUnregistered();
             }
         });
 
@@ -81,25 +135,75 @@ public class MainActivity extends AppCompatActivity {
         navigationView.setNavigationItemSelectedListener(item -> {
             int id = item.getItemId();
 
-            if (id == R.id.nav_history) {
+            if (id == R.id.nav_home) {
+                openFragment(new HomeFragment(), "SmartRide");
+            } else if (id == R.id.nav_history) {
                 openFragment(new DriverHistoryFragment(), "Ride History");
-            } else if (id == R.id.nav_home) {
-                removeCurrentFragment();
-                getSupportActionBar().setTitle("SmartRide");
-            } else if (id == R.id.nav_profile) {
-                Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
-                startActivity(intent);
+            } else if (id == R.id.nav_profile){
+                openFragment(new ProfileFragment(), "Profile");
             } else if (id == R.id.nav_register) {
                 Intent intent = new Intent(MainActivity.this, RegisterActivity.class);
                 startActivity(intent);
-            }else if (id == R.id.nav_login) {
+            }
+            else if (id == R.id.nav_login) {
                 Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                 startActivity(intent);
+            }
+            else if(id == R.id.nav_logout){
+                TokenStorage.clear(MainActivity.this);
+                UserRoleManger.updateRole(null);
+                getSupportFragmentManager().popBackStack(
+                        null,
+                        androidx.fragment.app.FragmentManager.POP_BACK_STACK_INCLUSIVE
+                );
+                showRideFormUnregistered();
+                Toast.makeText(MainActivity.this, "Logged out", Toast.LENGTH_SHORT).show();
+            }
+            else if (id == R.id.nav_ride_ordering) {
+                openFragment(new RideOrderingFragment(), "Ride ordering");
+            } else if (id == R.id.nav_register_driver){
+                openFragment(new DriverRegistrationFragment(), "Driver registration");
+            }
+            else if (id == R.id.nav_pricing) {
+                openFragment(new PricingFragment(), "Pricing");
+            }
+            else if (id == R.id.nav_scheduled) {
+                openFragment(new DriverScheduledRidesFragment(), "My Rides");
+            }
+            else if (id == R.id.nav_report) {
+                openFragment(new ReportFragment(), "Reports");
             }
             drawerLayout.closeDrawers();
             return true;
         });
+        if (savedInstanceState == null) {
+            openFragment(new HomeFragment(), "SmartRide");
+        }
     }
+    private void  showRideFormUnregistered() {
+        Fragment current = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+        if (current instanceof RideFormUnregisteredFragment) return;
+
+        getSupportFragmentManager().popBackStack(null,
+                androidx.fragment.app.FragmentManager.POP_BACK_STACK_INCLUSIVE);
+
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container, new RideFormUnregisteredFragment())
+                .commit();
+
+        if (getSupportActionBar() != null) getSupportActionBar().setTitle("Welcome to SmartRide!");
+    }
+
+    private void hideRideFormUnregistered() {
+        Fragment current = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+        if (current instanceof RideFormUnregisteredFragment) {
+            getSupportFragmentManager().beginTransaction()
+                    .remove(current)
+                    .commit();
+            if (getSupportActionBar() != null) getSupportActionBar().setTitle("SmartRide");
+        }
+    }
+
     private void openFragment(Fragment fragment, String title) {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragment_container, fragment)

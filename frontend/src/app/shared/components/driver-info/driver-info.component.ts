@@ -18,6 +18,7 @@ export class DriverInfoComponent {
   @Input() rating: number = 0;
   @Input() profileImageUrl: string = '';
   @Input() isFinished: boolean = false;
+  @Input() showActions: boolean = true;
 
   constructor(private dialog: MatDialog) {}
 

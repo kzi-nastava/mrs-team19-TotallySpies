@@ -9,13 +9,13 @@
     import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.User;
     import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.UserRole;
 
+    import java.util.List;
     import java.util.Optional;
 
     @Repository
     public interface UserRepository extends JpaRepository<User, Long> {
         User findByEmail(String email);
         boolean existsByEmail(String email);
-
         @Transactional
         @Modifying
         @Query("update User u set u.password = ?2 where u.email = ?1")
@@ -23,5 +23,7 @@
 
         @Query("select u.role from User u where u.email = ?1")
         UserRole getRoleByEmail(String email);
+
+        List<User> findAllByRole(UserRole role);
     }
 

@@ -20,14 +20,15 @@ public class Ride {
     private boolean panic;
 
     @OneToMany(mappedBy = "ride", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OrderBy("orderIndex ASC")
     private List<RideStop> stops;
 
     @Enumerated(EnumType.STRING)
     private RideStatus status;
 
+    @Column(nullable = false)
     private double distanceKm;
     private double estimatedTime;
-    private double totalPrice; //cijena_po_tipu + kilometri * 120
 
     private boolean babiesTransport;
     private boolean petsTransport;
@@ -52,6 +53,19 @@ public class Ride {
     @OneToOne(mappedBy = "ride", cascade = CascadeType.ALL)
     private PanicNotification panicNotification;
 
+    @OneToMany(mappedBy = "ride", cascade = CascadeType.ALL)
+    @OrderBy("sequence ASC")
+    private List<RoutePoint> routePoints;
+
+    @ManyToOne
+    private Passenger creator;
+
+    @ElementCollection
+    private List<Integer> sentNotificationMinutes;
+
+    @Column(nullable = false)
+    private Double totalPrice;
+    
     public Long getId() {
         return id;
     }
@@ -76,7 +90,7 @@ public class Ride {
         this.passengers = passengers;
     }
 
-    public boolean isPanic() {
+    public boolean getIsPanic() {
         return panic;
     }
 
@@ -211,4 +225,37 @@ public class Ride {
     public void setPanicNotification(PanicNotification panicNotification) {
         this.panicNotification = panicNotification;
     }
+
+    public List<RoutePoint> getRoutePoints() {
+        return routePoints;
+    }
+
+    public void setRoutePoints(List<RoutePoint> routePoints) {
+        this.routePoints = routePoints;
+    }
+
+    public Passenger getCreator() {
+        return creator;
+    }
+
+    public void setCreator(Passenger creator) {
+        this.creator = creator;
+    }
+
+    public List<Integer> getSentNotificationMinutes() {
+        return sentNotificationMinutes;
+    }
+
+    public void setSentNotificationMinutes(List<Integer> sentNotificationMinutes) {
+        this.sentNotificationMinutes = sentNotificationMinutes;
+    }
+
+    public boolean isPanic() {
+        return panic;
+    }
+
+    public void setTotalPrice(Double totalPrice) {
+        this.totalPrice = totalPrice;
+    }
+
 }

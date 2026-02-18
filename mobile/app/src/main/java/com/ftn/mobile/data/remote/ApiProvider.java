@@ -4,8 +4,12 @@ import com.ftn.mobile.data.remote.api.AdminApi;
 import com.ftn.mobile.data.remote.api.AuthApi;
 
 import com.ftn.mobile.data.remote.api.DriverApi;
+import com.ftn.mobile.data.remote.api.FavouriteApi;
 import com.ftn.mobile.data.remote.api.ForgotPasswordApi;
+import com.ftn.mobile.data.remote.api.PriceApi;
+import com.ftn.mobile.data.remote.api.RideApi;
 import com.ftn.mobile.data.remote.api.UserApi;
+import com.ftn.mobile.data.remote.api.VehicleApi;
 
 public final class ApiProvider {
     //returns every api needed
@@ -18,6 +22,14 @@ public final class ApiProvider {
     private static DriverApi driverApi;
 
     private static AdminApi adminApi;
+
+    private static PriceApi priceApi;
+
+    private static RideApi rideApi;
+
+    private static FavouriteApi favouriteApi;
+
+    private static VehicleApi vehicleApi;
 
     private ApiProvider() {}
 
@@ -53,6 +65,33 @@ public final class ApiProvider {
             adminApi = RetrofitClient.getRetrofit().create(AdminApi.class);
         }
         return adminApi;
+    }
+
+    public static PriceApi price() {
+        if (priceApi == null){
+            priceApi = RetrofitClient.getRetrofit().create(PriceApi.class);
+        }
+        return priceApi;
+    }
+
+    public static RideApi ride() {
+        if (rideApi == null){
+            rideApi = RetrofitClient.getRetrofit().create(RideApi.class);
+        }
+        return rideApi;
+    }
+
+    public static FavouriteApi favourite() {
+        if (favouriteApi == null){
+            favouriteApi = RetrofitClient.getRetrofit().create(FavouriteApi.class);
+        }
+        return favouriteApi;
+    }
+    public static VehicleApi vehicle() {
+        if (vehicleApi == null){
+            vehicleApi = RetrofitClient.getRetrofit().create(VehicleApi.class);
+        }
+        return vehicleApi;
     }
 }
 

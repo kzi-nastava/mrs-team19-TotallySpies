@@ -5,7 +5,9 @@ import {
   UserProfileUpdateRequestDTO,
   ProfileChangeRequestDTO,
   DriverActivityResponseDTO,
-  VehicleInfoResponseDTO
+  VehicleInfoResponseDTO,
+  DriverBlockedStatusDTO,
+  AdminUserDTO
 } from '../../shared/models/users/user.model';
 import { UserService } from '../../shared/services/user.service';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -14,6 +16,8 @@ import { AdminService } from '../../shared/services/admin.service';
 import { DriverService } from '../../shared/services/driver.service';
 import { AuthService } from '../../core/auth/services/auth.service';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
+import { BlockDialogComponent } from '../../shared/components/block-dialog/block-dialog.component';
 
 @Component({
   selector: 'app-user-profile',
@@ -41,13 +45,15 @@ export class UserProfileComponent {
 
   // Admin podaci
   pendingRequests: ProfileChangeRequestDTO[] = [];
-  driversList: any[] = [];  // Za admin tabele
-  usersList: any[] = [];
+  driversList: AdminUserDTO[] = [];
+  usersList: AdminUserDTO[] = [];
 
   // Driver podaci
+  blockedStatus!: DriverBlockedStatusDTO;
+
+
   driverActivity?: DriverActivityResponseDTO;
   vehicleInfo?: VehicleInfoResponseDTO;
-  driverNotes: any[] = []; // Prazna lista, da HTML ne puca
 
   constructor(
     private userService: UserService,
@@ -55,7 +61,8 @@ export class UserProfileComponent {
     private driverService: DriverService,
     private authService: AuthService,
     private cdr: ChangeDetectorRef,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private dialog: MatDialog
   ) { }
 
   ngOnInit() {
@@ -73,8 +80,10 @@ export class UserProfileComponent {
     this.profileForm = new FormGroup({
       name: new FormControl('', [Validators.required]),
       lastName: new FormControl('', [Validators.required]),
-      phoneNumber: new FormControl(''),
-      address: new FormControl('')
+      phoneNumber: new FormControl('', [
+        Validators.required,
+        Validators.pattern(/^(\+381 \d{2} \d{3} \d{3,4}|\d{11})$/)]),
+      address: new FormControl('', [Validators.required])
     });
   }
 
@@ -91,8 +100,8 @@ export class UserProfileComponent {
     if (this.userRole === 'ROLE_ADMIN') {
       this.adminService.getPendingRequests().subscribe(res => this.pendingRequests = res);
       this.loadPendingRequests();
-      //this.adminService.getDriversList().subscribe(res => this.driversList = res);
-      //this.adminService.getUsersList().subscribe(res => this.usersList = res);
+      this.adminService.getDriversList().subscribe(res => this.driversList = res);
+      this.adminService.getUsersList().subscribe(res => this.usersList = res);
     } else if (this.userRole === 'ROLE_DRIVER') {
       this.driverService.getVehicleInfo().subscribe(res => {
         this.vehicleInfo = res;
@@ -103,8 +112,12 @@ export class UserProfileComponent {
         console.log(this.driverActivity.minutesLast24h)
         this.cdr.detectChanges();
       });
-      // driverNotes ostaje prazna lista
-      this.driverNotes = [];
+
+      this.driverService.getBlockedStatus().subscribe({
+        next: (res) => this.blockedStatus = res,
+        error: err => console.error(err)
+      })
+
       this.cdr.detectChanges();
     }
   }
@@ -114,6 +127,11 @@ export class UserProfileComponent {
       this.pendingRequests = res;
       this.cdr.detectChanges();
     });
+  }
+
+  loadAdminLists() {
+    this.adminService.getDriversList().subscribe(res => this.driversList = res);
+    this.adminService.getUsersList().subscribe(res => this.usersList = res);
   }
 
   updateProfileImageUrl() {
@@ -144,11 +162,19 @@ export class UserProfileComponent {
       this.userService.updateProfile(request).subscribe({
         next: () => {
           this.editingField = null;
+          this.showSnackBar('Profile updated successfully!', 'success');
           this.loadDataByRole();
           this.cdr.detectChanges();
         },
-        error: () => {
+        error: (err) => {
           this.editingField = null;
+          let msg = 'Error updating profile.';
+          if (err.status === 400 && err.error.errors) {
+            msg = Object.values(err.error.errors).join(', ');
+          } else if (err.error.message) {
+            msg = err.error.message;
+          }
+          this.showSnackBar(msg, 'error');
         }
       });
     }
@@ -255,5 +281,58 @@ export class UserProfileComponent {
 
     const fileName = newValue.split('/').pop();
     return `http://localhost:8080/api/v1/users/image/${fileName}`;
+  }
+
+  toggleBlock(user: AdminUserDTO) {
+    const dialogRef = this.dialog.open(BlockDialogComponent, {
+      width: 'auto',
+      data: {
+        isBlocked: user.blocked,
+        name: user.name
+      },
+      panelClass: 'custom-dialog-container' // Opciono za uklanjanje default paddinga
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result && result.confirm) {
+        // Korisnik je kliknuo na dugme za potvrdu u dijalogu
+
+        if (user.blocked) {
+          // LOGIKA ZA ODBLOKIRANJE (UNBLOCK)
+          this.adminService.unblockUser(user.id).subscribe({
+            next: () => {
+              user.blocked = false;
+              user.blockReason = "";
+              this.showSnackBar('User unblocked successfully!', 'success');
+              this.cdr.detectChanges();
+            },
+            error: err => this.showSnackBar(err.error.message || 'Error unblocking user', 'error')
+          });
+
+        } else {
+          // LOGIKA ZA BLOKIRANJE (BLOCK)
+          const reason = result.reason;
+          this.adminService.blockUser(user.id, reason).subscribe({
+            next: () => {
+              user.blocked = true;
+              user.blockReason = reason;
+              this.showSnackBar('User blocked successfully!', 'success');
+              this.cdr.detectChanges();
+            },
+            error: err => this.showSnackBar(err.error.message || 'Error blocking user', 'error')
+          });
+        }
+      }
+    });
+    this.cdr.detectChanges();
+  }
+
+  private showSnackBar(message: string, type: 'success' | 'error') {
+    this.snackBar.open(message, 'OK', {
+      duration: 4000,
+      panelClass: type === 'success' ? ['confirm-snackbar'] : ['error-snackbar'],
+      horizontalPosition: 'center',
+      verticalPosition: 'top'
+    });
   }
 }

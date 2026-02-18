@@ -5,12 +5,27 @@
     <a routerLink="/profile" routerLinkActive="active">Profile</a>
     <!--<a routerLink="/driver-profile" routerLinkActive="active">Driver profile</a>
     <a routerLink="/admin-profile" routerLinkActive="active">Admin profile</a>-->
-    <a routerLink="/ride-history" routerLinkActive="active">Ride history</a>
+    <a *ngIf="isPassenger" routerLink="/passenger-ride-history" routerLinkActive="active">Ride history</a>
+    <a *ngIf="isDriver" routerLink="/ride-history" routerLinkActive="active">Ride history</a>
+    <a *ngIf="isAdmin" routerLink="/admin-ride-history" routerLinkActive="active">Ride history</a>
+    <a *ngIf="isAdmin" routerLink="/admin-notifications" routerLinkActive="active">Panic notifications</a>
+    <a routerLink="/report-page" routerLinkActive="active">Reports</a>
+    <a *ngIf="isPassenger" routerLink="/ride-ordering" routerLinkActive="active" class="order-link">
+      Order ride
+    </a>
+    <a *ngIf="isPassenger" routerLink="/upcoming-rides" routerLinkActive="active">Upcoming rides</a>
+    <a *ngIf="isAdmin" routerLink="/admin-pricing" routerLinkActive="active">Pricing</a>
+    <a *ngIf="isAdmin" routerLink="/admin-ride-tracking" routerLinkActive="active">Track rides</a>
+    <a *ngIf="isDriver" routerLink="/scheduled-rides" routerLinkActive="active">My rides</a>
+
+  
   </div>
 
   <div class="navbar-right">
-    <a routerLink="/login" class="login-btn">Login</a>
-    <a routerLink="/register" class="register-btn">Register</a>
-    <button (click)="logout()" class = "login-btn">Logout</button>
+    <app-notification></app-notification> 
+
+    <a *ngIf="!isLoggedIn" routerLink="/login" class="login-btn">Login</a>
+    <a *ngIf="!isLoggedIn" routerLink="/register" class="register-btn">Register</a>
+    <button *ngIf="isLoggedIn" (click)="logout()" class = "login-btn">Logout</button>
   </div>
 </nav>

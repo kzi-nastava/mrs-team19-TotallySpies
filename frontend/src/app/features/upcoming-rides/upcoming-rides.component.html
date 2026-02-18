@@ -1,0 +1,12 @@
+<div class="page">
+    <h2>My Upcoming Rides</h2>
+
+    <div *ngIf="loading">Loading...</div>
+
+    <p *ngIf="!loading && upcomingRides.length === 0">
+        You have no upcoming rides.
+    </p>
+    <app-upcoming-ride-card *ngFor="let r of upcomingRides" [ride]="r">
+    </app-upcoming-ride-card>
+
+</div>

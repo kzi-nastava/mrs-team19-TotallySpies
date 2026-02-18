@@ -1,0 +1,47 @@
+<div class="report-page">
+    <div class="filter-container">
+        <div *ngIf="userRole === 'ROLE_ADMIN'" class="admin-search">
+            <label>User Email:</label>
+            <input type="text" [(ngModel)]="targetEmail" placeholder="Search user...">
+        </div>
+
+        <label>From:</label>
+        <input type="date" [(ngModel)]="filterStart">
+        
+        <label>To:</label>
+        <input type="date" [(ngModel)]="filterEnd">
+
+        <button class="filter-btn" (click)="generateReport()">Generate</button>
+    </div>
+
+    <div class="stats-cards" *ngIf="reportData">
+        <div class="stat-card">
+            <h3>Total Rides</h3>
+            <p>{{reportData.totalCount}}</p>
+        </div>
+        <div class="stat-card">
+            <h3>Total Distance</h3>
+            <p>{{reportData.totalDistance | number:'1.1-2'}} km</p>
+        </div>
+        <div class="stat-card">
+            <h3>Total Money</h3>
+            <p>{{reportData.totalSum | number:'1.1-2'}} RSD</p>
+        </div>
+        <div class="stat-card">
+            <h3>Daily Average</h3>
+            <p>{{reportData.averageMoney | number:'1.1-2'}} RSD</p>
+        </div>
+    </div>
+
+    <div class="charts-container" *ngIf="reportData">
+        <div class="chart-box">
+            <canvas id="moneyChart"></canvas>
+        </div>
+        <div class="chart-box">
+            <canvas id="countChart"></canvas>
+        </div>
+        <div class="chart-box">
+            <canvas id="distanceChart"></canvas>
+        </div>
+    </div>
+</div>

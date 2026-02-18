@@ -71,6 +71,7 @@ public class DriverActivityService {
 
         if (activity != null) {
             activity.setEndTime(LocalDateTime.now());
+            activity.setDriver(driver);
             driverActivityRepository.save(activity);
         }
     }

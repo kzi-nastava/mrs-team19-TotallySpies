@@ -22,6 +22,7 @@ public interface DriverRepository extends JpaRepository<Driver, Long> {
 
     @Query("SELECT d FROM Driver d " +
             "WHERE d.isActive = true " +
+            "AND d.isBlocked = false " +
             "AND d.vehicle.vehicleType = :type " +
             "AND d.vehicle.passengerCapacity >= :seats " +
             "AND (:petFriendly = false OR d.vehicle.petTransport = true) " +

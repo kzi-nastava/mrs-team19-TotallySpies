@@ -1,5 +1,6 @@
 package rs.ac.uns.ftn.asd.ProjekatSIIT2025.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
@@ -15,6 +16,7 @@ public class RideStop {
     private int orderIndex;     // 0=start, n=destination
 
     @ManyToOne
+    @JsonIgnore
     private Ride ride;
 
     public RideStop(Long id, String address, double latitude, double longitude, int orderIndex, Ride ride) {

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:gravity="center"
+    android:background="@drawable/car_info_rectangle">
+
+    <ProgressBar
+        android:id="@+id/progressSearch"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:indeterminateTint="@color/accent" />
+
+    <TextView
+        android:id="@+id/tvSearchStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Searching for available drivers..."
+        android:textColor="@color/text"
+        android:textSize="18sp"
+        android:textAlignment="center" />
+
+    <Button
+        android:id="@+id/btnDismissDialog"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="OK"
+        android:visibility="gone"
+        android:layout_marginTop="16dp"
+        style="@style/Widget.MaterialComponents.Button.TextButton"/>
+</LinearLayout>

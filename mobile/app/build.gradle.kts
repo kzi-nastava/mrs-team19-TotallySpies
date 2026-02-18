@@ -34,20 +34,6 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
-
-        defaultConfig {
-            applicationId = "com.ftn.mobile"
-            minSdk = 30
-            targetSdk = 36
-            versionCode = 1
-            versionName = "1.0"
-            //ip config
-            val ip = getLocalProperty("ip_address")
-            val baseUrl = "http://$ip:8080/"
-            buildConfigField("String", "BASE_URL", "\"$baseUrl\"")
-            testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        }
-
         buildTypes {
             release {
                 isMinifyEnabled = false
@@ -77,9 +63,23 @@ dependencies {
 
     //Glide - for image
     implementation("com.github.bumptech.glide:glide:4.15.1")
+    implementation(libs.legacy.support.v4)
+    implementation(libs.lifecycle.livedata.ktx)
+    implementation(libs.lifecycle.viewmodel.ktx)
     annotationProcessor("com.github.bumptech.glide:compiler:4.15.1")
 
     implementation("com.google.android.material:material:1.9.0")
+
+    // MAPA i RUTIRANJE (OSM + OSRM)
+    implementation("org.osmdroid:osmdroid-android:6.1.14")
+    implementation("com.github.MKergall:osmbonuspack:6.9.0") {
+        exclude(group = "org.osmdroid", module = "osmdroid-android")
+    }
+    implementation("com.github.NaikSoftware:StompProtocolAndroid:1.6.6")
+    implementation("io.reactivex.rxjava2:rxandroid:2.1.1")
+    implementation("io.reactivex.rxjava2:rxjava:2.2.21")
+
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 
     implementation(libs.appcompat)
     implementation(libs.material)

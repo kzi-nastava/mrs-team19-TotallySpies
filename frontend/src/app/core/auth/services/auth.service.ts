@@ -23,6 +23,7 @@ export class AuthService {
   //behaviorSubject emits the current value to subscribers, it always remembers latest value
   userState = this.user$.asObservable(); //navbar is subscribed on userState(public observable)
   //  TODO :different navbar for every role
+  private authState = new BehaviorSubject<boolean>(this.isLoggedIn());
 
   constructor(private http: HttpClient) {
     this.user$.next(this.getRole()); //reads role from localStorage token,
@@ -31,15 +32,34 @@ export class AuthService {
 
   //this sends POST request to specific login endpoint with body {email, password}
   login(dto: UserLoginRequestDTO): Observable<UserTokenStateDTO> {
+    this.updateAuthState();
     return this.http.post<UserTokenStateDTO>(environment.apiHost + '/auth/login',
-      dto, 
-      {headers: this.headers,}
+      dto,
+      { headers: this.headers, }
     );
   }
 
-  logout() : void{ //removes jwt from local storage
-    localStorage.removeItem('token');
-    this.user$.next(null);
+  logout(): void { //removes jwt from local storage
+    const role = this.getRole();
+    const isDriver = role === 'ROLE_DRIVER';
+    if (isDriver) {
+      this.logoutDriver().subscribe({
+        next: () => {
+          localStorage.removeItem('token');
+          this.user$.next(null);
+          this.updateAuthState();
+        },
+        error: (err) => {
+          console.error("Backend logout failed:", err);
+          localStorage.removeItem('token');
+          this.user$.next(null);
+        }
+      });
+    } else {
+      localStorage.removeItem('token');
+      this.user$.next(null);
+      this.updateAuthState();
+    }
   }
   verifyEmail(dto: VerifyEmailDTO): Observable<string> {
     return this.http.post(
@@ -49,46 +69,46 @@ export class AuthService {
     );
   }
 
-  verifyOtp(dto : VerifyOtpDTO) : Observable<string>{
+  verifyOtp(dto: VerifyOtpDTO): Observable<string> {
     return this.http.post(
       environment.apiHost + '/forgot-password/verify-otp',
       dto,
-      { headers : this.headers, responseType: 'text'}
+      { headers: this.headers, responseType: 'text' }
     );
   }
-  changePassword(dto : ChangedPasswordDTO) : Observable<string>{
+  changePassword(dto: ChangedPasswordDTO): Observable<string> {
     return this.http.post(
       environment.apiHost + '/forgot-password/change-password',
       dto,
-      { headers : this.headers, responseType : 'text'}
+      { headers: this.headers, responseType: 'text' }
     );
   }
   register(formData: FormData): Observable<string> {
-  // do not set 'Content-Type' here
-  const uploadHeaders = new HttpHeaders({
-    skip: 'true',
-  });
-
-  return this.http.post(environment.apiHost + '/auth/register', formData, {
-    headers: uploadHeaders,
-    responseType: 'text',
-  });
-  }
-  activateAccount(token : string){
-    const headers = new HttpHeaders({
-      skip : 'true',   //to tell intercept to not attach jwt
+    // do not set 'Content-Type' here
+    const uploadHeaders = new HttpHeaders({
+      skip: 'true',
     });
-    return this.http.post(environment.apiHost + '/auth/activate', null,{
+
+    return this.http.post(environment.apiHost + '/auth/register', formData, {
+      headers: uploadHeaders,
+      responseType: 'text',
+    });
+  }
+  activateAccount(token: string) {
+    const headers = new HttpHeaders({
+      skip: 'true',   //to tell intercept to not attach jwt
+    });
+    return this.http.post(environment.apiHost + '/auth/activate', null, {
       headers,
       params: { token },
-      responseType: 'text' 
+      responseType: 'text'
     });
   }
 
   getRole(): any { //checks if token exists in localStorage, decodes it and extracts role
     if (this.isLoggedIn()) {
       const accessToken: any = localStorage.getItem('token');
-      const helper = new JwtHelperService(); 
+      const helper = new JwtHelperService();
       //return helper.decodeToken(accessToken).role[0].authority;
       return helper.decodeToken(accessToken).role; //gets role from jwt claims to use it for custom navbar
     }
@@ -104,7 +124,37 @@ export class AuthService {
   }
 
   activateDriver(dto: DriverActivationRequestDTO): Observable<void> {
-  const headers = new HttpHeaders({ skip: 'true' }); // da interceptor ne dodaje JWT
-  return this.http.post<void>(`${environment.apiHost}/auth/activate-driver`, dto, { headers });
-}
+    const headers = new HttpHeaders({ skip: 'true' }); // da interceptor ne dodaje JWT
+    return this.http.post<void>(`${environment.apiHost}/auth/activate-driver`, dto, { headers });
+  }
+
+  logoutDriver(): Observable<void> {
+    return this.http.post<void>(`${environment.apiHost}/drivers/logout`, {});
+  }
+
+  getUserId(): number | null {
+    const token = this.getToken();
+    if (!token) return null;
+    
+    try {
+      const helper = new JwtHelperService();
+      const decodedToken = helper.decodeToken(token);
+      return decodedToken.id || decodedToken.userId || decodedToken.sub || null;
+    } catch (error) {
+      console.error('Error decoding token:', error);
+      return null;
+    }
+  }
+
+  getToken(): string | null {
+      return localStorage.getItem('token');
+    }
+
+  getAuthState(): Observable<boolean> {
+    return this.authState.asObservable();
+  }
+
+  private updateAuthState() {
+    this.authState.next(this.isLoggedIn());
+  }
 }

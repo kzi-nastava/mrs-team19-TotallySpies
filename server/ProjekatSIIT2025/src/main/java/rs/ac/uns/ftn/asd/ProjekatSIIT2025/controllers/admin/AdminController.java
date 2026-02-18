@@ -1,24 +1,28 @@
 package rs.ac.uns.ftn.asd.ProjekatSIIT2025.controllers.admin;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.PanicNotificationDTO;
+import org.springframework.web.server.ResponseStatusException;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.PanicNotificationDTO;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.AdminRideHistoryResponseDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.RidePreviewResponseDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.users.*;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.Driver;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.PanicNotification;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.services.DriverService;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.services.PanicNotificationService;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.services.ProfileChangeService;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.UserRole;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.UserRepository;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.services.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping(value = "/api/v1/admin", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -31,6 +35,15 @@ public class AdminController {
 
     @Autowired
     PanicNotificationService panicNotificationService;
+
+    @Autowired
+    UserService userService;
+
+    @Autowired
+    RideService rideService;
+
+    @Autowired
+    UserRepository userRepository;
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping(value = "/profile-change-requests")
@@ -54,47 +67,10 @@ public class AdminController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/create-driver")
-    public ResponseEntity<Void> createDriver(@RequestBody CreateDriverRequestDTO dto) {
+    public ResponseEntity<Void> createDriver(@Valid @RequestBody CreateDriverRequestDTO dto) {
         driverService.createDriver(dto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
-
-    /* @GetMapping("/{id}")
-    public ResponseEntity<UserProfileResponseDTO> getAdminProfile(@PathVariable Long id) {
-        UserProfileResponseDTO dto = new UserProfileResponseDTO();
-        dto.setName("Admin123");
-        dto.setLastName("Administrator");
-        dto.setEmail("admin@system.com");
-        dto.setProfilePicture("admin.png");
-
-        return ResponseEntity.ok(dto);
-    }
-
-    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> updateAdminProfile(
-            @PathVariable Long id,
-            @RequestBody UserProfileUpdateRequestDTO request) {
-
-        return ResponseEntity.noContent().build();
-    }
-
-    @PutMapping(value = "/{id}/image", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> updateAdminImage(
-            @PathVariable Long id,
-            @RequestBody UserImageUpdateDTO request) {
-
-        return ResponseEntity.noContent().build();
-    }
-
-    @PostMapping(value = "/drivers", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<UserProfileResponseDTO> createDriver(@RequestBody DriverRegisterRequestDTO request) {
-        UserProfileResponseDTO response = new UserProfileResponseDTO();
-        response.setEmail(request.getEmail());
-        response.setName(request.getName());
-        response.setLastName(request.getLastName());
-
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
-    }*/
 
     @GetMapping(value = "/users/{id}",consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ArrayList<RidePreviewResponseDTO>> getAll(@PathVariable Long id){
@@ -141,12 +117,75 @@ public class AdminController {
     }
 
     @GetMapping("/panic-notifications")
-    public ResponseEntity<List<PanicNotification>> getPanicNotifications() {
-        List<PanicNotification> panicNotifications =
+    public ResponseEntity<List<PanicNotificationDTO>> getPanicNotifications() {
+        List<PanicNotificationDTO> panicNotifications =
                 panicNotificationService.getPanicNotifications();
 
         return ResponseEntity.ok(panicNotifications);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/drivers")
+    public List<AdminUserDTO> getDrivers() {
+        return userService.findAllUsersByRole(UserRole.DRIVER);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/passengers")
+    public List<AdminUserDTO> getPassengers() {
+        return userService.findAllUsersByRole(UserRole.PASSENGER);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/block/{id}")
+    public void blockUser(@PathVariable Long id, @Valid @RequestBody BlockRequestDTO req) {
+        userService.blockUser(id, req.getReason());
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/unblock/{id}")
+    public void unblockUser(@PathVariable Long id) {
+        userService.unblockUser(id);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping(value = "/{userId}/history")
+    public ResponseEntity<List<AdminRideHistoryResponseDTO>> getAdminRideHistory(
+            @PathVariable Long userId,
+            @RequestParam int userIndicator, //1 is driver , 2 is passenger
+            @RequestParam( defaultValue = "startedAt") String sortBy,
+            @RequestParam ( defaultValue = "DESC") String sortDirection,
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) //tells spring how to parse string from request to localDateTime
+            LocalDateTime from,   //for filtering by ride.createdAt
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+            LocalDateTime to )
+
+    {
+        Set<String> allowedSorts = Set.of("startedAt", "finishedAt", "createdAt", "pickupAddress",
+                "destinationAddress", "totalPrice", "userWhoCancelled", "isCancelled", "isPanic");
+        if (!allowedSorts.contains(sortBy)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid sort field");
+        }
+        Sort sort = null;
+
+        if(sortDirection.equals("ASC")){
+            sort = Sort.by(sortBy).ascending();
+        }
+        else{
+            sort = Sort.by(sortBy).descending();
+        }
+        List<AdminRideHistoryResponseDTO> history = rideService.getAdminHistory(userId, userIndicator,
+                sort, from, to);
+        return new ResponseEntity<>(history, HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping(value = "/users", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<UserDTO>> getAllUsers(){
+        List<UserDTO> allUsers = userService.getAllUsers();
+        return new ResponseEntity<>(allUsers, HttpStatus.OK);
+    }
 
 }

@@ -89,6 +89,44 @@
 
         <div class="divider"></div>
 
+        <div class="section" [formGroup]="routeForm">
+          <label>Schedule ride</label>
+
+          <div class="radio-vertical">
+            <label class="custom-radio">
+              <input type="radio" [checked]="!routeForm.value.isScheduled"
+                (change)="routeForm.patchValue({ isScheduled: false, scheduledTime: '' })">
+              <span class="radio-mark"></span> Now
+            </label>
+
+            <label class="custom-radio">
+              <input type="radio" [checked]="routeForm.value.isScheduled"
+                (change)="routeForm.patchValue({ isScheduled: true })">
+              <span class="radio-mark"></span> Later
+            </label>
+          </div>
+
+          <!-- prikazuje se samo ako je Later -->
+          <div *ngIf="routeForm.value.isScheduled" class="time-picker-card">
+            <p class="picker-title">Enter time</p>
+
+            <div class="time-selector">
+              <div class="time-unit">
+                <input type="number" min="0" max="23" class="time-input"
+                  [value]="routeForm.value.scheduledTime?.split(':')[0] || ''" (input)="onTimeInput($event, 'h')">
+                <span class="unit-label">Hour</span>
+              </div>
+
+              <span class="time-separator">:</span>
+
+              <div class="time-unit">
+                <input type="number" min="0" max="59" class="time-input"
+                  [value]="routeForm.value.scheduledTime?.split(':')[1] || ''" (input)="onTimeInput($event, 'm')">
+                <span class="unit-label">Minute</span>
+              </div>
+            </div>
+          </div>
+        </div>
 
 
         <div class="scroll-spacer"></div>
@@ -118,9 +156,13 @@
     </aside>
 
     <section class="map-view">
-      <app-map [pickupAddress]="pickupForMap" [destinationAddress]="destinationForMap"
-        (routeInfo)="onRouteInfo($event)">
-      </app-map>
+      <!--<app-map [pickupAddress]="pickupForMap" [destinationAddress]="destinationForMap"
+        (routeInfo)="onRouteInfo($event)"
+        (routeCoordinatesFound)="onRouteCoordinates($event)">
+      </app-map>-->
+      <app-map [pickupAddress]="pickupForMap" [destinationAddress]="destinationForMap" [stopAddresses]="stopsForMap"
+        [mode]="'ordering'" (routeInfo)="onRouteInfo($event)"
+        (routeCoordinatesFound)="onRouteCoordinates($event)"></app-map>
     </section>
   </main>
 </div>
@@ -130,21 +172,10 @@
     <h2 style="color: white;">Your favorites</h2>
 
     <div class="cards">
-      <div
-        class="fav-card"
-        *ngFor="let fav of favourites"
-        (click)="selectFavourite(fav)"
-      >
+      <div class="fav-card" *ngFor="let fav of favourites" (click)="selectFavourite(fav)">
         <div class="route">
-          <div
-            class="stop"
-            *ngFor="let loc of fav.locations; let i = index"
-          >
-            <span
-              class="dot"
-              [class.start]="i === 0"
-              [class.end]="i === fav.locations.length - 1"
-            ></span>
+          <div class="stop" *ngFor="let loc of fav.locations; let i = index">
+            <span class="dot" [class.start]="i === 0" [class.end]="i === fav.locations.length - 1"></span>
             {{ loc.address }}
           </div>
         </div>
@@ -155,43 +186,5 @@
   </div>
 </div>
 
-<app-driver-search-modal
-  [status]="driverSearchStatus"
-  [errorMessage]="driverErrorMessage"
-  (close)="closeDriverModal()">
+<app-driver-search-modal [status]="driverSearchStatus" [errorMessage]="driverErrorMessage" (close)="handleModalClose()">
 </app-driver-search-modal>
-
-<!--
-        za zakazivanje voznje, koristice se kasnije
-        <div class="section">
-          <label>Schedule ride</label>
-          <div class="radio-vertical">
-            <label class="custom-radio">
-              <input type="radio" name="time" value="now">
-              <span class="radio-mark"></span> Now
-            </label>
-            <label class="custom-radio">
-              <input type="radio" name="time" value="later" checked>
-              <span class="radio-mark"></span> Later
-            </label>
-          </div>
-
-          <div class="time-picker-card">
-            <p class="picker-title">Enter time</p>
-            <div class="time-selector">
-              <div class="time-unit">
-                <span class="val">20</span>
-                <span class="unit-label">Hour</span>
-              </div>
-              <span class="time-separator">:</span>
-              <div class="time-unit">
-                <span class="val">00</span>
-                <span class="unit-label">Minute</span>
-              </div>
-            </div>
-            <div class="picker-actions">
-              <button class="flat-btn">Cancel</button>
-              <button class="flat-btn">OK</button>
-            </div>
-          </div>
-        </div>-->

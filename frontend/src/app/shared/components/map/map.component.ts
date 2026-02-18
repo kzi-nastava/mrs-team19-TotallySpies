@@ -11,8 +11,11 @@ import {
 import * as L from 'leaflet';
 import { MapService } from './map.service';
 import 'leaflet-routing-machine';
-import { interval, Subscription, startWith, switchMap, catchError, of } from 'rxjs'; //for polling
-import { RideTrackingDTO } from '../../models/ride.model';
+import { RideDetailsStopDTO, RideStopDTO, RideTrackingDTO } from '../../models/ride.model';
+import { Client } from '@stomp/stompjs';
+import SockJS from 'sockjs-client';
+import { forkJoin } from 'rxjs';
+
 export type RouteInfo = { distanceKm: number; estimatedTime: number };
 
 @Component({
@@ -21,16 +24,22 @@ export type RouteInfo = { distanceKm: number; estimatedTime: number };
   styleUrls: ['./map.component.css'],
   standalone: true,
 })
-export class MapComponent implements AfterViewInit, OnDestroy, OnDestroy {
+export class MapComponent implements AfterViewInit, OnDestroy, OnChanges {
   private map!: L.Map;
   private routeControl?: L.Routing.Control;
   private vehicleMarkers: Map<number, L.Marker> = new Map();
-  private pollingSubscription?: Subscription;
+  private stompClient: Client | null = null;
+  private coordinates: any[] = [];
   @Input() pickupAddress = '';
   @Input() destinationAddress = '';
+  @Input() mode = '';
+  @Input() rideStops: RideDetailsStopDTO[] = [];
   @Input() rideId: number | null = null;
+  @Input() stopAddresses: string[] = [];
   @Output() routeInfo = new EventEmitter<RouteInfo>();
   @Output() rideUpdate = new EventEmitter<RideTrackingDTO>();
+  @Output() routeCoordinatesFound = new EventEmitter<any[]>();  // emitt coordinates of route when found
+  mapContainerId: string = 'map-' + Math.random().toString(36).substr(2, 9);
 
   private greenIcon = L.icon({
     iconUrl: 'icons/car-icon-green.png',
@@ -44,12 +53,66 @@ export class MapComponent implements AfterViewInit, OnDestroy, OnDestroy {
     iconAnchor: [16, 16]
   });
 
-  constructor(private mapService: MapService) {}
+  constructor(private mapService: MapService) { }
+
+  private subscribeToWebsocket(): void {
+    const socket = new SockJS('http://localhost:8080/ws-transport');
+    this.stompClient = new Client({
+      webSocketFactory: () => socket,
+      reconnectDelay: 5000, // try again if connection is lost
+      onConnect: () => {
+        console.log('Connected to WebSocket for Map Updates');
+
+        // if we are tracking specific ride
+        if (this.rideId) {
+          console.log(`Subscribing to specific ride: ${this.rideId}`);
+          this.stompClient!.subscribe(`/topic/ride/${this.rideId}`, (message) => {
+            const data: RideTrackingDTO = JSON.parse(message.body);
+            this.handleSingleRideUpdate(data);
+          });
+        }
+        // all vehicles map
+        else {
+          console.log('Subscribing to all map updates');
+          this.stompClient!.subscribe('/topic/vehicle-locations', (message) => {
+            const vehicles = JSON.parse(message.body);
+            this.updateVehicleMarkers(vehicles);
+          });
+        }
+      }
+    });
+    this.stompClient.activate();
+  }
 
   setRoute(): void {
     if (!this.pickupAddress?.trim() || !this.destinationAddress?.trim()) return;
+
+    const allAddresses = [
+      this.pickupAddress,
+      ...this.stopAddresses,
+      this.destinationAddress
+    ];
+
+    const geocodeRequests = allAddresses.map(address => this.mapService.search(address));
+
+    forkJoin(geocodeRequests).subscribe((results: any[]) => {
+      // Filtriramo rezultate (uzimamo samo validne koordinate)
+      const waypoints = results
+        .map(res => {
+          if (res && res.length > 0) {
+            return L.latLng(+res[0].lat, +res[0].lon);
+          }
+          return null;
+        })
+        .filter(wp => wp !== null) as L.LatLng[];
+
+      // Ako imamo barem 2 tačke (start i kraj), crtamo rutu
+      if (waypoints.length >= 2) {
+        this.drawRouteWithWaypoints(waypoints);
+      }
+    });
     // geocode pickup
-    this.mapService.search(this.pickupAddress).subscribe((p: any) => {
+    /*this.mapService.search(this.pickupAddress).subscribe((p: any) => {
       if (!p?.length) return;
 
       const pickupLatitude = +p[0].lat; //takes the first result(because it expects array of results)p[0]
@@ -63,6 +126,57 @@ export class MapComponent implements AfterViewInit, OnDestroy, OnDestroy {
 
         this.drawRoute(pickupLatitude, pickupLongitude, destinationLatitude, destinationLongitude);
       });
+    });*/
+  }
+  private drawRouteWithWaypoints(waypoints: L.LatLng[]) {
+    // Ukloni prethodnu rutu
+    if (this.routeControl) {
+      this.map.removeControl(this.routeControl);
+      this.routeControl = undefined;
+    }
+
+    this.routeControl = L.Routing.control({
+      waypoints: waypoints,
+      router: L.routing.mapbox(
+        'pk.eyJ1IjoidG90YWxseS1zcGllczMzIiwiYSI6ImNtanpxYm54dzV1MTEzZnF4M3c4ejZ0c28ifQ.iwa5IGW8kqTBZtwXvVTQcQ',
+        { profile: 'mapbox/driving' }
+      ),
+      fitSelectedRoutes: true,
+      show: false,
+      addWaypoints: false,
+      routeWhileDragging: false,
+
+      createMarker: (i: number, wp: any, nWps: number) => {
+        if (i === 0) {
+          return L.marker(wp.latLng, { draggable: false }).bindPopup("Starting point");
+        }
+
+        if (i === nWps - 1) {
+          return L.marker(wp.latLng, { draggable: false }).bindPopup("Destination");
+        }
+
+        return L.circleMarker(wp.latLng, {
+          radius: 8,
+          fillColor: "#1da93b",
+          color: "#ffffff",
+          weight: 2,
+          opacity: 1,
+          fillOpacity: 1,
+          pane: 'markerPane'
+        }).bindPopup("Stop " + i);
+      }
+    } as any).addTo(this.map);
+
+    this.routeControl.on('routesfound', (e: any) => {
+      const route = e.routes[0];
+      this.coordinates = route.coordinates;
+      this.routeCoordinatesFound.emit(this.coordinates);
+
+      const summary = route.summary;
+      const distanceKm = Math.round((summary.totalDistance / 1000) * 10) / 10;
+      const estimatedTime = Math.round(summary.totalTime / 60);
+
+      this.routeInfo.emit({ distanceKm, estimatedTime });
     });
   }
 
@@ -95,6 +209,8 @@ export class MapComponent implements AfterViewInit, OnDestroy, OnDestroy {
 
     this.routeControl.on('routesfound', (e: any) => {
       const route = e.routes[0];
+      this.coordinates = route.coordinates;
+      this.routeCoordinatesFound.emit(this.coordinates);
       //creating a rectangle around the route
       const bounds = L.latLngBounds(route.coordinates as any);
       //moves and zooms the map so the entire rectangle with route is visible
@@ -108,8 +224,35 @@ export class MapComponent implements AfterViewInit, OnDestroy, OnDestroy {
     });
   }
 
+
+  private routeLine?: L.Polyline;
+
+  private drawRouteFromStops(): void {
+    console.log('STATIC stops:', this.rideStops);
+    console.log('MAP exists:', !!this.map);
+    if (!this.rideStops || this.rideStops.length < 2) return;
+
+    // clean previous route
+    if (this.routeLine) {
+      this.routeLine.remove();
+      this.routeLine = undefined;
+    }
+
+    const points = this.rideStops.map(s => L.latLng(s.latitude, s.longitude));
+
+    //draw a line
+    this.routeLine = L.polyline(points).addTo(this.map);
+
+    // zoom 
+    this.map.fitBounds(this.routeLine.getBounds(), { padding: [30, 30] });
+
+    // markers
+    L.marker(points[0]).addTo(this.map).bindPopup('Pickup');
+    L.marker(points[points.length - 1]).addTo(this.map).bindPopup('Destination');
+  }
+
   private initMap(): void {
-    this.map = L.map('map', {
+    this.map = L.map(this.mapContainerId, {
       center: [45.2396, 19.8227],
       zoom: 13,
     });
@@ -135,16 +278,21 @@ export class MapComponent implements AfterViewInit, OnDestroy, OnDestroy {
     });
   }
   ngOnChanges(changes: SimpleChanges): void {
-    if (this.map && (changes['pickupAddress'] || changes['destinationAddress'])) {
-        this.setRoute();
+    if (!this.map)
+      return;
+
+    if (this.mode === 'static' && changes['rideStops']) {
+      this.drawRouteFromStops();
     }
-    if (changes['rideId'] && !changes['rideId'].firstChange) {
-        this.startPollingPositions();
+    if (this.map && (changes['pickupAddress'] || changes['destinationAddress'] || changes['stopAddresses'])) {
+      this.setRoute();
     }
   }
 
   ngOnDestroy(): void {
-    this.pollingSubscription?.unsubscribe();
+    if (this.stompClient) {
+      this.stompClient.deactivate();
+    }
     // we dont want to use up all resources when he is not on that page
   }
 
@@ -156,69 +304,40 @@ export class MapComponent implements AfterViewInit, OnDestroy, OnDestroy {
 
     L.Marker.prototype.options.icon = DefaultIcon;
     this.initMap();
+
+    if (this.mode === 'static') {
+      this.drawRouteFromStops();
+      return;
+    }
+
+    this.subscribeToWebsocket();
     if (this.pickupAddress.trim() && this.destinationAddress.trim()) {
       this.setRoute();
     }
-    this.startPollingPositions();
     // if inputs are already set by the time map is ready, draw route now
     //this.registerOnClick();
   }
 
-  private startPollingPositions(): void {
-    if (this.pollingSubscription) {
-      this.pollingSubscription.unsubscribe();
-    }
-    this.pollingSubscription = interval(4000) // Poll na svake 4 sekunde (češće je bolje za praćenje uživo)
-      .pipe(
-        startWith(0),
-        switchMap(() => {
-          if (this.rideId) {
-            // display specific ride
-            return this.mapService.getRideLocation(this.rideId).pipe(
-                catchError(err => {
-                    console.error('Error tracking ride', err);
-                    return of(null);
-                })
-            );
-          } else {
-            // display all active vehicles
-            return this.mapService.getAllVehiclePositions();
-          }
-        })
-      )
-      .subscribe((result: any) => {
-        if (!result) return;
+  private updateVehicleMarkers(vehicles: any[]): void {
+    vehicles.forEach(v => {
+      const latLng = L.latLng(v.currentLat, v.currentLng);
+      const iconToUse = v.busy ? this.redIcon : this.greenIcon;
 
-        if (this.rideId) {
-            // update specific
-            this.handleSingleRideUpdate(result as RideTrackingDTO);
-        } else {
-            // update all
-            this.updateVehicleMarkers(result);
-        }
-      });
+      if (this.vehicleMarkers.has(v.id)) {
+        const marker = this.vehicleMarkers.get(v.id)!;
+        marker.setLatLng(latLng);
+        marker.setIcon(iconToUse); // update icon if the sttaus is updated
+      } else {
+        const marker = L.marker(latLng, { icon: iconToUse })
+          .addTo(this.map)
+          .bindPopup(`vehicle: ${v.id} <br> status: ${v.busy ? 'occupied' : 'free'}`);
+
+        this.vehicleMarkers.set(v.id, marker);
+      }
+    });
   }
 
-  private updateVehicleMarkers(vehicles: any[]): void {
-  vehicles.forEach(v => {
-    const latLng = L.latLng(v.currentLat, v.currentLng);
-    const iconToUse = v.busy ? this.redIcon : this.greenIcon;
-
-    if (this.vehicleMarkers.has(v.id)) {
-      const marker = this.vehicleMarkers.get(v.id)!;
-      marker.setLatLng(latLng);
-      marker.setIcon(iconToUse); // update icon if the sttaus is updated
-    } else {
-      const marker = L.marker(latLng, { icon: iconToUse })
-        .addTo(this.map)
-        .bindPopup(`vehicle: ${v.id} <br> status: ${v.busy ? 'occupied' : 'free'}`);
-      
-      this.vehicleMarkers.set(v.id, marker);
-    }
-  });
-}
-
-// update map for specific ride tracking
+  // update map for specific ride tracking
   private handleSingleRideUpdate(data: RideTrackingDTO): void {
     this.rideUpdate.emit(data);
 
@@ -234,7 +353,7 @@ export class MapComponent implements AfterViewInit, OnDestroy, OnDestroy {
       const marker = L.marker(latLng, { icon: this.redIcon })
         .addTo(this.map)
         .bindPopup(`Vehicle arrived in: ${data.eta} min`);
-      
+
       this.vehicleMarkers.set(data.rideId, marker);
     }
   }

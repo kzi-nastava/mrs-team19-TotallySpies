@@ -1,6 +1,7 @@
 package com.ftn.mobile.data.remote.api;
 
 import com.ftn.mobile.data.remote.dto.ChangePasswordRequestDTO;
+import com.ftn.mobile.data.remote.dto.ReportResponseDTO;
 import com.ftn.mobile.data.remote.dto.UserProfileResponseDTO;
 import com.ftn.mobile.data.remote.dto.UserProfileUpdateRequestDTO;
 
@@ -13,6 +14,7 @@ import retrofit2.http.Multipart;
 import retrofit2.http.PUT;
 import retrofit2.http.Part;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 public interface UserApi {
     // GET /api/v1/users/profile
@@ -35,4 +37,12 @@ public interface UserApi {
     // GET /api/v1/users/image/{filename}
     @GET("api/v1/users/image/{filename}")
     Call<ResponseBody> getProfileImage(@Path("filename") String filename);
+
+    // GET /api/v1/users/report
+    @GET("api/v1/users/report")
+    Call<ReportResponseDTO> getReport(
+            @Query("from") String from, // ISO format: yyyy-MM-dd'T'HH:mm:ss
+            @Query("to") String to,
+            @Query("targetEmail") String targetEmail
+    );
 }

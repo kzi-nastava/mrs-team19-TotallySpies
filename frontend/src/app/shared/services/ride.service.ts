@@ -1,11 +1,13 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { CreateRideRequestDTO, CreateRideResponseDTO, RideFinishResponseDTO, RideTrackingDTO } from '../models/ride.model';
+import { ActiveRideDTO, CreateRideRequestDTO, CreateRideResponseDTO, DriverRideHistoryDTO, PassengerUpcomingRideDTO, RideFinishResponseDTO, RideTrackingDTO } from '../models/ride.model';
 import { environment } from '../../../env/environment';
 import { CancelRideDTO } from '../models/cancel-ride.model';
 import { PanicRideDTO } from '../models/panic-ride.model';
 import { StopRideDTO } from '../models/stop-ride.model';
+import { PassengerRideDetailsResponseDTO } from '../models/passenger-ride-details.model';
+import { AdminRideDetailsResponseDTO } from '../models/admin-ride-details.model';
 
 @Injectable({
   providedIn: 'root',
@@ -33,7 +35,7 @@ export class RideService {
     return this.http.post(`${environment.apiHost}/rides/${rideId}/inconsistency-report`, request, { responseType: 'text' });
   }
 
-  cancelRide(dto : CancelRideDTO){
+  cancelRide(dto: CancelRideDTO) {
     return this.http.put<string>(`${environment.apiHost}/rides/cancel-ride`, dto);
   }
 
@@ -44,19 +46,41 @@ export class RideService {
   }
 
   startRide(rideId: number) {
-    return this.http.put(`${environment.apiHost}/rides/${rideId}/start`,null,
+    return this.http.put(`${environment.apiHost}/rides/${rideId}/start`, null,
       { responseType: 'text' }
     );
   }
 
-  panicRide(dto : PanicRideDTO){
-    return this.http.put<string>(`${environment.apiHost}/rides/panic`, dto);
+  panicRide(dto: PanicRideDTO) {
+    return this.http.put(`${environment.apiHost}/rides/panic`, dto,
+      {responseType: 'text'}
+    );
   }
   stopRide(dto: StopRideDTO) {
-  return this.http.put(
-    `${environment.apiHost}/rides/stop-ride`,
-    dto,
-    { responseType: 'text' } 
-  );
-}
+    return this.http.put(
+      `${environment.apiHost}/rides/stop-ride`,
+      dto,
+      { responseType: 'text' }
+    );
+  }
+
+  getActiveRidesForAdmin(driverName: string = ''): Observable<ActiveRideDTO[]> {
+    let params = new HttpParams();
+    if (driverName) {
+      params = params.set('driverName', driverName);
+    }
+    return this.http.get<ActiveRideDTO[]>(`${environment.apiHost}/rides/active-admin`, { params });
+  }
+
+  getRideDetails(rideId: number) {
+    return this.http.get<PassengerRideDetailsResponseDTO>(`${environment.apiHost}/rides/${rideId}/details`)
+  }
+
+  getPassengerUpcomingRides() {
+    return this.http.get<PassengerUpcomingRideDTO[]>(`${environment.apiHost}/rides/passenger-upcoming`);
+  }
+  
+  getRideDetailsForAdmin(rideId : number){
+    return this.http.get<AdminRideDetailsResponseDTO>(`${environment.apiHost}/rides/${rideId}/details/admin`)
+  }
 }

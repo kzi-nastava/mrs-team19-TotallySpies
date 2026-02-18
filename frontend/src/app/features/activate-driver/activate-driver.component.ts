@@ -59,11 +59,16 @@ export class ActivateDriverComponent {
       this.authService.activateDriver(dto).subscribe({
         next: () => {
           alert('Account activated successfully!');
-          this.router.navigate(['/login']); // ili landing page za neregistrovane
+          this.router.navigate(['/login']); 
         },
         error: (err) => {
           console.error(err);
-          alert('Error activating account. The link may be invalid or expired.');
+          if (err.status === 400) {
+            const errorMessage = err.error.message || 'Validation failed. Check your password.';
+            alert(errorMessage);
+          } else {
+            alert('The link may be invalid or expired.');
+          }
         }
       });
     } else {

@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:background="@color/background"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="24dp"
+        android:orientation="vertical" >
+
+        <ImageView
+            android:id="@+id/imgIllustration"
+            android:layout_width="match_parent"
+            android:layout_height="140dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/illustration_2_v2"
+            android:contentDescription="@string/login_illustration" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/register_driver_title"
+            android:textSize="28sp"
+            android:layout_marginTop="10dp"
+            android:textStyle="bold"
+            android:textColor="@android:color/white" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:textSize = "16sp"
+            android:text="@string/email"
+            android:textColor="@android:color/white" />
+
+        <EditText
+            android:id="@+id/etEmailReg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/enter_email"
+            android:textSize="14sp"
+            android:textColor="@android:color/white"
+            android:textColorHint="@color/placeholder"
+            android:autofillHints="Email"
+            android:backgroundTint = "@color/accent"
+            android:inputType="textEmailAddress"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:textSize = "16sp"
+            android:text="@string/name"
+            android:textColor="@android:color/white" />
+
+        <EditText
+            android:id="@+id/etNameReg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/enter_name"
+            android:textSize="14sp"
+            android:textColor="@android:color/white"
+            android:textColorHint="@color/placeholder"
+            android:autofillHints="Name"
+            android:backgroundTint = "@color/accent"
+            android:inputType="textPersonName"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:textSize = "16sp"
+            android:text="@string/last_name"
+            android:textColor="@android:color/white" />
+
+        <EditText
+            android:id="@+id/etLastNameReg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/enter_last_name"
+            android:textSize="14sp"
+            android:textColor="@android:color/white"
+            android:textColorHint="@color/placeholder"
+            android:autofillHints="Last name"
+            android:backgroundTint = "@color/accent"
+            android:inputType="textPersonName" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:textSize = "16sp"
+            android:text="@string/address"
+            android:textColor="@android:color/white" />
+
+        <EditText
+            android:id="@+id/etAddressReg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:hint="@string/enter_address"
+            android:textColor="@android:color/white"
+            android:textColorHint="@color/placeholder"
+            android:autofillHints="address"
+            android:backgroundTint = "@color/accent"
+            android:inputType="textPostalAddress"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:textSize = "16sp"
+            android:text="@string/phone_number"
+            android:textColor="@android:color/white" />
+
+        <EditText
+            android:id="@+id/etPhoneNumberReg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:hint="@string/enter_phone_number"
+            android:textColor="@android:color/white"
+            android:textColorHint="@color/placeholder"
+            android:autofillHints="address"
+            android:backgroundTint = "@color/accent"
+            android:inputType="phone"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:textSize = "20sp"
+            android:text="@string/vehicle_info_title"
+            android:textColor="@android:color/white" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:textSize = "16sp"
+            android:text="@string/vehicle_model_label"
+            android:textColor="@android:color/white" />
+
+        <EditText
+            android:id="@+id/etVehicleModelReg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:hint="@string/vehicle_model_hint"
+            android:textColor="@android:color/white"
+            android:textColorHint="@color/placeholder"
+            android:autofillHints="address"
+            android:backgroundTint = "@color/accent"
+            android:inputType="text"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:textSize = "16sp"
+            android:text="@string/vehicle_type_label"
+            android:textColor="@android:color/white" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/vehicleTypeLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="@string/vehicle_type_hint"
+            android:textColorHint="@color/text"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:backgroundTint="@color/accent">
+
+            <AutoCompleteTextView
+                android:id="@+id/vehicleTypeInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="@android:color/white"
+                android:textColorHint="@color/placeholder"
+                android:inputType="none"
+                android:focusable="false"
+                android:clickable="true"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:textSize = "16sp"
+            android:text="@string/licence_plate_label"
+            android:textColor="@android:color/white" />
+
+        <EditText
+            android:id="@+id/etLicencePlateReg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:hint="@string/licence_plate_hint"
+            android:textColor="@android:color/white"
+            android:textColorHint="@color/placeholder"
+            android:autofillHints="address"
+            android:backgroundTint = "@color/accent"
+            android:inputType="text"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:textSize = "16sp"
+            android:text="@string/seats_label"
+            android:textColor="@android:color/white" />
+
+        <EditText
+            android:id="@+id/etSeatsNumber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:hint="@string/seats_hint"
+            android:textColor="@android:color/white"
+            android:textColorHint="@color/placeholder"
+            android:inputType="number"
+            android:backgroundTint="@color/accent"
+            android:autofillHints="none"/>
+
+        <CheckBox
+            android:id="@+id/cbBabyFriendly"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/baby_friendly_label"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:layout_marginTop="10dp"
+            android:buttonTint="@color/accent" />
+
+        <CheckBox
+            android:id="@+id/cbPetFriendly"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/pet_friendly_label"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:layout_marginTop="10dp"
+            android:buttonTint="@color/accent" />
+
+        <Button
+            android:id="@+id/btnRegisterDriver"
+            android:layout_width="208dp"
+            android:layout_height="56dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="32dp"
+            android:backgroundTint="@color/accent"
+            android:text="@string/register"
+            android:textColor="@color/background"
+            android:textSize="16sp" />
+
+    </LinearLayout>
+
+
+</ScrollView>

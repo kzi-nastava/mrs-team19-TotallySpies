@@ -10,28 +10,27 @@ import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.event.TransactionalEventListener;
 import org.springframework.web.server.ResponseStatusException;
 
 import jakarta.transaction.Transactional;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.PanicNotificationDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.auth.MailBody;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.*;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.users.DriverActivityResponseDTO;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.users.PassengerInfoDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.users.UserProfileResponseDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.*;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.DriverRepository;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.RideRepository;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.*;
 
 import static java.awt.geom.Point2D.distance;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.PanicNotificationRepository;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.PassengerRepository;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.ReportRepository;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.RideCancellationRepository;
-import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.UserRepository;
+
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.utils.RideComparator;
 
 @Service
 public class RideService {
@@ -51,32 +50,56 @@ public class RideService {
     private PassengerRepository passengerRepository;
     @Autowired
     private ReportRepository reportRepository;
+    @Autowired
+    private ReviewRepository reviewRepository;
+    @Autowired
+    private PricingService pricingService;
 
     @Autowired
     DriverActivityService driverActivityService;
+    @Autowired
+    private NotificationService notificationService;
 
     @Transactional
     public RideFinishResponseDTO finishRide(Long rideId) {
         Ride ride = rideRepository.findById(rideId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "ride is not found"));
+        String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        Driver currentDriver = Optional.ofNullable(driverRepository.findByEmail(currentUserEmail))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Driver not found"));
+        
+        if (!currentDriver.getId().equals(ride.getDriver().getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not the driver of this ride");
+        }
 
         // update ride
         ride.setStatus(RideStatus.COMPLETED);
         ride.setFinishedAt(LocalDateTime.now());
         rideRepository.save(ride);
 
-        // send email to the passengers
-        for (Passenger passenger : ride.getPassengers()) {
-            MailBody mailBody = MailBody.builder()
-                    .to(passenger.getEmail())
-                    .subject("Ride Finished - SmartRide")
-                    .text("Dear " + passenger.getName() + ", your ride has successfully finished. " +
-                            "Total price: " + ride.getTotalPrice() + " RSD. You can now leave a review on the app!")
-                    .build();
+        // send email and notifications to the passengers
 
-            try {
-                emailService.sendSimpleMessage(mailBody);
-            } catch (Exception e) {
-                e.printStackTrace();
+        String message = "Your ride has finished. Thank you for riding with us!";
+
+        for (Passenger passenger : ride.getPassengers()) {
+            if (passenger != null) {
+                notificationService.notifyUser(
+                    passenger, 
+                    ride, 
+                    message, 
+                    NotificationType.RIDE_COMPLETED
+                );
+                MailBody mailBody = MailBody.builder()
+                        .to(passenger.getEmail())
+                        .subject("Ride Finished - SmartRide")
+                        .text("Dear " + passenger.getName() + ", your ride has successfully finished. " +
+                                "Total price: " + ride.getTotalPrice() + " RSD. You can now leave a review on the app!")
+                        .build();
+
+                try {
+                    emailService.sendSimpleMessage(mailBody);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
 
@@ -178,27 +201,25 @@ public class RideService {
             rideRepository.save(ride);
         }
     }
-    public void handlePanicNotification(PanicNotificationDTO dto){
-        //administrators get notification
+    public void handlePanicNotification(PanicRideDTO dto){
         Ride ride = rideRepository.findById(dto.getRideId())
                 .orElseThrow(() ->
                         new ResponseStatusException(HttpStatus.NOT_FOUND, "Ride not found!")
                 );
         String email = SecurityContextHolder.getContext().getAuthentication().getName(); // == user.getEmail()
         User user = userRepository.findByEmail(email);
+        User admin = userRepository.findByEmail("admin@gmail.com");
         if(user == null)
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found!");
-        if(dto.getTime() == null){
-            dto.setTime(LocalDateTime.now());
-        }
         if(dto.getReason() == null){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Panic reason can not be null!");
         }
         PanicNotification panicNotification = new PanicNotification(user,
-                ride, dto.getTime(), dto.getReason());
+                ride, dto.getReason());
         panicNotificationRepository.save(panicNotification);
         ride.setPanic(true);
         rideRepository.save(ride);
+        notificationService.notifyUser(admin,ride,dto.getReason(),NotificationType.PANIC_ALERT);
     }
 
     @Transactional
@@ -294,6 +315,7 @@ public class RideService {
         ride.getStatus().toString(),
         ride.getDriver().getName(),
         vehicle.getModel(),
+        ride.getDriver().getAverageRating(),
         ride.getDriver().getProfilePicture(),
         ride.getStops().get(0).getAddress(),
         ride.getStops().get(ride.getStops().size() - 1).getAddress());
@@ -328,6 +350,7 @@ public class RideService {
 
         return true;
     }
+
 
     @Transactional
     public List<DriverRideHistoryResponseDTO> getDriverHistory(String email, String from, String to) {
@@ -394,9 +417,36 @@ public class RideService {
         Passenger creator = passengerRepository.findByEmail(creatorEmail)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Passenger not found"));
 
+        if (creator.isBlocked()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You can't order a new ride! You are blocked:" + creator.getBlockReason());
+        }
+
         boolean creatorHasActiveRide = rideRepository.existsByPassengersContainingAndStatus(creator, RideStatus.ACTIVE);
         if (creatorHasActiveRide) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You already have an active ride");
+        }
+
+        boolean isScheduled = dto.getScheduledFor() != null;
+
+        if (isScheduled) {
+            if (dto.getScheduledFor().isBefore(LocalDateTime.now())) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Time must be in future");
+            }
+            if (dto.getScheduledFor().isAfter(LocalDateTime.now().plusHours(5))) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ride can be scheduled max 5 hours ahead");
+            }
+        }
+
+        boolean assignNow = false;
+
+        if (isScheduled) {
+            long minutesToStart = Duration
+                    .between(LocalDateTime.now(), dto.getScheduledFor())
+                    .toMinutes();
+
+            if (minutesToStart <= 30) {
+                assignNow = true;
+            }
         }
 
         // other passengers
@@ -420,23 +470,39 @@ public class RideService {
             }
         }
 
-        Driver driver = findBestDriver(dto);
-        if (driver == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No available drivers");
-        }
+        DriverSearchContext context = this.fromRequest(dto);
 
-        double basePrice = priceByVehicleType(dto.getVehicleType());
-        double totalPrice = basePrice + dto.getDistanceKm() * 120;
+        Driver driver = null;
+
+        if (!isScheduled) {
+            driver = findBestDriver(context);
+            if (driver == null) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No available drivers");
+            }
+        }
+        double calculatedPrice = pricingService.calculatePrice(dto.getVehicleType(), dto.getDistanceKm());
+        //double basePrice = priceByVehicleType(dto.getVehicleType());
+        //double totalPrice = basePrice + dto.getDistanceKm() * 120;
 
         Ride ride = new Ride();
-        ride.setDriver(driver);
+        ride.setCreator(creator);
         ride.setPassengers(passengers);
-        ride.setStatus(RideStatus.SCHEDULED);
+
+        if (isScheduled && !assignNow) {
+            ride.setStatus(RideStatus.PENDING);
+            ride.setScheduledFor(dto.getScheduledFor());
+        } else if (driver != null) {
+            ride.setDriver(driver);
+            ride.setStatus(RideStatus.SCHEDULED);
+        } else {
+            ride.setStatus(RideStatus.PENDING);
+            ride.setScheduledFor(dto.getScheduledFor());
+        }
 
         ride.setVehicleType(dto.getVehicleType());
         ride.setBabiesTransport(dto.isBabyTransport());
         ride.setPetsTransport(dto.isPetTransport());
-        ride.setTotalPrice(totalPrice);
+        ride.setTotalPrice(calculatedPrice);
         ride.setDistanceKm(dto.getDistanceKm());
         ride.setEstimatedTime(dto.getEstimatedTime());
 
@@ -459,35 +525,107 @@ public class RideService {
 
         ride.setStops(stops);
 
+        if (dto.getPath() != null && !dto.getPath().isEmpty()) {
+            List<RoutePoint> routePoints = new ArrayList<>();
+            for (RoutePointDTO pDto : dto.getPath()) {
+                RoutePoint rp = new RoutePoint();
+                rp.setLatitude(pDto.getLat());
+                rp.setLongitude(pDto.getLng());
+                rp.setRide(ride); 
+                routePoints.add(rp);
+            }
+            ride.setRoutePoints(routePoints);
+        }
+
         rideRepository.save(ride);
 
         CreateRideResponseDTO response = new CreateRideResponseDTO();
         response.setRideId(ride.getId());
         response.setStatus(ride.getStatus());
-        response.setDriverEmail(driver.getEmail());
-        response.setDriverName(driver.getName() + " " + driver.getLastName());
+
+        if(driver == null){
+            response.setDriverName(null);
+            response.setDriverEmail(null);
+            response.setMessage("Ride successfully scheduled. You will receive notification 15 min before ride start.");
+        } else {
+            response.setDriverEmail(driver.getEmail());
+            response.setDriverName(driver.getName() + " " + driver.getLastName());
+            User driverUser = userRepository.findByEmail(driver.getEmail());
+            notificationService.notifyUser(driverUser, ride, "You have a new ride in less than 15 minutes", NotificationType.NEW_RIDE);
+            
+            String passengerMsg = "You have a new ride! Driver " + driver.getName() + " is at your service.";
+            String url = "http://localhost:4200/ride-tracker-user/"; 
+            String trackingLink = url + ride.getId();
+            for (Passenger p : ride.getPassengers()) {
+
+                notificationService.notifyUser(p, ride, passengerMsg, NotificationType.LINKED_TO_RIDE);
+                
+                MailBody mailBody = MailBody.builder()
+                        .to(p.getEmail())
+                        .subject("You've been added to ride - SmartRide")
+                        .text("Dear " + p.getName() + ", you are travelling soon. " +
+                                "When your ride starts, you can track it here: " + trackingLink)
+                        .build();
+
+                try {
+                    emailService.sendSimpleMessage(mailBody);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            
+            response.setMessage("Ride successfully created and driver assigned.");
+        }
         response.setDistanceKm(ride.getDistanceKm());
         response.setEstimatedTime(ride.getEstimatedTime());
-        response.setMessage("Ride successfully created and driver assigned.");
 
         return response;
     }
 
-    private Driver findBestDriver(CreateRideRequestDTO dto) {
+    private DriverSearchContext fromRequest(CreateRideRequestDTO dto) {
+        DriverSearchContext ctx = new DriverSearchContext();
 
-        int requiredSeats = 1 +
-                (dto.getPassengerEmails() == null ? 0 : dto.getPassengerEmails().size());
+        ctx.setVehicleType(dto.getVehicleType());
+        ctx.setBabyTransport(dto.isBabyTransport());
+        ctx.setPetTransport(dto.isPetTransport());
+        ctx.setEstimatedTime(dto.getEstimatedTime());
 
-        // get driver whose vehicles are compatible with ride request
-        List<Driver> potentialDrivers = driverRepository.findPotentialDrivers(
-                dto.getVehicleType(),
-                requiredSeats,
-                dto.isPetTransport(),
-                dto.isBabyTransport()
-        );
-        if (potentialDrivers.isEmpty()) return null;
+        int seats = 1 + (dto.getPassengerEmails() == null ? 0 : dto.getPassengerEmails().size());
+        ctx.setRequiredSeats(seats);
 
         RideStopDTO pickup = dto.getLocations().get(0);
+        ctx.setPickupLat(pickup.getLat());
+        ctx.setPickupLng(pickup.getLng());
+
+        return ctx;
+    }
+
+    public DriverSearchContext fromRide(Ride ride) {
+        DriverSearchContext ctx = new DriverSearchContext();
+
+        ctx.setVehicleType(ride.getVehicleType());
+        ctx.setBabyTransport(ride.isBabiesTransport());
+        ctx.setPetTransport(ride.isPetsTransport());
+        ctx.setEstimatedTime(ride.getEstimatedTime());
+
+        ctx.setRequiredSeats(ride.getPassengers().size());
+
+        RideStop pickup = ride.getStops().get(0);
+        ctx.setPickupLat(pickup.getLatitude());
+        ctx.setPickupLng(pickup.getLongitude());
+
+        return ctx;
+    }
+
+    public Driver findBestDriver(DriverSearchContext context) {
+        // get driver whose vehicles are compatible with ride request
+        List<Driver> potentialDrivers = driverRepository.findPotentialDrivers(
+                context.getVehicleType(),
+                context.getRequiredSeats(),
+                context.isPetTransport(),
+                context.isBabyTransport()
+        );
+        if (potentialDrivers.isEmpty()) return null;
 
         // list for free drivers
         List<Driver> freeDrivers = new ArrayList<>();
@@ -511,7 +649,7 @@ public class RideService {
 
             if (activeRideOpt.isEmpty()) {
                 // free driver: Start from current vehicle location, 0 minutes remaining
-                if (canDriverTakeRide(d, dto, 0, d.getVehicle().getCurrentLat(), d.getVehicle().getCurrentLng())) {
+                if (canDriverTakeRide(d, context, 0, d.getVehicle().getCurrentLat(), d.getVehicle().getCurrentLng())) {
                     freeDrivers.add(d);
                 }
             } else {
@@ -525,7 +663,7 @@ public class RideService {
                     RideStop lastStop = activeRide.getStops().get(activeRide.getStops().size() - 1);
 
                     // check work limit starting from the last stop of the current ride
-                    if (canDriverTakeRide(d, dto, timeRemaining, lastStop.getLatitude(), lastStop.getLongitude())) {
+                    if (canDriverTakeRide(d, context, timeRemaining, lastStop.getLatitude(), lastStop.getLongitude())) {
                         eligibleBusyDrivers.put(d, lastStop);
                     }
                 }
@@ -539,7 +677,7 @@ public class RideService {
             return freeDrivers.stream()
                     .min(Comparator.comparingDouble(d ->
                             distance(d.getVehicle().getCurrentLat(), d.getVehicle().getCurrentLng(),
-                                    pickup.getLat(), pickup.getLng())))
+                                    context.getPickupLat(), context.getPickupLng())))
                     .orElse(null);
         }
 
@@ -550,7 +688,7 @@ public class RideService {
                         RideStop finishPoint = entry.getValue(); // finish stop of current active ride
                         return distance(
                                 finishPoint.getLatitude(), finishPoint.getLongitude(),
-                                pickup.getLat(), pickup.getLng()
+                                context.getPickupLat(), context.getPickupLng()
                         );
                     }))
                     .map(Map.Entry::getKey)
@@ -570,25 +708,24 @@ public class RideService {
         return Math.max(0, Math.round(activeRide.getEstimatedTime() - passed));
     }
 
-    private double priceByVehicleType(VehicleType type) {
-        return switch (type) {
-            case STANDARD -> 300;
-            case VAN -> 500;
-            case LUXURIOUS -> 800;
-        };
-    }
+    // private double priceByVehicleType(VehicleType type) {
+    //     return switch (type) {
+    //         case STANDARD -> 300;
+    //         case VAN -> 500;
+    //         case LUXURIOUS -> 800;
+    //     };
+    // }
 
-    private boolean canDriverTakeRide(Driver driver, CreateRideRequestDTO dto, long remainingMinutesOfCurrentRide, double startLat, double startLng) {
+    private boolean canDriverTakeRide(Driver driver, DriverSearchContext context, long remainingMinutesOfCurrentRide, double startLat, double startLng) {
         // minutes worked in the last 24h
         DriverActivityResponseDTO activity = driverActivityService.getActivityMinutesLast24h(driver.getEmail());
         long minutesWorked = activity.getMinutesLast24h();
 
         // estimated duration of the new requested ride
-        long rideMinutes = Math.round(dto.getEstimatedTime());
+        long rideMinutes = Math.round(context.getEstimatedTime());
 
         // travel time from reference point to the new pickup location
-        RideStopDTO pickup = dto.getLocations().get(0);
-        double distanceToPickupKm = distance(startLat, startLng, pickup.getLat(), pickup.getLng());
+        double distanceToPickupKm = distance(startLat, startLng, context.getPickupLat(), context.getPickupLng());
 
         // travelTimeToPickup calculation (assuming average speed 30km/h -> 0.5km/min)
         long travelTimeToPickup = Math.round(distanceToPickupKm / 0.5);
@@ -622,5 +759,414 @@ public class RideService {
         ride.setStatus(RideStatus.ACTIVE);
         ride.setStartedAt(LocalDateTime.now());
         rideRepository.save(ride);
+    }
+
+        @Transactional
+        public List<AdminRideHistoryResponseDTO>getAdminHistory(Long userId,int userIndicator,
+                                                                Sort sort,LocalDateTime from, LocalDateTime to){
+            List<RideStatus> statuses = List.of(
+                    RideStatus.COMPLETED,
+                    RideStatus.STOPPED,
+                    RideStatus.CANCELLED);
+
+            List<Ride> rides = null;
+            String sortBy;
+            Sort.Direction direction = Sort.Direction.ASC;
+
+            if (sort != null && sort.iterator().hasNext()) {
+                Sort.Order order = sort.iterator().next();
+                sortBy = order.getProperty();
+                direction = order.getDirection();
+            } else { //default sorting
+                sortBy = "createdAt";
+                direction = Sort.Direction.DESC;
+            }
+            if ("startedAt".equals(sortBy) || "finishedAt".equals(sortBy) || "createdAt".equals(sortBy)
+                    || "totalPrice".equals(sortBy) || "panic".equals(sortBy)) {
+                //db sorts
+                if(from != null && to != null){
+                    if(userIndicator == 1){
+                        rides = rideRepository.findByDriverIdAndStatusInAndCreatedAtBetween(userId, statuses, sort,from,to);
+                    }
+                    else{
+                        rides = rideRepository.findByPassengers_IdAndStatusInAndCreatedAtBetween(userId, statuses, sort,from,to);
+                    }
+                }
+                else if(from != null){
+                    if(userIndicator == 1){
+                        rides = rideRepository.findByDriverIdAndStatusInAndCreatedAtAfter(userId, statuses, sort,from);
+                    }
+                    else{
+                        rides = rideRepository.findByPassengers_IdAndStatusInAndCreatedAtAfter(userId, statuses, sort, from);
+                    }
+
+                }
+                else if(to != null){
+                    if(userIndicator == 1){
+                        rides = rideRepository.findByDriverIdAndStatusInAndCreatedAtBefore(userId, statuses, sort, to);
+                    }
+                    else{
+                        rides = rideRepository.findByPassengers_IdAndStatusInAndCreatedAtBefore(userId, statuses, sort, to);
+                    }
+
+                }
+                else{
+                    if(userIndicator == 1){
+                        rides = rideRepository.findByDriverIdAndStatusIn(userId, statuses, sort);
+                    }
+                    else{
+                        rides = rideRepository.findByPassengers_IdAndStatusIn(userId, statuses, sort);
+                    }
+
+                }
+            }
+            else{// custom sort for pickup/destination
+                if(from != null && to != null){
+                    if(userIndicator == 1){
+                        rides = rideRepository.findByDriverIdAndStatusInAndCreatedAtBetween(userId, statuses,Sort.unsorted(),from,to);
+                    }
+                    else{
+                        rides = rideRepository.findByPassengers_IdAndStatusInAndCreatedAtBetween(userId, statuses, Sort.unsorted(),from,to);
+                    }
+                }
+                else if(from != null){
+                    if(userIndicator == 1){
+                        rides = rideRepository.findByDriverIdAndStatusInAndCreatedAtAfter(userId, statuses, Sort.unsorted(),from);
+                    }
+                    else{
+                        rides = rideRepository.findByPassengers_IdAndStatusInAndCreatedAtAfter(userId, statuses, Sort.unsorted(), from);
+                    }
+
+                }
+                else if(to != null){
+                    if(userIndicator == 1){
+                        rides = rideRepository.findByDriverIdAndStatusInAndCreatedAtBefore(userId, statuses, Sort.unsorted(), to);
+                    }
+                    else{
+                        rides = rideRepository.findByPassengers_IdAndStatusInAndCreatedAtBefore(userId, statuses, Sort.unsorted(), to);
+                    }
+
+                }
+                else{
+                    if(userIndicator == 1){
+                        rides = rideRepository.findByDriverIdAndStatusIn(userId, statuses, Sort.unsorted());
+                    }
+                    else{
+                        rides = rideRepository.findByPassengers_IdAndStatusIn(userId, statuses, Sort.unsorted());
+                    }
+
+                }
+
+                if ("pickupAddress".equals(sortBy) || "destinationAddress".equals(sortBy)) {
+                    Comparator<Ride> comparator = new RideComparator(sortBy);
+                    if (direction == Sort.Direction.DESC) {
+                        rides.sort(comparator.reversed());
+                    } else {
+                        rides.sort(comparator);
+                    }
+                }
+            }
+            //map to dto
+            List<AdminRideHistoryResponseDTO> response = new ArrayList<>();
+
+            boolean isCancelled = false;
+            for (Ride ride : rides){
+                if(ride.getStatus() == RideStatus.CANCELLED)
+                    isCancelled = true;
+                else isCancelled = false;
+                String userWhoCancelled = null;
+                if (ride.getRideCancellation() != null && ride.getRideCancellation().getUser() != null) {
+                    userWhoCancelled = ride.getRideCancellation().getUser().getEmail();
+                }
+
+                response.add(new AdminRideHistoryResponseDTO(
+                        ride.getFinishedAt(),
+                        ride.getStartedAt(),
+                        ride.getCreatedAt(),
+                        ride.getStops(),
+                        ride.getId(),
+                        ride.getTotalPrice(),
+                        ride.getIsPanic(),
+                        userWhoCancelled,
+                        isCancelled
+                        ));
+            }
+            //sorting by isCancelled and userWhoCancelled
+            if ("userWhoCancelled".equals(sortBy)) {
+                Comparator<AdminRideHistoryResponseDTO> comparator =
+                        Comparator.comparing(
+                                dto -> dto.getUserWhoCancelled() == null ? "" : dto.getUserWhoCancelled()
+                        );
+
+                response.sort(direction == Sort.Direction.DESC ?
+                        comparator.reversed() : comparator);
+            }
+
+            else if ("isCancelled".equals(sortBy)) {
+                Comparator<AdminRideHistoryResponseDTO> comparator =
+                        Comparator.comparing(AdminRideHistoryResponseDTO::getCancelled);
+
+                response.sort(direction == Sort.Direction.DESC ?
+                        comparator.reversed() : comparator);
+            }
+
+            return response;
+        }
+
+    @Transactional
+    public List<PassengerRideHistoryResponseDTO> getPassengerHistory(String email, Sort sort, LocalDateTime from, LocalDateTime to){
+        User user = userRepository.findByEmail(email);
+        if (user == null) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Passenger not found!");
+        Long passengerId = user.getId();
+
+        List<RideStatus> statuses = List.of(
+                RideStatus.COMPLETED,
+                RideStatus.STOPPED);
+
+        List<Ride> rides = new ArrayList<>();
+        String sortBy;
+        Sort.Direction direction = Sort.Direction.ASC;
+
+        if (sort != null && sort.iterator().hasNext()) {
+            Sort.Order order = sort.iterator().next();
+            sortBy = order.getProperty();
+            direction = order.getDirection();
+        } else { //default sorting
+            sortBy = "createdAt";
+            direction = Sort.Direction.DESC;
+        }
+        if ("startedAt".equals(sortBy) || "finishedAt".equals(sortBy) || "createdAt".equals(sortBy)) {
+            //db sorts
+            if(from != null && to != null){
+                rides = rideRepository.findByPassengers_IdAndStatusInAndCreatedAtBetween(passengerId, statuses, sort,from,to);
+            }
+            else if(from != null){
+                rides = rideRepository.findByPassengers_IdAndStatusInAndCreatedAtAfter(passengerId, statuses, sort, from);
+            }
+            else if(to != null){
+                rides = rideRepository.findByPassengers_IdAndStatusInAndCreatedAtBefore(passengerId, statuses, sort, to);
+            }
+            else{
+                rides = rideRepository.findByPassengers_IdAndStatusIn(passengerId, statuses, sort);
+            }
+        }
+        else{// custom sort for pickup/destination
+            if (from != null && to != null) {
+                rides = rideRepository.findByPassengers_IdAndStatusInAndCreatedAtBetween(passengerId, statuses, Sort.unsorted(), from, to);
+            } else if (from != null) {
+                rides = rideRepository.findByPassengers_IdAndStatusInAndCreatedAtAfter(passengerId, statuses, Sort.unsorted(), from);
+            } else if (to != null) {
+                rides = rideRepository.findByPassengers_IdAndStatusInAndCreatedAtBefore(passengerId, statuses, Sort.unsorted(), to);
+            } else {
+                rides = rideRepository.findByPassengers_IdAndStatusIn(passengerId, statuses, Sort.unsorted());
+            }
+
+            if ("pickupAddress".equals(sortBy) || "destinationAddress".equals(sortBy)) {
+                Comparator<Ride> comparator = new RideComparator(sortBy);
+                if (direction == Sort.Direction.DESC) {
+                    rides.sort(comparator.reversed());
+                } else {
+                    rides.sort(comparator);
+                }
+            }
+        }
+
+        //map to dto
+        List<PassengerRideHistoryResponseDTO> response = new ArrayList<>();
+        for (Ride ride : rides){
+            response.add(new PassengerRideHistoryResponseDTO(
+                    ride.getFinishedAt(),
+                    ride.getStartedAt(),
+                    ride.getCreatedAt(),
+                    ride.getStops(),
+                    ride.getId()));
+        }
+        return response;
+    }
+
+    @Transactional
+    public PassengerRideDetailsResponseDTO getRideDetails(Long id){
+        Ride ride = rideRepository.findById(id).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Ride not found!"));
+        PassengerRideDetailsResponseDTO dto = new PassengerRideDetailsResponseDTO(ride.getId(),ride.getStops(),ride.getDistanceKm(),
+                ride.getTotalPrice());
+        Driver driver = ride.getDriver();
+        dto.setDriverEmail(driver.getEmail());
+        dto.setDriverName(driver.getName());
+        dto.setDriverLastName(driver.getLastName());
+        dto.setDriverPhoneNumber(driver.getPhoneNumber());
+        Map<String, String> reportReasons = new HashMap<>();
+        List<RideGradeDTO> rideGrades = new ArrayList<>();
+        /*if(ride.getReports() != null){
+            for (Report report : ride.getReports()){
+                reportReasons.put(
+                        report.getPassenger().getEmail(),
+                        report.getReportReason());
+                }
+        }*/
+        List<Report> reports=  reportRepository.findByRide_Id(id);
+        if(reports != null){
+            for (Report report : reports){
+                reportReasons.put(
+                        report.getPassenger().getEmail(),
+                        report.getReportReason());
+            }
+        }
+        dto.setReportReasons(reportReasons);
+        List<Review> reviews = reviewRepository.findByRide_Id(id);
+        /*if(ride.getReviews() != null){
+            for(Review review : ride.getReviews()){
+                rideGrades.add(
+                        new RideGradeDTO(review.getPassenger().getEmail(),
+                        review.getGrade(),review.getType().toString())
+                );
+            }
+        }*/
+        if(reviews != null){
+            for(Review review : reviews){
+                rideGrades.add(
+                        new RideGradeDTO(review.getPassenger().getEmail(),
+                                review.getGrade(),review.getType().toString())
+                );
+            }
+        }
+        dto.setRideGrades(rideGrades);
+        return dto;
+    }
+
+    @Transactional
+    public AdminRideDetailsResponseDTO getRideDetailsForAdmin(Long id){
+        Ride ride = rideRepository.findById(id).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Ride not found!"));
+        AdminRideDetailsResponseDTO dto = new AdminRideDetailsResponseDTO();
+        dto.setRideId(ride.getId());
+        dto.setRideStops(ride.getStops());
+        dto.setDistanceKm(ride.getDistanceKm());
+        dto.setTotalPrice(ride.getTotalPrice());
+        Driver driver = ride.getDriver();
+        dto.setDriverEmail(driver.getEmail());
+        dto.setDriverName(driver.getName());
+        dto.setDriverLastName(driver.getLastName());
+        dto.setDriverPhoneNumber(driver.getPhoneNumber());
+        Map<String, String> reportReasons = new HashMap<>();
+        List<RideGradeDTO> rideGrades = new ArrayList<>();
+        List<Report> reports=  reportRepository.findByRide_Id(id);
+        if(reports != null){
+            for (Report report : reports){
+                reportReasons.put(
+                        report.getPassenger().getEmail(),
+                        report.getReportReason());
+            }
+        }
+        dto.setReportReasons(reportReasons);
+        List<Review> reviews = reviewRepository.findByRide_Id(id);
+        if(reviews != null){
+            for(Review review : reviews){
+                rideGrades.add(
+                        new RideGradeDTO(review.getPassenger().getEmail(),
+                                review.getGrade(),review.getType().toString())
+                );
+            }
+        }
+        dto.setRideGrades(rideGrades);
+        List<PassengerInfoDTO> passengersInfo = new ArrayList<>();
+        for (Passenger passenger : ride.getPassengers()){
+            passengersInfo.add(new PassengerInfoDTO(passenger.getName(), passenger.getLastName(), passenger.getEmail()));
+        }
+        dto.setPassengersInfo(passengersInfo);
+        return dto;
+    }
+
+    public List<ActiveRideDTO> findActiveRides(String driverName) {
+    List<Ride> rides;
+    if (driverName != null && !driverName.isEmpty()) {
+        rides = rideRepository.findActiveByDriverName(driverName, RideStatus.ACTIVE);
+    } else {
+        rides = rideRepository.findByStatus(RideStatus.ACTIVE);
+    }
+
+    return rides.stream().map(ride -> {
+        ActiveRideDTO dto = new ActiveRideDTO();
+        dto.setId(ride.getId());
+        dto.setStartTime(ride.getStartedAt());
+        dto.setEndTime(ride.getFinishedAt());
+        dto.setPrice(ride.getTotalPrice());
+        dto.setStatus(ride.getStatus());
+
+        dto.setPassengers(ride.getPassengers().stream()
+            .map(p -> p.getName() + " " + p.getLastName())
+            .collect(Collectors.toList()));
+
+        if (ride.getStops() != null && !ride.getStops().isEmpty()) {
+            dto.setStartLocation(ride.getStops().stream()
+                .min(Comparator.comparingInt(RideStop::getOrderIndex))
+                .map(RideStop::getAddress).orElse("Unknown"));
+            dto.setEndLocation(ride.getStops().stream()
+                .max(Comparator.comparingInt(RideStop::getOrderIndex))
+                .map(RideStop::getAddress).orElse("Unknown"));
+        }
+
+        if (ride.getPanicNotification() != null) {
+            dto.setPanicPressed(true);
+            dto.setPanicReason(ride.getPanicNotification().getReason());
+        } else {
+            dto.setPanicPressed(false);
+        }
+
+        if (ride.getDriver() != null) {
+            dto.setDriverId(ride.getDriver().getId());
+            dto.setDriverName(ride.getDriver().getName());
+            dto.setDriverPicture(ride.getDriver().getProfilePicture());
+            dto.setDriverAverageRating(ride.getDriver().getAverageRating());
+            
+            if (ride.getDriver().getVehicle() != null) {
+                dto.setVehicleModel(ride.getDriver().getVehicle().getModel());
+            }
+        }
+
+        return dto;
+    }).collect(Collectors.toList());
+}
+
+    public List<PassengerUpcomingRideDTO> findUpcomingRides(String email) {
+        User user = userRepository.findByEmail(email);
+        if (user == null) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Passenger not found!");
+
+        List<RideStatus> statuses = new ArrayList<>();
+        statuses.add(RideStatus.PENDING);
+        statuses.add(RideStatus.SCHEDULED);
+        List<Ride> rides = rideRepository.findAllByCreatorEmailAndStatusIn(email, statuses);
+
+        List<PassengerUpcomingRideDTO> upcomingRides = new ArrayList<>();
+        for(Ride ride : rides){
+            upcomingRides.add(mapToUpcomingRide(ride));
+        }
+        return upcomingRides;
+    }
+
+    private PassengerUpcomingRideDTO mapToUpcomingRide(Ride ride) {
+        PassengerUpcomingRideDTO dto = new PassengerUpcomingRideDTO();
+
+        dto.setRideId(ride.getId());
+        dto.setStatus(ride.getStatus());
+        dto.setPrice(ride.getTotalPrice());
+
+        if (ride.getDriver() != null) {
+            dto.setDriverName(ride.getDriver().getName() + " " + ride.getDriver().getLastName());
+        }
+
+        List<RideStopDTO> stops = ride.getStops().stream()
+                .sorted(Comparator.comparingInt(RideStop::getOrderIndex))
+                .map(s -> {
+                    RideStopDTO rs = new RideStopDTO();
+                    rs.setAddress(s.getAddress());
+                    rs.setLat(s.getLatitude());
+                    rs.setLng(s.getLongitude());
+                    rs.setOrderIndex(s.getOrderIndex());
+                    return rs;
+                })
+                .toList();
+
+        dto.setLocations(stops);
+
+        return dto;
     }
 }

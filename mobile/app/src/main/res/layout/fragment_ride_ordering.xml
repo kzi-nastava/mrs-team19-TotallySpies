@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <org.osmdroid.views.MapView
+        android:id="@+id/map"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/bottomSheet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:elevation="16dp"
+        android:backgroundTint="@color/background"
+        app:behavior_peekHeight="120dp"
+        android:paddingBottom="60dp"
+        android:fillViewport="true"
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <View
+                android:layout_width="50dp"
+                android:layout_height="4dp"
+                android:layout_gravity="center"
+                android:background="#CCCCCC"
+                android:layout_marginBottom="10dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Where to go?"
+                android:textColor="@color/text"
+                android:textSize="22sp"
+                android:textStyle="bold"/>
+
+            <LinearLayout
+                android:id="@+id/btnOpenFavorites"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackground">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="★ Pick from favorites"
+                    android:textColor="@color/accent"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <EditText
+                android:id="@+id/etStart"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Starting point"
+                android:textColor="@color/text"
+                android:textColorHint="@color/text_hint"
+                android:layout_marginTop="10dp"
+                android:drawableStart="@drawable/ic_location_on" />
+
+            <LinearLayout
+                android:id="@+id/stopsContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+
+            <Button
+                android:id="@+id/btnAddStop"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="+ Add stop"
+                android:textColor="@color/accent"/>
+
+            <EditText
+                android:id="@+id/etEnd"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:textColor="@color/text"
+                android:textColorHint="@color/text_hint"
+                android:hint="Destination" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/card_color"
+                android:layout_marginVertical="10dp"/>
+
+            <RadioGroup
+                android:id="@+id/rgVehicle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <RadioButton
+                    android:id="@+id/rbStandard"
+                    android:text="Standard"
+                    android:textColor="@color/text"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:buttonTint="@color/accent"/>
+                <RadioButton
+                    android:id="@+id/rbLuxury"
+                    android:text="Luxury"
+                    android:textColor="@color/text"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="@color/accent"/>
+                <RadioButton
+                    android:id="@+id/rbVan"
+                    android:text="Van"
+                    android:textColor="@color/text"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="@color/accent"/>
+            </RadioGroup>
+
+            <CheckBox
+                android:id="@+id/cbBaby"
+                android:text="Baby friendly"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text"
+                android:buttonTint="@color/accent"/>
+            <CheckBox
+                android:id="@+id/cbPet"
+                android:text="Pet friendly"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text"
+                android:buttonTint="@color/accent"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Invite passengers"
+                android:textStyle="bold"
+                android:textColor="@color/text_hint"
+                android:layout_marginTop="10dp"/>
+
+            <LinearLayout
+                android:id="@+id/emailsContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+            <Button
+                android:id="@+id/btnAddEmail"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="+ Add email"
+                android:textColor="@color/accent"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="When?"
+                android:textStyle="bold"
+                android:textColor="@color/text_hint"
+                android:layout_marginTop="10dp"/>
+
+            <RadioGroup
+                android:id="@+id/rgTime"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <RadioButton
+                    android:id="@+id/rbNow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Now"
+                    android:checked="true"
+                    android:textColor="@color/text"
+                    android:buttonTint="@color/accent"/>
+                <RadioButton
+                    android:id="@+id/rbLater"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Later"
+                    android:textColor="@color/text"
+                    android:buttonTint="@color/accent"/>
+            </RadioGroup>
+
+            <Button
+                android:id="@+id/btnPickTime"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Set Departure Time"
+                android:visibility="gone"
+                android:textColor="@color/accent"/>
+
+            <Button
+                android:id="@+id/btnSearch"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:text="SEARCH ROUTE"
+                android:textColor="@color/accent"
+                android:backgroundTint="@color/card_color"
+                android:layout_marginTop="10dp"/>
+
+            <LinearLayout
+                android:id="@+id/layoutOrder"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+                <TextView
+                android:id="@+id/tvPriceInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="12.5 km • 25 min • 500 RSD"
+                android:gravity="center"
+                android:textSize="18sp"
+                android:layout_marginBottom="10dp"/>
+
+                <Button
+                    android:id="@+id/btnOrder"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:text="BOOK NOW"
+                    android:textColor="@color/accent"
+                    android:backgroundTint="@color/card_color"/>
+            </LinearLayout>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

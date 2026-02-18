@@ -17,6 +17,7 @@ public class Vehicle {
     private boolean petTransport;
     private double currentLat;
     private double currentLng;
+    private int CurrentRouteIndex;
 
     public Vehicle() {
     }
@@ -91,6 +92,14 @@ public class Vehicle {
 
     public void setCurrentLng(double currentLng) {
         this.currentLng = currentLng;
+    }
+
+    public int getCurrentRouteIndex() {
+        return CurrentRouteIndex;
+    }
+
+    public void setCurrentRouteIndex(int CurrentRouteIndex) {
+        this.CurrentRouteIndex = CurrentRouteIndex;
     }
     
 }

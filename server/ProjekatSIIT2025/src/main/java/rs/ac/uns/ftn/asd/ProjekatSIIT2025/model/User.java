@@ -155,7 +155,7 @@ public class User implements UserDetails {
         this.address = address;
     }
 
-    public Boolean getBlocked() {
+    public Boolean isBlocked() {
         return isBlocked;
     }
 
@@ -169,5 +169,12 @@ public class User implements UserDetails {
     //if user activated his profile with email activation link then he becomes enabled
     @Override public boolean isEnabled() { return enabled; }
 
+    public String getBlockReason() {
+        return blockReason;
+    }
+
+    public void setBlockReason(String blockReason) {
+        this.blockReason = blockReason;
+    }
 }
 

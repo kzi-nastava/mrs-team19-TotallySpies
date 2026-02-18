@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Router } from '@angular/router';
 
-export type DriverSearchStatus = 'IDLE' | 'SEARCHING' | 'FOUND' | 'NOT_FOUND';
+export type DriverSearchStatus = 'IDLE' | 'SEARCHING' | 'FOUND' | 'NOT_FOUND' | 'BLOCKED'  | 'SCHEDULED';
 
 @Component({
   selector: 'app-driver-search-modal',
@@ -16,6 +17,7 @@ export class DriverSearchModalComponent {
   @Output() close = new EventEmitter<void>();
 
   closeModal() {
-    this.close.emit();
-  }
+  console.log('Modal: Emitujem close event...');
+  this.close.emit();
+}
 }

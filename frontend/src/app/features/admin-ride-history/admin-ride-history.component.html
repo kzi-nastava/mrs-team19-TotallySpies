@@ -1,0 +1,176 @@
+<div class="page">
+  <div class="topbar">
+    <button class="back-btn" type="button" aria-label="Back">
+      ←
+    </button>
+    <h1 class="title">Rides history</h1>
+  </div>
+  
+
+    <form [formGroup]="filterForm">
+        <div class="filters">
+            <div class="date-box">
+                <label class="date-label">Created from</label>
+                <input class="date-input" data-testid = "from-date" type="date" formControlName = "filterFrom" />
+            </div>
+
+            <div class="date-box">
+            <label class="date-label">Created to</label>
+            <input class="date-input" data-testid = "to-date" type="date"  formControlName = "filterTo"/>
+            </div>
+
+            <button class="search-btn" type="button" (click) = "search()">
+                Search
+            </button>
+            <button class = "reset-btn" type = "button" (click)="reset()">
+                Reset
+            </button>
+        </div>
+    </form>
+    <div class="table-container">
+      <h1>Users</h1>
+    <table class="rides-table" data-testid = "users-table">
+      <thead>
+        <tr>
+          <th>Role</th>
+          <th>Name</th>
+          <th>Last name</th>
+          <th>Email</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr *ngFor="let user of users">
+            <td>{{user.role}}</td>
+            <td>{{ user.name }}</td>
+            <td>{{ user.lastName }}</td>
+            <td>{{user.email }}</td>
+            <td class="cell-actions">
+              <button class="view-btn" type="button" (click)="showHistory(user.role, user.id)" >View ride history</button>
+            </td>
+          </tr>
+        </tbody>
+    </table>
+  </div>
+
+  <div class="table-container">
+    <h1>Rides</h1>
+    <table class="rides-table" data-testid = "rides-table">
+      <thead>
+        <tr>
+          <th>
+            <div class="th-content">
+              <span>Pickup address</span>
+              <button class="sort-btn" data-testid = "sort-pickupAddress" type="button" (click)="sortPickupAddress()" aria-label="Sort pickup">
+                ⇅
+              </button>
+            </div>
+          </th>
+
+          <th>
+            <div class="th-content">
+              <span>Destination address</span>
+              <button class="sort-btn" data-testid = "sort-destinationAddress" type="button" (click)="sortDestinationAddress()" aria-label="Sort destination">
+                ⇅
+              </button>
+            </div>
+          </th>
+
+          <th>
+            <div class="th-content">
+              <span>Start time</span>
+              <button class="sort-btn" data-testid = "sort-startTime" type="button" (click)="sortStartedAt()" aria-label="Sort start time">
+                ⇅
+              </button>
+            </div>
+          </th>
+
+          <th>
+            <div class="th-content">
+              <span>End time</span>
+              <button class="sort-btn" data-testid = "sort-endTime" type="button" (click)="sortFinishedAt()" aria-label="Sort end time">
+                ⇅
+              </button>
+            </div>
+          </th>
+
+          <th>
+            <div class = "th-content">
+                <span>Creation time</span>
+                <button class = "sort-btn" data-testid = "sort-creationTime" type = "button" (click)="sortCreatedAt()" aria-label = "Sort creation time">
+                    ⇅
+                </button>
+            </div>
+          </th>
+        
+
+          <th>
+            <div class="th-content">
+              <span>Additional stops</span>
+            </div>
+          </th>
+          <th>
+            <div class="th-content">
+              <span>Total price</span>
+              <button class="sort-btn" data-testid = "sort-totalPrice" type="button" (click)="sortTotalPrice()" aria-label="Sort total price">
+                ⇅
+              </button>
+            </div>
+          </th>
+          <th>
+            <div class="th-content">
+              <span>Is cancelled</span>
+              <button class="sort-btn" data-testid = "sort-isCancelled" type="button" (click)="sortPickupAddress()" aria-label="Sort pickup">
+                ⇅
+              </button>
+            </div>
+          </th>
+          <th>
+            <div class="th-content">
+              <span>User who cancelled</span>
+              <button class="sort-btn" data-testid = "sort-userWhoCancelled" type="button" (click)="sortUserWhoCancelled()" aria-label="Sort pickup">
+                ⇅
+              </button>
+            </div>
+          </th>
+          <th>
+            <div class="th-content">
+              <span>Panic</span>
+              <button class="sort-btn" data-testid = "sort-panic" type="button" (click)="sortPickupAddress()" aria-label="Sort pickup">
+                ⇅
+              </button>
+            </div>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr *ngFor="let ride of rides">
+            <td>{{ getPickup(ride) }}</td>
+            <td>{{ getDestination(ride) }}</td>
+
+            <td>{{ride.startedAt | date:'dd.MM.yyyy. HH:mm'  }}</td>
+            <td>{{ride.finishedAt | date:'dd.MM.yyyy. HH:mm' }}</td>
+            <td>{{ ride.createdAt | date:'dd.MM.yyyy. HH:mm' }}</td>
+            <td>
+              <div class="stops">
+                <div class="stop" *ngFor="let rideStop of getAdditionalStops(ride)">{{ rideStop }}</div>
+                <span *ngIf="getAdditionalStops(ride).length === 0">-</span>
+              </div>
+            </td>
+            <td>{{ride.totalPrice}}</td>
+            <td>{{ride.cancelled}}</td>
+            <td>{{ride.userWhoCancelled}}</td>
+            <td>{{ride.panic}}</td>
+            <td class="cell-actions">
+              <button class="view-btn" type="button" (click)="showMore(ride.rideId)" >View more</button>
+            </td>
+          </tr>
+
+          <tr *ngIf="rides.length === 0">
+            <td colspan="10" >No rides found.</td>
+          </tr>
+        </tbody>
+    </table>
+  </div>
+</div>
+
+

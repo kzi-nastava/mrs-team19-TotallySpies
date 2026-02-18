@@ -4,10 +4,11 @@ import { NavBar } from './core/layout/nav-bar/nav-bar';
 import { filter } from 'rxjs/operators';
 import 'leaflet-routing-machine';
 import { CommonModule } from '@angular/common';
+import { SupportChatComponent } from './features/support-chat/support-chat.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, NavBar, CommonModule],
+  imports: [RouterOutlet, NavBar, CommonModule, SupportChatComponent],
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
