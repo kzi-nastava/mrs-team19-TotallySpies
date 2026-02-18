@@ -94,6 +94,7 @@ export interface RideTrackingDTO {
 }
 
 export interface InconsistencyReportRequestDTO {
+  rideId: number;
   description: string;
 }
 
