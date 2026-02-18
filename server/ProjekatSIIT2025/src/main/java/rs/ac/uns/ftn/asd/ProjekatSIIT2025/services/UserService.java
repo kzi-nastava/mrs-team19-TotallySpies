@@ -190,10 +190,10 @@ public class UserService implements UserDetailsService {
             if (targetEmail != null && !targetEmail.isEmpty()) {
                 //admin gleda specificnog putnika provjeravam njegovu rolu
                 User targetUser = userRepository.findByEmail(targetEmail);
-                if (user != null){
-                    if(user.getRole() == UserRole.DRIVER){
+                if (targetUser != null){
+                    if(targetUser.getRole() == UserRole.DRIVER){
                         rides = rideRepository.findAllByDriverEmailAndStatusInAndStartedAtBetween(targetEmail, validReportStatuses, from, to);
-                    } else if (user.getRole() == UserRole.PASSENGER) {
+                    } else if (targetUser.getRole() == UserRole.PASSENGER) {
                         rides = rideRepository.findAllByCreatorEmailAndStatusInAndStartedAtBetween(targetEmail, validReportStatuses, from, to);
                     }
                 }
