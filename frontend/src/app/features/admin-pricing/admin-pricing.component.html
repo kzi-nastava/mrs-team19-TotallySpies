@@ -5,7 +5,7 @@
     <h3>{{ p.vehicleType }}</h3>
     <div class="form-group">
       <label>Starting price (RSD):</label>
-      <input type="number" [(ngModel)]="p.basePrice">
+      <input type="number" [(ngModel)]="p.basePrice" min="1">
     </div>
     <button (click)="updatePrice(p)">Save</button>
   </div>

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.UpdatePriceDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.VehiclePricing;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.services.PricingService;
@@ -24,7 +25,7 @@ public class PriceController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping
-    public ResponseEntity<?> updatePrice(@RequestBody UpdatePriceDTO dto) {
+    public ResponseEntity<?> updatePrice(@Valid @RequestBody UpdatePriceDTO dto) {
         pricingService.updateBasePrice(dto.getVehicleType(), dto.getNewPrice());
         return ResponseEntity.ok().build();
     }
