@@ -179,6 +179,7 @@
     <string name="price_standard">Standard</string>
     <string name="price_luxury">Luxury</string>
     <string name="price_van">Van</string>
+    <string name="choose">CHOOSE</string>
 
     <string-array name="vehicle_types">
         <item>Standard</item>

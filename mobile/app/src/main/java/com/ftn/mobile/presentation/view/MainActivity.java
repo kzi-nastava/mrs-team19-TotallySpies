@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -21,6 +22,7 @@ import com.ftn.mobile.presentation.fragments.DriverHistoryFragment;
 import com.ftn.mobile.presentation.fragments.DriverScheduledRidesFragment;
 import com.ftn.mobile.presentation.fragments.HomeFragment;
 import com.ftn.mobile.presentation.fragments.ReportFragment;
+import com.ftn.mobile.presentation.fragments.RideFormUnregisteredFragment;
 import com.ftn.mobile.presentation.fragments.RideOrderingFragment;
 import com.ftn.mobile.presentation.fragments.DriverRegistrationFragment;
 import com.ftn.mobile.presentation.fragments.PricingFragment;
@@ -55,6 +57,15 @@ public class MainActivity extends AppCompatActivity {
 
         UserRoleManger.getRoleLiveData().observe(this, role -> {
             boolean isLoggedIn = (role != null);
+
+            MenuItem loginItem = menu.findItem(R.id.nav_login);
+            if (loginItem != null) loginItem.setVisible(!isLoggedIn);
+
+            MenuItem registerItem = menu.findItem(R.id.nav_register);
+            if (registerItem != null) registerItem.setVisible(!isLoggedIn);
+
+            MenuItem logoutItem = menu.findItem(R.id.nav_logout);
+            if (logoutItem != null) logoutItem.setVisible(isLoggedIn);
 
             MenuItem profileItem = menu.findItem(R.id.nav_profile);
             if (profileItem != null) {
@@ -95,6 +106,13 @@ public class MainActivity extends AppCompatActivity {
             if (reportItem != null){
                 reportItem.setVisible(isLoggedIn);
             }
+
+            if(!isLoggedIn){
+                showRideFormUnregistered();
+            }
+            else{
+                hideRideFormUnregistered();
+            }
         });
 
         String token = TokenStorage.get(this);
@@ -130,7 +148,18 @@ public class MainActivity extends AppCompatActivity {
             else if (id == R.id.nav_login) {
                 Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                 startActivity(intent);
-            } else if (id == R.id.nav_ride_ordering) {
+            }
+            else if(id == R.id.nav_logout){
+                TokenStorage.clear(MainActivity.this);
+                UserRoleManger.updateRole(null);
+                getSupportFragmentManager().popBackStack(
+                        null,
+                        androidx.fragment.app.FragmentManager.POP_BACK_STACK_INCLUSIVE
+                );
+                showRideFormUnregistered();
+                Toast.makeText(MainActivity.this, "Logged out", Toast.LENGTH_SHORT).show();
+            }
+            else if (id == R.id.nav_ride_ordering) {
                 openFragment(new RideOrderingFragment(), "Ride ordering");
             } else if (id == R.id.nav_register_driver){
                 openFragment(new DriverRegistrationFragment(), "Driver registration");
@@ -151,6 +180,30 @@ public class MainActivity extends AppCompatActivity {
             openFragment(new HomeFragment(), "SmartRide");
         }
     }
+    private void  showRideFormUnregistered() {
+        Fragment current = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+        if (current instanceof RideFormUnregisteredFragment) return;
+
+        getSupportFragmentManager().popBackStack(null,
+                androidx.fragment.app.FragmentManager.POP_BACK_STACK_INCLUSIVE);
+
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container, new RideFormUnregisteredFragment())
+                .commit();
+
+        if (getSupportActionBar() != null) getSupportActionBar().setTitle("Welcome to SmartRide!");
+    }
+
+    private void hideRideFormUnregistered() {
+        Fragment current = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+        if (current instanceof RideFormUnregisteredFragment) {
+            getSupportFragmentManager().beginTransaction()
+                    .remove(current)
+                    .commit();
+            if (getSupportActionBar() != null) getSupportActionBar().setTitle("SmartRide");
+        }
+    }
+
     private void openFragment(Fragment fragment, String title) {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragment_container, fragment)
