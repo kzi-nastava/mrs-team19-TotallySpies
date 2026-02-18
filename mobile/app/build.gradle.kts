@@ -75,6 +75,9 @@ dependencies {
     implementation("com.github.MKergall:osmbonuspack:6.9.0") {
         exclude(group = "org.osmdroid", module = "osmdroid-android")
     }
+    implementation("com.github.NaikSoftware:StompProtocolAndroid:1.6.6")
+    implementation("io.reactivex.rxjava2:rxandroid:2.1.1")
+    implementation("io.reactivex.rxjava2:rxjava:2.2.21")
 
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 
