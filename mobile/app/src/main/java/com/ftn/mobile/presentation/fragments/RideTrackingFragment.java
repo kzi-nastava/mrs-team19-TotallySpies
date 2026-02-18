@@ -7,7 +7,10 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -52,6 +55,8 @@ public class RideTrackingFragment extends Fragment {
     private RideTrackingViewModel viewModel;
     String color = "#6E58C6";
     int routeColor = Color.parseColor(color);
+    private LinearLayout ratingButtonsContainer;
+    private Button btnRateDriver, btnRateVehicle, btnReport;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -67,7 +72,15 @@ public class RideTrackingFragment extends Fragment {
         map = v.findViewById(R.id.map);
         etaText = v.findViewById(R.id.etaText);
         driverInfo = v.findViewById(R.id.driverInfoText);
-        v.findViewById(R.id.btnReportInconsistency).setOnClickListener(view -> showInconsistencyDialog());
+        btnReport = v.findViewById(R.id.btnReportInconsistency);
+        ratingButtonsContainer = v.findViewById(R.id.ratingButtonsContainer);
+        btnRateDriver = v.findViewById(R.id.btnRateDriver);
+        btnRateVehicle = v.findViewById(R.id.btnRateVehicle);
+
+        btnRateDriver.setOnClickListener(view -> showRatingDialog(true));
+        btnRateVehicle.setOnClickListener(view -> showRatingDialog(false));
+        btnReport.setOnClickListener(view -> showInconsistencyDialog());
+
         setupMap();
         return v;
     }
@@ -76,20 +89,36 @@ public class RideTrackingFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         viewModel = new ViewModelProvider(this).get(RideTrackingViewModel.class);
+
         viewModel.getRideData().observe(getViewLifecycleOwner(), data -> {
             if (data != null) {
                 updateUI(data);
+                // show rating buttons only if ride is completed
+                if ("COMPLETED".equals(data.getStatus())) {
+                    ratingButtonsContainer.setVisibility(View.VISIBLE);
+                    btnReport.setVisibility(View.GONE);
+                    etaText.setVisibility(View.GONE);
+                } else {
+                    ratingButtonsContainer.setVisibility(View.GONE);
+                    btnReport.setVisibility(View.VISIBLE);
+                    etaText.setVisibility(View.VISIBLE);
+                }
             }
+        });
+        viewModel.getToastMessage().observe(getViewLifecycleOwner(), message -> {
+            if (message != null) Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+        });
+        // disable buttons after successful rating
+        viewModel.getDriverRated().observe(getViewLifecycleOwner(), rated -> {
+            if (rated) btnRateDriver.setEnabled(false);
+        });
+        viewModel.getVehicleRated().observe(getViewLifecycleOwner(), rated -> {
+            if (rated) btnRateVehicle.setEnabled(false);
         });
 
-        viewModel.getToastMessage().observe(getViewLifecycleOwner(), message -> {
-            if (message != null) {
-                Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
-            }
-        });
         if (rideId != null) {
             viewModel.initStomp(rideId);
-            viewModel.fetchInitialData();
+            viewModel.loadRideById(rideId);
         }
     }
     private void setupMap() {
@@ -161,5 +190,34 @@ public class RideTrackingFragment extends Fragment {
 
     private void sendReport(String reason) {
         viewModel.sendReport(rideId, reason);
+    }
+
+    private void showRatingDialog(boolean isDriver) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setTitle(isDriver ? "Rate Driver" : "Rate Vehicle");
+
+        LayoutInflater inflater = requireActivity().getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_rating, null);
+        RatingBar ratingBar = dialogView.findViewById(R.id.ratingBar);
+        EditText commentEdit = dialogView.findViewById(R.id.commentEdit);
+
+        builder.setView(dialogView)
+                .setPositiveButton("Submit", (dialog, which) -> {
+                    int rating = (int) ratingBar.getRating();
+                    String comment = commentEdit.getText().toString().trim();
+
+                    if (rating == 0) {
+                        Toast.makeText(getContext(), "Please select a rating", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    if (isDriver) {
+                        viewModel.rateDriver(rideId, rating, comment);
+                    } else {
+                        viewModel.rateVehicle(rideId, rating, comment);
+                    }
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
     }
 }

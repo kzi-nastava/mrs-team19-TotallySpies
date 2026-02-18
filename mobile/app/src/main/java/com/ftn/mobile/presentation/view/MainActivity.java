@@ -180,7 +180,25 @@ public class MainActivity extends AppCompatActivity {
                             Long activeRideId = response.body().getRideId();
                             openTrackingFragment(activeRideId);
                         } else {
-                            Toast.makeText(MainActivity.this, "no active ride.", Toast.LENGTH_SHORT).show();
+                            ApiProvider.ride().getLastCompletedRide().enqueue(new Callback<RideTrackingDTO>() {
+                                @Override
+                                public void onResponse(Call<RideTrackingDTO> call2, Response<RideTrackingDTO> response2) {
+                                    if (response2.isSuccessful() && response2.body() != null) {
+                                        openTrackingFragment(response2.body().getRideId());
+                                    } else {
+                                        Toast.makeText(MainActivity.this,
+                                                "No active or recent completed rides.",
+                                                Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call<RideTrackingDTO> call2, Throwable t) {
+                                    Toast.makeText(MainActivity.this,
+                                            "Error checking completed ride",
+                                            Toast.LENGTH_SHORT).show();
+                                }
+                            });
                         }
                     }
 

@@ -1184,4 +1184,20 @@ public class RideService {
         if (ride == null) return null;
         return getRideTrackingInfo(ride.getId());
     }
+
+    public RideTrackingDTO getLastCompletedRideForPassenger(String email) {
+        Passenger passenger = passengerRepository.findByEmail(email)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Passenger not found"));
+        
+        LocalDateTime threeDaysAgo = LocalDateTime.now().minusDays(3);
+        
+        Ride ride = rideRepository.findTopByPassengerAndStatusAndFinishedAtAfterOrderByFinishedAtDesc(
+            passenger, RideStatus.COMPLETED, threeDaysAgo);
+        
+        if (ride == null) {
+            return null;
+        }
+        
+        return getRideTrackingInfo(ride.getId());
+    }
 }

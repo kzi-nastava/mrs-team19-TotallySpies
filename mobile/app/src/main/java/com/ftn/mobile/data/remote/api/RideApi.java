@@ -34,4 +34,10 @@ public interface RideApi {
 
     @GET("api/v1/rides/active-tracking")
     Call<RideTrackingDTO> getActiveRide();
+
+    @GET("api/v1/rides/{rideId}/location")
+    Call<RideTrackingDTO> getRideLocation(@Path("rideId") long rideId);
+
+    @GET("api/v1/rides/last-completed")
+    Call<RideTrackingDTO> getLastCompletedRide();
 }

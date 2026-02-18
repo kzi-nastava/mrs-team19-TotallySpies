@@ -180,6 +180,12 @@
     <string name="price_luxury">Luxury</string>
     <string name="price_van">Van</string>
     <string name="choose">CHOOSE</string>
+    <string name="rate_driver">Rate Driver</string>
+    <string name="eta">ETA: --</string>
+    <string name="driver">Driver: --</string>
+    <string name="rate_vehicle">Rate Vehicle</string>
+    <string name="report">Report</string>
+    <string name="comment">Comment</string>
 
     <string-array name="vehicle_types">
         <item>Standard</item>
