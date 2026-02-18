@@ -35,7 +35,7 @@ export class RideOrderingComponent implements OnInit {
   stopsForMap: string[] = [];
 
   constructor(private fb: FormBuilder, private mapService: MapService,
-    private rideService: RideService, private favouriteService: FavouriteService, 
+    private rideService: RideService, private favouriteService: FavouriteService,
     private cd: ChangeDetectorRef, private snackBar: MatSnackBar,
     private router: Router, private ngZone: NgZone) {
     this.routeForm = this.fb.group({
@@ -197,19 +197,25 @@ export class RideOrderingComponent implements OnInit {
             this.cd.detectChanges();
           },
           error: (err: HttpErrorResponse) => {
-
-            const errorMessage = err.error?.message || "";
-            if (errorMessage.toLowerCase().includes('blocked')) {
-              this.driverSearchStatus = 'BLOCKED';
-              this.driverErrorMessage = errorMessage;
-            } else {
-              this.driverSearchStatus = 'NOT_FOUND';
-              if (err.status === 400 && err.error?.message) {
-                this.driverErrorMessage = err.error.message;
-              } else if (err.status === 404) {
-                this.driverErrorMessage = "Resource not found.";
+            if (err.status === 400 && err.error.errors) {
+              const validationMsgs = Object.values(err.error.errors).join(' | ');
+              this.showSnackBar(validationMsgs, "error");
+              this.driverSearchStatus = 'IDLE';
+            }
+            else {
+              const errorMessage = err.error?.message || "";
+              if (errorMessage.toLowerCase().includes('blocked')) {
+                this.driverSearchStatus = 'BLOCKED';
+                this.driverErrorMessage = errorMessage;
               } else {
-                this.driverErrorMessage = "Unexpected error occurred.";
+                this.driverSearchStatus = 'NOT_FOUND';
+                if (err.status === 400 && err.error?.message) {
+                  this.driverErrorMessage = err.error.message;
+                } else if (err.status === 404) {
+                  this.driverErrorMessage = "Resource not found.";
+                } else {
+                  this.driverErrorMessage = "Unexpected error occurred.";
+                }
               }
             }
             this.cd.detectChanges();
@@ -347,27 +353,27 @@ export class RideOrderingComponent implements OnInit {
 
     this.showFavouritesModal = false;
   }
-handleModalClose() {
-  console.log('Status pre zatvaranja:', this.driverSearchStatus);
-  
-  if (this.driverSearchStatus === 'FOUND' || this.driverSearchStatus === 'SCHEDULED') {
-    this.driverSearchStatus = 'IDLE';
-    this.cd.detectChanges();
+  handleModalClose() {
+    console.log('Status pre zatvaranja:', this.driverSearchStatus);
 
-    // Pokreni navigaciju unutar zone
-    this.ngZone.run(() => {
-      this.router.navigate(['/upcoming-rides']).then(success => {
-        if (success) {
-          console.log('Navigacija uspešna!');
-        } else {
-          console.error('Navigacija nije uspela. Proveri putanju u app.routes.ts');
-        }
+    if (this.driverSearchStatus === 'FOUND' || this.driverSearchStatus === 'SCHEDULED') {
+      this.driverSearchStatus = 'IDLE';
+      this.cd.detectChanges();
+
+      // Pokreni navigaciju unutar zone
+      this.ngZone.run(() => {
+        this.router.navigate(['/upcoming-rides']).then(success => {
+          if (success) {
+            console.log('Navigacija uspešna!');
+          } else {
+            console.error('Navigacija nije uspela. Proveri putanju u app.routes.ts');
+          }
+        });
       });
-    });
-  } else {
-    this.driverSearchStatus = 'IDLE';
+    } else {
+      this.driverSearchStatus = 'IDLE';
+    }
   }
-}
 
   validateAndGetScheduledTime(): string | null {
     if (!this.routeForm.value.isScheduled) return null;
@@ -394,7 +400,7 @@ handleModalClose() {
 
     const pad = (n: number) => n.toString().padStart(2, '0');
 
-  return `${scheduledDate.getFullYear()}-${pad(scheduledDate.getMonth() + 1)}-${pad(scheduledDate.getDate())}T${pad(scheduledDate.getHours())}:${pad(scheduledDate.getMinutes())}:00`;
+    return `${scheduledDate.getFullYear()}-${pad(scheduledDate.getMonth() + 1)}-${pad(scheduledDate.getDate())}T${pad(scheduledDate.getHours())}:${pad(scheduledDate.getMinutes())}:00`;
   }
   private showSnackBar(message: string, type: 'success' | 'error') {
 

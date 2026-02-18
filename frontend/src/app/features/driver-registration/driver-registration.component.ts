@@ -8,7 +8,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-driver-registration',
-  standalone: true,  // <-- ovo je važno
+  standalone: true,
   imports: [ReactiveFormsModule, RouterModule, CommonModule, MatSnackBarModule],
   templateUrl: './driver-registration.component.html',
   styleUrls: ['./driver-registration.component.css']
@@ -26,13 +26,13 @@ export class DriverRegistrationComponent {
       address: new FormControl('', [Validators.required]),
       phone: new FormControl('', [
         Validators.required,
-        Validators.pattern(/^\+381 6\d \d{3} \d{3,4}$/)
+        Validators.pattern(/^(\+381 \d{2} \d{3} \d{3,4}|\d{11})$/)
       ]),
 
       model: new FormControl('', [Validators.required]),
       type: new FormControl('', [Validators.required]),
       licensePlate: new FormControl('', [Validators.required]),
-      seats: new FormControl(4, [Validators.required, Validators.min(1)]),
+      seats: new FormControl(4, [Validators.required, Validators.min(1), Validators.max(8)]),
       babyFriendly: new FormControl(false),
       petFriendly: new FormControl(false)
     });
@@ -59,32 +59,21 @@ export class DriverRegistrationComponent {
           });;
         },
         error: (err) => {
-          if (err.status === 409) {
-            //alert('Driver with this email already exists.');
-            this.snackBar.open(
-              'Driver with this email already exists.',
-              'OK',
-              {
-                duration: 4000,
-                panelClass: ['error-snackbar'],
-                horizontalPosition: 'center',
-                verticalPosition: 'top'
-              }
-            );
-          } else {
-            console.error(err);
-            //alert('Error creating driver.');
-            this.snackBar.open(
-              'Error creating driver.',
-              'OK',
-              {
-                duration: 4000,
-                panelClass: ['error-snackbar'],
-                horizontalPosition: 'center',
-                verticalPosition: 'top'
-              }
-            );
+          let errorMessage = 'Error creating driver.';
+
+          if (err.status === 400 && err.error.errors) {
+            // Ako Spring Boot vrati listu validacionih gresaka
+            errorMessage = Object.values(err.error.errors).join(', ');
+          } else if (err.status === 409) {
+            errorMessage = 'Driver with this email already exists.';
           }
+
+          this.snackBar.open(errorMessage, 'OK', {
+            duration: 5000,
+            panelClass: ['error-snackbar'],
+            horizontalPosition: 'center',
+            verticalPosition: 'top'
+          });
         }
       });
     } else {
