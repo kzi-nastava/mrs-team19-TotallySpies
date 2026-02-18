@@ -19,6 +19,7 @@ import com.ftn.mobile.data.local.TokenStorage;
 import com.ftn.mobile.data.local.UserRoleManger;
 import com.ftn.mobile.presentation.fragments.DriverHistoryFragment;
 import com.ftn.mobile.presentation.fragments.DriverScheduledRidesFragment;
+import com.ftn.mobile.presentation.fragments.HomeFragment;
 import com.ftn.mobile.presentation.fragments.ReportFragment;
 import com.ftn.mobile.presentation.fragments.RideOrderingFragment;
 import com.ftn.mobile.presentation.fragments.DriverRegistrationFragment;
@@ -116,11 +117,10 @@ public class MainActivity extends AppCompatActivity {
         navigationView.setNavigationItemSelectedListener(item -> {
             int id = item.getItemId();
 
-            if (id == R.id.nav_history) {
+            if (id == R.id.nav_home) {
+                openFragment(new HomeFragment(), "SmartRide");
+            } else if (id == R.id.nav_history) {
                 openFragment(new DriverHistoryFragment(), "Ride History");
-            } else if (id == R.id.nav_home) {
-                removeCurrentFragment();
-                getSupportActionBar().setTitle("SmartRide");
             } else if (id == R.id.nav_profile){
                 openFragment(new ProfileFragment(), "Profile");
             } else if (id == R.id.nav_register) {
@@ -147,6 +147,9 @@ public class MainActivity extends AppCompatActivity {
             drawerLayout.closeDrawers();
             return true;
         });
+        if (savedInstanceState == null) {
+            openFragment(new HomeFragment(), "SmartRide");
+        }
     }
     private void openFragment(Fragment fragment, String title) {
         getSupportFragmentManager().beginTransaction()
