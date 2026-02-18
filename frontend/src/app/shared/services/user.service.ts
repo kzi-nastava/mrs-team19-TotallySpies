@@ -37,7 +37,7 @@ export class UserService {
     .set('to', to + 'T23:59:59');
   
     if (targetEmail) {
-      params = params.set('userEmail', targetEmail);
+      params = params.set('targetEmail', targetEmail);
     }
 
     return this.http.get<ReportResponseDTO>(`${this.baseUrl}/report`, { params });
