@@ -553,14 +553,11 @@ public class RideService {
             User driverUser = userRepository.findByEmail(driver.getEmail());
             notificationService.notifyUser(driverUser, ride, "You have a new ride in less than 15 minutes", NotificationType.NEW_RIDE);
             
-            String currentPassenger = SecurityContextHolder.getContext().getAuthentication().getName();
-            String passengerMsg = "You've been added to ride to ride! Driver " + driver.getName() + " is at your service.";
+            String passengerMsg = "You have a new ride! Driver " + driver.getName() + " is at your service.";
             String url = "http://localhost:4200/ride-tracker-user/"; 
             String trackingLink = url + ride.getId();
             for (Passenger p : ride.getPassengers()) {
-                if (p.getEmail().equals(currentPassenger)) {
-                    continue; 
-                }
+
                 notificationService.notifyUser(p, ride, passengerMsg, NotificationType.LINKED_TO_RIDE);
                 
                 MailBody mailBody = MailBody.builder()
