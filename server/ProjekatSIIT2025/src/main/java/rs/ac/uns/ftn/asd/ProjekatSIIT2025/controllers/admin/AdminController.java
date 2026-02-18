@@ -1,5 +1,6 @@
 package rs.ac.uns.ftn.asd.ProjekatSIIT2025.controllers.admin;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -66,7 +67,7 @@ public class AdminController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/create-driver")
-    public ResponseEntity<Void> createDriver(@RequestBody CreateDriverRequestDTO dto) {
+    public ResponseEntity<Void> createDriver(@Valid @RequestBody CreateDriverRequestDTO dto) {
         driverService.createDriver(dto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -137,7 +138,7 @@ public class AdminController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/block/{id}")
-    public void blockUser(@PathVariable Long id, @RequestBody BlockRequestDTO req) {
+    public void blockUser(@PathVariable Long id, @Valid @RequestBody BlockRequestDTO req) {
         userService.blockUser(id, req.getReason());
     }
 
