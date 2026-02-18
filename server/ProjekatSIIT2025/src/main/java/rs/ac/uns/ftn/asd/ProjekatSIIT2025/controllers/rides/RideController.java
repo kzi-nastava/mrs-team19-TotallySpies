@@ -11,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.*;
@@ -117,6 +118,18 @@ public class RideController {
         String email = auth.getName();
         List<PassengerUpcomingRideDTO> upcomingRides = rideService.findUpcomingRides(email);
         return ResponseEntity.ok(upcomingRides);
+    }
+
+    @GetMapping(value = "/active-tracking", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('PASSENGER')")
+    public ResponseEntity<RideTrackingDTO> getActiveRideTracking() {
+        RideTrackingDTO response = rideService.getActiveRideForPassenger();
+        
+        if (response != null) {
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
 }

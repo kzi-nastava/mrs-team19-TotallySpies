@@ -60,4 +60,6 @@ public interface RideRepository extends JpaRepository<Ride, Long> {
             @Param("to") LocalDateTime to);
 
     List<Ride> findAllByCreatorEmailAndStatusIn(String email, List<RideStatus> stuteses);
+    @Query("SELECT r FROM Ride r JOIN r.passengers p WHERE p.email = :email AND r.status = rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.RideStatus.ACTIVE")
+     Ride findActiveRideByPassengerEmail(@Param("email") String email);
 }

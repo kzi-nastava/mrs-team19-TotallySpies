@@ -2,6 +2,8 @@ package com.ftn.mobile.data.remote.api;
 
 import com.ftn.mobile.data.remote.dto.CreateRideRequestDTO;
 import com.ftn.mobile.data.remote.dto.CreateRideResponseDTO;
+import com.ftn.mobile.data.remote.dto.InconsistencyReportRequestDTO;
+import com.ftn.mobile.data.remote.dto.RideTrackingDTO;
 import com.ftn.mobile.data.remote.dto.ScheduledRideDTO;
 
 import java.util.List;
@@ -26,4 +28,10 @@ public interface RideApi {
 
     @PUT("api/v1/rides/{id}/start")
     Call<ResponseBody> startRide(@Path("id") Long id);
+
+    @POST("api/v1/rides/{id}/inconsistency-report")
+    Call<ResponseBody> reportInconsistency(@Path("id") Long id, @Body  InconsistencyReportRequestDTO request);
+
+    @GET("api/v1/rides/active-tracking")
+    Call<RideTrackingDTO> getActiveRide();
 }

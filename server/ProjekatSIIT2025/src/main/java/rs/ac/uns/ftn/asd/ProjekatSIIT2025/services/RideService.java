@@ -306,9 +306,15 @@ public class RideService {
         vehicleLat = start.getLatitude();
         vehicleLng = start.getLongitude();
     }
+    List<RoutePointDTO> path = new ArrayList<>();
+    if (ride.getRoutePoints() != null) {
+        for (RoutePoint rp : ride.getRoutePoints()) {
+            path.add(new RoutePointDTO(rp.getLatitude(), rp.getLongitude()));
+        }
+    }
 
     return new RideTrackingDTO(
-        vehicle.getId(),
+        ride.getId(),
         vehicleLat,
         vehicleLng,
         eta,
@@ -318,7 +324,7 @@ public class RideService {
         ride.getDriver().getAverageRating(),
         ride.getDriver().getProfilePicture(),
         ride.getStops().get(0).getAddress(),
-        ride.getStops().get(ride.getStops().size() - 1).getAddress());
+        ride.getStops().get(ride.getStops().size() - 1).getAddress(), path);
 }
 
     @Transactional
@@ -1168,5 +1174,14 @@ public class RideService {
         dto.setLocations(stops);
 
         return dto;
+    }
+    
+    @Transactional
+    public RideTrackingDTO getActiveRideForPassenger() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        Ride ride = rideRepository.findActiveRideByPassengerEmail(email); 
+        
+        if (ride == null) return null;
+        return getRideTrackingInfo(ride.getId());
     }
 }
