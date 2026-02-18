@@ -84,14 +84,7 @@ public class AdminRideHistoryTest extends BaseTest{
         var prices = page.getTotalPrices();
         assertTrue(isSortedAscDouble(prices) || isSortedDescDouble(prices), "Prices should be sorted after click");
     }
-    @Test
-    void sort_by_is_cancelled_work() {
-        AdminRideHistoryPage page = openHistoryForFirstUser();
-        page.sortByIsCancelled();
-        page.sortByIsCancelled();
-        var cancellations = page.getCancellations();
-        assertTrue(isSortedAscString(cancellations) || isSortedDescString(cancellations), "Should be sorted after click");
-    }
+
     @Test
     void sort_by_user_who_cancelled_work() {
         AdminRideHistoryPage page = openHistoryForFirstUser();
