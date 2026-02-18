@@ -33,6 +33,11 @@
         android:title="Pricing Settings" />
 
     <item
+        android:id="@+id/nav_report"
+        android:title="Reports"
+        />
+
+    <item
         android:id="@+id/nav_scheduled"
         android:title="Scheduled Rides" />
 </menu>

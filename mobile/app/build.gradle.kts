@@ -76,6 +76,8 @@ dependencies {
         exclude(group = "org.osmdroid", module = "osmdroid-android")
     }
 
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)

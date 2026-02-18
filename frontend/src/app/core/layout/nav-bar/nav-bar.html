@@ -14,6 +14,10 @@
       Order ride
     </a>
     <a *ngIf="isPassenger" routerLink="/upcoming-rides" routerLinkActive="active">Upcoming rides</a>
+    <a *ngIf="isAdmin" routerLink="/admin-pricing" routerLinkActive="active">Pricing</a>
+    <a *ngIf="isAdmin" routerLink="/admin-ride-tracking" routerLinkActive="active">Track rides</a>
+    <a *ngIf="isDriver" routerLink="/scheduled-rides" routerLinkActive="active">My rides</a>
+
   
   </div>
 
