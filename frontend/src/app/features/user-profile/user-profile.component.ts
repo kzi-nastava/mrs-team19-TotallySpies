@@ -80,8 +80,10 @@ export class UserProfileComponent {
     this.profileForm = new FormGroup({
       name: new FormControl('', [Validators.required]),
       lastName: new FormControl('', [Validators.required]),
-      phoneNumber: new FormControl(''),
-      address: new FormControl('')
+      phoneNumber: new FormControl('', [
+        Validators.required,
+        Validators.pattern(/^(\+381 \d{2} \d{3} \d{3,4}|\d{11})$/)]),
+      address: new FormControl('', [Validators.required])
     });
   }
 
@@ -160,11 +162,19 @@ export class UserProfileComponent {
       this.userService.updateProfile(request).subscribe({
         next: () => {
           this.editingField = null;
+          this.showSnackBar('Profile updated successfully!', 'success');
           this.loadDataByRole();
           this.cdr.detectChanges();
         },
-        error: () => {
+        error: (err) => {
           this.editingField = null;
+          let msg = 'Error updating profile.';
+          if (err.status === 400 && err.error.errors) {
+            msg = Object.values(err.error.errors).join(', ');
+          } else if (err.error.message) {
+            msg = err.error.message;
+          }
+          this.showSnackBar(msg, 'error');
         }
       });
     }
@@ -276,9 +286,9 @@ export class UserProfileComponent {
   toggleBlock(user: AdminUserDTO) {
     const dialogRef = this.dialog.open(BlockDialogComponent, {
       width: 'auto',
-      data: { 
-        isBlocked: user.blocked, 
-        name: user.name 
+      data: {
+        isBlocked: user.blocked,
+        name: user.name
       },
       panelClass: 'custom-dialog-container' // Opciono za uklanjanje default paddinga
     });
@@ -286,7 +296,7 @@ export class UserProfileComponent {
     dialogRef.afterClosed().subscribe(result => {
       if (result && result.confirm) {
         // Korisnik je kliknuo na dugme za potvrdu u dijalogu
-        
+
         if (user.blocked) {
           // LOGIKA ZA ODBLOKIRANJE (UNBLOCK)
           this.adminService.unblockUser(user.id).subscribe({
@@ -316,7 +326,7 @@ export class UserProfileComponent {
     });
     this.cdr.detectChanges();
   }
-  
+
   private showSnackBar(message: string, type: 'success' | 'error') {
     this.snackBar.open(message, 'OK', {
       duration: 4000,
