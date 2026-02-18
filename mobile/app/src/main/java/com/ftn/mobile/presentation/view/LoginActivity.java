@@ -76,7 +76,10 @@ public class LoginActivity extends AppCompatActivity {
                         String token = response.body().getAccessToken();
                         TokenStorage.save(LoginActivity.this, token);
                         UserRoleManger.updateRole(token);
-                        DialogBox.showDialog(LoginActivity.this, "Logged in", "Successfully logged!");
+                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
+                        finish();
                         // startActivity(new Intent(Login.this, HomeActivity.class));
                     } else if (response.code() == 401) {
                         DialogBox.showDialog(LoginActivity.this, "Error", "Invalid email or password");

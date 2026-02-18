@@ -14,6 +14,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.validation.Valid;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.*;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.Ride;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.services.RideService;
@@ -35,7 +36,7 @@ public class RideController {
     @PreAuthorize("hasRole('PASSENGER')")
     public ResponseEntity<Map<String, String>> reportInconsistency(
             @PathVariable Long id, 
-            @RequestBody InconsistencyReportRequestDTO request) {
+            @Valid @RequestBody InconsistencyReportRequestDTO request) {
                 boolean isReported = rideService.reportInconsistency(id, request);
                 
                 if (isReported) {

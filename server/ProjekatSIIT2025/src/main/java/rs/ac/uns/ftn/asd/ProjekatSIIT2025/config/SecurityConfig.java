@@ -49,7 +49,8 @@ public class SecurityConfig {
                              "/error", "/api/v1/rides/{id}/location", "/api/v1/rides/{id}/inconsistency-report",
                             "/error", "/api/v1/vehicles", "/api/v1/drivers/{id}/ride",
                             "/api/v1/forgot-password/**","/api/v1/auth/activate","/api/v1/auth/activate-driver",
-                            "/api/v1/vehicles/active", "/ws-transport/**", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html")
+                            "/api/v1/vehicles/active", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html",
+                             "/ws-transport/**", "/socket/**")
               .permitAll()
                     .anyRequest().authenticated()
                     )

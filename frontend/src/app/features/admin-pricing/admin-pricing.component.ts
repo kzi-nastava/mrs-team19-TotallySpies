@@ -26,12 +26,18 @@ export class AdminPricingComponent implements OnInit {
 }
 
   updatePrice(priceObj: any) {
+    if (priceObj.basePrice <= 0) {
+      alert('Price must be a positive number!');
+      return;
+    }
     this.http.put('http://localhost:8080/api/v1/prices', {
       vehicleType: priceObj.vehicleType,
       newPrice: priceObj.basePrice
     }).subscribe({
       next: () => alert(`Price for ${priceObj.vehicleType} updated!`),
-      error: () => alert('Error while updating price!')
+      error: (err) => {
+        alert('Error: ' + (err.error?.message || 'Update failed'));
+      }
     });
   }
 }
