@@ -90,4 +90,25 @@ public class DriverScheduledRidesFragment extends Fragment implements ScheduledR
             }
         });
     }
+
+    @Override
+    public void onStartRide(Long rideId) {
+        ApiProvider.ride().startRide(rideId).enqueue(new Callback<okhttp3.ResponseBody>() {
+            @Override
+            public void onResponse(Call<okhttp3.ResponseBody> call, Response<okhttp3.ResponseBody> response) {
+                if (response.isSuccessful()) {
+                    Toast.makeText(getContext(), "Ride successfully started!", Toast.LENGTH_SHORT).show();
+                    loadActiveAndScheduledRides();
+                } else {
+                    Toast.makeText(getContext(), "Failed to start ride.", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<okhttp3.ResponseBody> call, Throwable t) {
+                Log.e("API_ERROR", "Error starting ride: " + t.getMessage());
+                Toast.makeText(getContext(), "Server error", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 }

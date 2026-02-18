@@ -6,6 +6,7 @@ import com.ftn.mobile.data.remote.dto.ScheduledRideDTO;
 
 import java.util.List;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -22,4 +23,7 @@ public interface RideApi {
 
     @PUT("api/v1/rides/{id}/end")
     Call<ScheduledRideDTO> finishRide(@Path("id") Long id);
+
+    @PUT("api/v1/rides/{id}/start")
+    Call<ResponseBody> startRide(@Path("id") Long id);
 }
