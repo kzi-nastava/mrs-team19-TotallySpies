@@ -3,6 +3,7 @@ package com.ftn.mobile.data.remote;
 import com.ftn.mobile.data.remote.api.AdminApi;
 import com.ftn.mobile.data.remote.api.AuthApi;
 
+import com.ftn.mobile.data.remote.api.ChatApi;
 import com.ftn.mobile.data.remote.api.DriverApi;
 import com.ftn.mobile.data.remote.api.FavouriteApi;
 import com.ftn.mobile.data.remote.api.ForgotPasswordApi;
@@ -27,10 +28,10 @@ public final class ApiProvider {
     private static PriceApi priceApi;
 
     private static RideApi rideApi;
-
     private static FavouriteApi favouriteApi;
 
     private static VehicleApi vehicleApi;
+    private static ChatApi chatApi;
     private static ReviewApi reviewApi;
 
     private ApiProvider() {}
@@ -94,6 +95,12 @@ public final class ApiProvider {
             vehicleApi = RetrofitClient.getRetrofit().create(VehicleApi.class);
         }
         return vehicleApi;
+    }
+    public static ChatApi chat() {
+        if (chatApi == null){
+            chatApi = RetrofitClient.getRetrofit().create(ChatApi.class);
+        }
+        return chatApi;
     }
 
     public static ReviewApi review() {

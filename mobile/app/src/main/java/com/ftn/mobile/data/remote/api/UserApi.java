@@ -1,9 +1,12 @@
 package com.ftn.mobile.data.remote.api;
 
-import com.ftn.mobile.data.remote.dto.ChangePasswordRequestDTO;
+import com.ftn.mobile.data.remote.dto.auth.ChangePasswordRequestDTO;
 import com.ftn.mobile.data.remote.dto.ReportResponseDTO;
 import com.ftn.mobile.data.remote.dto.UserProfileResponseDTO;
 import com.ftn.mobile.data.remote.dto.UserProfileUpdateRequestDTO;
+import com.ftn.mobile.data.remote.dto.rides.PassengerRideHistoryDTO;
+
+import java.util.List;
 
 import okhttp3.MultipartBody;
 import okhttp3.ResponseBody;
@@ -17,6 +20,15 @@ import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface UserApi {
+
+    @GET("api/v1/users/history")
+    Call<List<PassengerRideHistoryDTO>> getPassengerRideHistory(
+            @Query("sortBy") String sortBy,
+            @Query("sortDirection") String sortDirection,
+            @Query("from") String from, //ISO date time
+            @Query("to") String to
+    );
+
     // GET /api/v1/users/profile
     @GET("api/v1/users/profile")
     Call<UserProfileResponseDTO> getProfile();

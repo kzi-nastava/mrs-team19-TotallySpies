@@ -1,6 +1,7 @@
 package com.ftn.mobile.data.remote.api;
 
 import com.ftn.mobile.data.remote.dto.DriverActivityResponseDTO;
+import com.ftn.mobile.data.remote.dto.DriverBlockedStatusDTO;
 import com.ftn.mobile.data.remote.dto.VehicleInfoResponseDTO;
 
 import com.ftn.mobile.data.remote.dto.DriverRideHistoryDTO;
@@ -25,4 +26,7 @@ public interface DriverApi {
             @Query("from") String from,
             @Query("to") String to
     );
+
+    @GET("api/v1/drivers/blocked-status")
+    Call<DriverBlockedStatusDTO> getBlockedStatus();
 }

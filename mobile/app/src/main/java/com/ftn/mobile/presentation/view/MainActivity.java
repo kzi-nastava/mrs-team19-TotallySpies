@@ -7,10 +7,12 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
@@ -18,12 +20,15 @@ import androidx.fragment.app.Fragment;
 import com.ftn.mobile.R;
 import com.ftn.mobile.data.local.TokenStorage;
 import com.ftn.mobile.data.local.UserRoleManger;
+import com.ftn.mobile.presentation.fragments.ChatFragment;
+import com.ftn.mobile.presentation.fragments.ChatListFragment;
 import com.ftn.mobile.data.remote.ApiProvider;
 import com.ftn.mobile.data.remote.dto.RideTrackingDTO;
 import com.ftn.mobile.presentation.fragments.AdminTrackingFragment;
 import com.ftn.mobile.presentation.fragments.DriverHistoryFragment;
 import com.ftn.mobile.presentation.fragments.DriverScheduledRidesFragment;
 import com.ftn.mobile.presentation.fragments.HomeFragment;
+import com.ftn.mobile.presentation.fragments.PassengerRideHistoryFragment;
 import com.ftn.mobile.presentation.fragments.ReportFragment;
 import com.ftn.mobile.presentation.fragments.RideFormUnregisteredFragment;
 import com.ftn.mobile.presentation.fragments.RideOrderingFragment;
@@ -44,16 +49,19 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
+        //EdgeToEdge.enable(this);
+
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), true);
+
         setContentView(R.layout.activity_main);
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.drawer_layout), (v, insets) -> {
+       /* ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.drawer_layout), (v, insets) -> {
             v.setPadding(insets.getInsets(WindowInsetsCompat.Type.systemBars()).left,
                     insets.getInsets(WindowInsetsCompat.Type.systemBars()).top,
                     insets.getInsets(WindowInsetsCompat.Type.systemBars()).right,
                     insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom);
             return insets;
-        });
+        });*/
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -67,10 +75,18 @@ public class MainActivity extends AppCompatActivity {
             boolean isLoggedIn = (role != null);
 
             MenuItem loginItem = menu.findItem(R.id.nav_login);
-            if (loginItem != null) loginItem.setVisible(!isLoggedIn);
+            loginItem.setVisible(true);
+            //if (loginItem != null) loginItem.setVisible(!isLoggedIn);
 
             MenuItem registerItem = menu.findItem(R.id.nav_register);
-            if (registerItem != null) registerItem.setVisible(!isLoggedIn);
+            //if (registerItem != null) registerItem.setVisible(!isLoggedIn);
+            registerItem.setVisible(true);
+
+            MenuItem passengerRideHistoryItem = menu.findItem(R.id.nav_passenger_ride_history);
+            if (passengerRideHistoryItem != null) {
+                boolean isPassenger = "ROLE_PASSENGER".equals(role);
+                passengerRideHistoryItem.setVisible(isPassenger);
+            }
 
             MenuItem logoutItem = menu.findItem(R.id.nav_logout);
             if (logoutItem != null) logoutItem.setVisible(isLoggedIn);
@@ -127,6 +143,10 @@ public class MainActivity extends AppCompatActivity {
             if (reportItem != null){
                 reportItem.setVisible(isLoggedIn);
             }
+            MenuItem chatItem = menu.findItem(R.id.nav_support_chat);
+            if (chatItem != null){
+                chatItem.setVisible(isLoggedIn);
+            }
 
             if(!isLoggedIn){
                 showRideFormUnregistered();
@@ -160,7 +180,11 @@ public class MainActivity extends AppCompatActivity {
                 openFragment(new HomeFragment(), "SmartRide");
             } else if (id == R.id.nav_history) {
                 openFragment(new DriverHistoryFragment(), "Ride History");
-            } else if (id == R.id.nav_profile){
+            }
+            else if(id == R.id.nav_passenger_ride_history){
+                openFragment(new PassengerRideHistoryFragment(), "Ride history");
+            }
+            else if (id == R.id.nav_profile){
                 openFragment(new ProfileFragment(), "Profile");
             } else if (id == R.id.nav_register) {
                 Intent intent = new Intent(MainActivity.this, RegisterActivity.class);
@@ -220,6 +244,18 @@ public class MainActivity extends AppCompatActivity {
                 openFragment(new RideOrderingFragment(), "Ride ordering");
             } else if (id == R.id.nav_register_driver){
                 openFragment(new DriverRegistrationFragment(), "Driver registration");
+            }
+            else if (id == R.id.nav_support_chat) {
+                String role = UserRoleManger.getCurrentRole();
+                if ("ROLE_ADMIN".equals(role)) {
+                    openFragment(new ChatListFragment(), "Support Chats");
+                } else {
+                    ChatFragment fragment = new ChatFragment();
+                    Bundle args = new Bundle();
+                    args.putBoolean("isAdmin", false);
+                    fragment.setArguments(args);
+                    openFragment(fragment, "Support Chat");
+                }
             }
             else if (id == R.id.nav_pricing) {
                 openFragment(new PricingFragment(), "Pricing");

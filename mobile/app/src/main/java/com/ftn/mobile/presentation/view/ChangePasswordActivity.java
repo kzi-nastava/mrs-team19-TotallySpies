@@ -13,8 +13,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.ftn.mobile.R;
 import com.ftn.mobile.data.remote.ApiProvider;
-import com.ftn.mobile.data.remote.dto.ChangedPasswordDTO;
-import com.ftn.mobile.data.remote.dto.VerifyOtpDTO;
+import com.ftn.mobile.data.remote.dto.auth.ChangedPasswordDTO;
 import com.ftn.mobile.utils.DialogBox;
 
 import okhttp3.ResponseBody;

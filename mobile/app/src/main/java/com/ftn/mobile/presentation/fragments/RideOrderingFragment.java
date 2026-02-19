@@ -29,6 +29,7 @@ import com.ftn.mobile.data.remote.dto.CreateRideResponseDTO;
 import com.ftn.mobile.data.remote.dto.FavouriteRideDTO;
 import com.ftn.mobile.data.remote.dto.RideStopDTO;
 import com.ftn.mobile.data.remote.dto.RoutePointDTO;
+import com.ftn.mobile.data.remote.dto.rides.PassengerRideDetailsResponseDTO;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -52,6 +53,7 @@ import retrofit2.Response;
 
 public class RideOrderingFragment extends Fragment {
 
+    private static final String ARG_RIDE_ID = "arg_ride_id";
     private MapView map;
     private EditText etStart, etEnd;
     private LinearLayout stopsContainer, emailsContainer, layoutOrder;
@@ -80,6 +82,14 @@ public class RideOrderingFragment extends Fragment {
         // Required empty public constructor
     }
 
+    public static RideOrderingFragment newInstance(long rideId) {
+        RideOrderingFragment f = new RideOrderingFragment();
+        Bundle b = new Bundle();
+        b.putSerializable(ARG_RIDE_ID, rideId);
+        f.setArguments(b);
+        return f;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,6 +99,12 @@ public class RideOrderingFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_ride_ordering, container, false);
+        if (getArguments() != null && getArguments().containsKey(ARG_RIDE_ID)) {
+            long id = getArguments().getLong(ARG_RIDE_ID, -1);
+            if (id != -1) {
+                prefillStopsFromRideId(id);
+            }
+        }
 
         map = view.findViewById(R.id.map);
         etStart = view.findViewById(R.id.etStart);
@@ -144,7 +160,40 @@ public class RideOrderingFragment extends Fragment {
 
         return view;
     }
+    private void prefillStopsFromRideId(long rideId){
+        ApiProvider.ride().getRideDetails(rideId).enqueue(new Callback<PassengerRideDetailsResponseDTO>() {
 
+            @Override
+            public void onResponse(Call<PassengerRideDetailsResponseDTO> call,
+                                   Response<PassengerRideDetailsResponseDTO> response) {
+
+                if (!isAdded()) return;
+
+                if (response.isSuccessful() && response.body() != null && response.body().getRideStops() != null) {
+                    java.util.List<com.ftn.mobile.data.remote.dto.rides.RideStopDTO> incoming = response.body().getRideStops();
+                    if (incoming.size() < 2) return;
+
+                    etStart.setText(incoming.get(0).getAddress());
+                    etEnd.setText(incoming.get(incoming.size() - 1).getAddress());
+                    stopsContainer.removeAllViews();
+
+                    for (int i = 1; i < incoming.size() - 1; i++) {
+                        addStopFieldWithAddress(incoming.get(i).getAddress());
+                    }
+                    executeSearchRoute();
+                } else {
+                    Toast.makeText(requireContext(), "Failed to load ride details", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(retrofit2.Call<com.ftn.mobile.data.remote.dto.rides.PassengerRideDetailsResponseDTO> call,
+                                  Throwable t) {
+                if (!isAdded()) return;
+                Toast.makeText(requireContext(), "Network error", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
     // podesavanje mape
     private void setupMap() {
         Configuration.getInstance().load(getContext(), PreferenceManager.getDefaultSharedPreferences(getContext()));
@@ -380,7 +429,7 @@ public class RideOrderingFragment extends Fragment {
             @Override
             public void onResponse(Call<CreateRideResponseDTO> call, Response<CreateRideResponseDTO> response) {
                 if(response.isSuccessful() && response.body() != null) {
-                    updateDialogStatus("FOUND", response.body().getMessage());
+                    updateDialogStatus("FOUND", response.body().getMessage(), true);
                 } else {
                     String errorMsg = "No drivers available.";
                     try {
@@ -390,12 +439,12 @@ public class RideOrderingFragment extends Fragment {
                     } catch (Exception e) {
 
                     }
-                    updateDialogStatus("NOT_FOUND", errorMsg);
+                    updateDialogStatus("NOT_FOUND", errorMsg, false);
                 }
             }
             @Override
             public void onFailure(Call<CreateRideResponseDTO> call, Throwable t) {
-                updateDialogStatus("ERROR", "Network error: " + t.getMessage());
+                updateDialogStatus("ERROR", "Network error: " + t.getMessage(), false);
             }
         });
     }
@@ -421,7 +470,7 @@ public class RideOrderingFragment extends Fragment {
         searchDialog.show();
     }
 
-    private void updateDialogStatus(String status, String msg) {
+    private void updateDialogStatus(String status, String msg, boolean isSuccess) {
         if (searchDialog == null || !searchDialog.isShowing()) return;
 
         getActivity().runOnUiThread(() -> {
@@ -429,10 +478,18 @@ public class RideOrderingFragment extends Fragment {
             progressSearch.setVisibility(View.GONE);
             btnDismissDialog.setVisibility(View.VISIBLE);
 
-            if (status.equals("FOUND")) {
+            if (isSuccess) {
                 tvSearchStatus.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
+                btnDismissDialog.setText("VIEW MY RIDES");
+
+                btnDismissDialog.setOnClickListener(v -> {
+                    searchDialog.dismiss();
+                    navigateToUpcomingRides();
+                });
             } else {
                 tvSearchStatus.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
+                btnDismissDialog.setText("CLOSE");
+                btnDismissDialog.setOnClickListener(v -> searchDialog.dismiss());
             }
         });
     }
@@ -549,5 +606,12 @@ public class RideOrderingFragment extends Fragment {
             EditText et = (EditText) ((LinearLayout) lastRow).getChildAt(1);
             et.setText(address);
         }
+    }
+
+    private void navigateToUpcomingRides() {
+        getParentFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container, new PassengerUpcomingRidesFragment())
+                .addToBackStack(null)
+                .commit();
     }
 }

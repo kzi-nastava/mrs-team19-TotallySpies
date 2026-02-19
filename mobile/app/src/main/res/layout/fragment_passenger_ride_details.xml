@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <ProgressBar
+            android:id="@+id/progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone" />
+        <org.osmdroid.views.MapView
+            android:id="@+id/map"
+            android:layout_width="match_parent"
+            android:layout_height="280dp" />
+        <!-- DRIVER INFO -->
+        <TextView
+            android:id="@+id/tvDriverInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Driver info"
+            android:textStyle="bold"
+            android:textColor="@color/accent"
+            android:textSize="16sp"/>
+        <TextView
+            android:id="@+id/tvDriverFullName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/driver_name"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:textSize="16sp"/>
+
+        <TextView
+            android:id="@+id/tvDriverEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/driver_email_com"
+            android:textColor="@color/white"
+            android:textSize="16sp"/>
+
+        <TextView
+            android:id="@+id/tvDriverPhone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/_381_64_000_000"
+            android:textColor="@color/white"
+            android:textSize="16sp"/>
+
+        <!-- DISTANCE -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="@string/distance"
+            android:textStyle="bold"
+            android:textColor="@color/accent"
+            android:textSize="16sp"/>
+
+        <TextView
+            android:id="@+id/tvDistance"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/_12_5_km"
+            android:textColor="@color/white"
+            android:textSize="16sp"/>
+
+        <!-- PRICE -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/total_price"
+            android:textStyle="bold"
+            android:textColor="@color/accent"
+            android:textSize="16sp"/>
+
+        <TextView
+            android:id="@+id/tvTotalPrice"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/_1200_rsd"
+            android:textColor="@color/white"
+            android:textSize="16sp"/>
+
+        <!-- STOPS -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/ride_stops"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:textColor="@color/accent"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvStops"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:nestedScrollingEnabled="false"/>
+
+        <!-- GRADES -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/ride_grades"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:textColor="@color/accent"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvGrades"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:nestedScrollingEnabled="false"/>
+
+        <!-- REPORTS -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/reports"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:textColor="@color/accent"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvReports"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:nestedScrollingEnabled="false"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btnReorder"
+            android:text="Reorder ride"
+            android:layout_marginTop="10dp"/>
+
+        <Button
+            android:id="@+id/btnAddToFavourite"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="⭐ Add to Favourites" />
+
+
+    </LinearLayout>
+</ScrollView>

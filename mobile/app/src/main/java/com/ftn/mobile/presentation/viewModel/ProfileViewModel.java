@@ -8,6 +8,7 @@ import com.ftn.mobile.data.model.CarInfo;
 import com.ftn.mobile.data.model.User;
 import com.ftn.mobile.data.remote.ApiProvider;
 import com.ftn.mobile.data.remote.dto.DriverActivityResponseDTO;
+import com.ftn.mobile.data.remote.dto.DriverBlockedStatusDTO;
 import com.ftn.mobile.data.remote.dto.UserProfileResponseDTO;
 import com.ftn.mobile.data.remote.dto.VehicleInfoResponseDTO;
 
@@ -17,6 +18,11 @@ import retrofit2.Response;
 
 public class ProfileViewModel extends ViewModel {
     private final MutableLiveData<User> userLiveData = new MutableLiveData<>();
+    private MutableLiveData<DriverBlockedStatusDTO> blockedStatus = new MutableLiveData<>();
+
+    public LiveData<DriverBlockedStatusDTO> getBlockedStatus() {
+        return blockedStatus;
+    }
     private final MutableLiveData<String> error = new MutableLiveData<>();
     private final MutableLiveData<CarInfo> carLiveData = new MutableLiveData<>();
     private final MutableLiveData<String> driverActivity = new MutableLiveData<>();
@@ -102,6 +108,19 @@ public class ProfileViewModel extends ViewModel {
         long hours = totalMinutes / 60;
         long minutes = totalMinutes % 60;
         return hours + "h " + minutes + "m";
+    }
+
+    public void loadBlockedStatus() {
+        ApiProvider.driver().getBlockedStatus().enqueue(new Callback<DriverBlockedStatusDTO>() {
+            @Override
+            public void onResponse(Call<DriverBlockedStatusDTO> call, Response<DriverBlockedStatusDTO> response) {
+                if (response.isSuccessful()) {
+                    blockedStatus.setValue(response.body());
+                }
+            }
+            @Override
+            public void onFailure(Call<DriverBlockedStatusDTO> call, Throwable t) { /* handle error */ }
+        });
     }
 
 }
