@@ -18,6 +18,8 @@ import androidx.fragment.app.Fragment;
 import com.ftn.mobile.R;
 import com.ftn.mobile.data.local.TokenStorage;
 import com.ftn.mobile.data.local.UserRoleManger;
+import com.ftn.mobile.presentation.fragments.ChatFragment;
+import com.ftn.mobile.presentation.fragments.ChatListFragment;
 import com.ftn.mobile.presentation.fragments.DriverHistoryFragment;
 import com.ftn.mobile.presentation.fragments.DriverScheduledRidesFragment;
 import com.ftn.mobile.presentation.fragments.HomeFragment;
@@ -106,6 +108,10 @@ public class MainActivity extends AppCompatActivity {
             if (reportItem != null){
                 reportItem.setVisible(isLoggedIn);
             }
+            MenuItem chatItem = menu.findItem(R.id.nav_support_chat);
+            if (chatItem != null){
+                chatItem.setVisible(isLoggedIn);
+            }
 
             if(!isLoggedIn){
                 showRideFormUnregistered();
@@ -163,6 +169,18 @@ public class MainActivity extends AppCompatActivity {
                 openFragment(new RideOrderingFragment(), "Ride ordering");
             } else if (id == R.id.nav_register_driver){
                 openFragment(new DriverRegistrationFragment(), "Driver registration");
+            }
+            else if (id == R.id.nav_support_chat) {
+                String role = UserRoleManger.getCurrentRole();
+                if ("ROLE_ADMIN".equals(role)) {
+                    openFragment(new ChatListFragment(), "Support Chats");
+                } else {
+                    ChatFragment fragment = new ChatFragment();
+                    Bundle args = new Bundle();
+                    args.putBoolean("isAdmin", false);
+                    fragment.setArguments(args);
+                    openFragment(fragment, "Support Chat");
+                }
             }
             else if (id == R.id.nav_pricing) {
                 openFragment(new PricingFragment(), "Pricing");

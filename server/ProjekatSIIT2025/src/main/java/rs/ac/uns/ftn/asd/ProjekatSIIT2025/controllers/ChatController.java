@@ -50,7 +50,7 @@ public class ChatController {
                 return;
             }
             
-            User sender = userService.findById(dto.getSenderId()); // You'll need this method
+            User sender = userService.findById(dto.getSenderId());
             System.out.println("Sender found: " + sender.getEmail());
 
             ChatMessage message = new ChatMessage();
@@ -64,6 +64,7 @@ public class ChatController {
 
             messagingTemplate.convertAndSend("/topic/admin/messages", saved);
             System.out.println("Message sent to /topic/admin/messages");
+            messagingTemplate.convertAndSend("/topic/user/" + sender.getId(), saved);
             
         } catch (Exception e) {
             System.err.println("Error sending message: " + e.getMessage());
@@ -90,6 +91,7 @@ public class ChatController {
             ChatMessage saved = chatMessageRepository.save(message);
             
             messagingTemplate.convertAndSend("/topic/user/" + dto.getReceiverId(), saved);
+            messagingTemplate.convertAndSend("/topic/admin/messages", saved);
             
         } catch (Exception e) {
             System.err.println("Error sending admin response: " + e.getMessage());

@@ -43,4 +43,8 @@
     <item
         android:id="@+id/nav_scheduled"
         android:title="Scheduled Rides" />
+
+    <item
+        android:id="@+id/nav_support_chat"
+        android:title="Support" />
 </menu>
