@@ -53,7 +53,7 @@ public class Ride {
     @OneToOne(mappedBy = "ride", cascade = CascadeType.ALL)
     private PanicNotification panicNotification;
 
-    @OneToMany(mappedBy = "ride", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "ride", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @OrderBy("sequence ASC")
     private List<RoutePoint> routePoints;
 
