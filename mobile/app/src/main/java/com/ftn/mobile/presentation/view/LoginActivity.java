@@ -2,12 +2,10 @@ package com.ftn.mobile.presentation.view;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.util.Patterns;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,8 +17,8 @@ import androidx.core.view.WindowInsetsCompat;
 import com.ftn.mobile.R;
 import com.ftn.mobile.data.local.TokenStorage;
 import com.ftn.mobile.data.remote.ApiProvider;
-import com.ftn.mobile.data.remote.dto.UserLoginRequestDTO;
-import com.ftn.mobile.data.remote.dto.UserTokenStateDTO;
+import com.ftn.mobile.data.remote.dto.auth.UserLoginRequestDTO;
+import com.ftn.mobile.data.remote.dto.auth.UserTokenStateDTO;
 import com.ftn.mobile.utils.DialogBox;
 import com.ftn.mobile.data.local.UserRoleManger;
 

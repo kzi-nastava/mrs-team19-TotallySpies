@@ -1,4 +1,4 @@
-package com.ftn.mobile.data.remote.dto;
+package com.ftn.mobile.data.remote.dto.auth;
 
 public class VerifyOtpDTO {
     private String email;

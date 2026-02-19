@@ -15,7 +15,7 @@ import android.widget.Toast;
 
 import com.ftn.mobile.R;
 import com.ftn.mobile.data.remote.ApiProvider;
-import com.ftn.mobile.data.remote.dto.ChangePasswordRequestDTO;
+import com.ftn.mobile.data.remote.dto.auth.ChangePasswordRequestDTO;
 import com.ftn.mobile.presentation.view.LoginActivity;
 
 public class ChangePasswordFragment extends DialogFragment {

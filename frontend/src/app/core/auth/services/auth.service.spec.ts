@@ -35,7 +35,7 @@ describe('AuthService', () => {
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toBe(formData);
     expect(req.request.headers.get('skip')).toBe('true');
-    expect(req.request.headers.get('Content-Type')).toBeNull(); // ne setuje se ručno
+    expect(req.request.headers.get('Content-Type')).toBeNull();
     expect(req.request.responseType).toBe('text');
 
     req.flush('User registered!');
