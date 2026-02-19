@@ -74,21 +74,20 @@ public class PassengerRideHistoryFragment extends Fragment {
         Button btnSortEnd = view.findViewById(R.id.btnSortEnd);
         Button btnSortCreation = view.findViewById(R.id.btnSortCreation);
         btnFilter.setOnClickListener(v -> showDateRangePicker());
-        btnSortPickup.setOnClickListener(v -> applySort("pickupDestination"));
+        btnSortPickup.setOnClickListener(v -> applySort("pickupAddress"));
         btnSortDestination.setOnClickListener(v -> applySort("destinationAddress"));
         btnSortStart.setOnClickListener(v -> applySort("startedAt"));
-        btnSortStart.setOnClickListener(v -> applySort("finishedAt"));
-        btnSortStart.setOnClickListener(v -> applySort("createdAt"));
+        btnSortEnd.setOnClickListener(v -> applySort("finishedAt"));
+        btnSortCreation.setOnClickListener(v -> applySort("createdAt"));
         loadPassengerRideHistory(null, null);
     }
-    private void applySort(String sortBy){
-        if (sortBy.equals(sortBy)) {
-            sortDirection = sortDirection.equals("ASC") ? "DESC" : "ASC";
+    private void applySort(String newSortBy){
+        if (this.sortBy.equals(newSortBy)) {
+            this.sortDirection = this.sortDirection.equals("ASC") ? "DESC" : "ASC";
         } else {
-            sortBy = sortBy;
-            sortDirection = "DESC"; // default
+            this.sortBy = newSortBy;
+            this.sortDirection = "DESC";
         }
-
         loadPassengerRideHistory(selectedFromDate, selectedToDate);
     }
     private void showDateRangePicker() {

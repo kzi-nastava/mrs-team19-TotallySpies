@@ -5,6 +5,9 @@ import com.ftn.mobile.data.remote.dto.BlockRequestDTO;
 import com.ftn.mobile.data.remote.dto.CreateDriverRequestDTO;
 import com.ftn.mobile.data.remote.dto.DriverActivityResponseDTO;
 import com.ftn.mobile.data.remote.dto.ProfileChangeRequestDTO;
+import com.ftn.mobile.data.remote.dto.rides.AdminRideHistoryDTO;
+import com.ftn.mobile.data.remote.dto.rides.UserDTO;
+import com.ftn.mobile.presentation.fragments.AdminRideHistoryFragment;
 
 import java.util.List;
 
@@ -15,6 +18,7 @@ import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 public interface AdminApi {
     //GET /api/v1/admin/profile-change-requests
@@ -44,5 +48,16 @@ public interface AdminApi {
 
     @PUT("api/v1/admin/unblock/{id}")
     Call<Void> unblockUser(@Path("id") Long id);
+    @GET("api/v1/admin/{userId}/history")
+    Call<List<AdminRideHistoryDTO>> getAdminRideHistory(
+            @Path("userId") long userId,
+            @Query("userIndicator") int userIndicator,
+            @Query("sortBy") String sortBy,
+            @Query("sortDirection") String sortDirection,
+            @Query("from") String from, //ISO date time
+            @Query("to") String to
+    );
+    @GET("api/v1/admin/users")
+    Call<List<UserDTO>> getAllUsers();
 
 }
