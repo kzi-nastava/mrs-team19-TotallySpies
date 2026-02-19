@@ -78,6 +78,16 @@
                 android:text="@string/report"
                 style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:textColor="@color/error" />
+            <Button
+                android:id="@+id/btnPanic"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="PANIC"
+                android:textColor="@android:color/white"
+                android:backgroundTint="@color/error"
+                android:textStyle="bold" />
+
 
         </LinearLayout>
     </androidx.cardview.widget.CardView>

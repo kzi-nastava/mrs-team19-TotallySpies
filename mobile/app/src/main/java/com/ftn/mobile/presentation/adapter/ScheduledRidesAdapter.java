@@ -30,6 +30,7 @@ public class ScheduledRidesAdapter extends RecyclerView.Adapter<ScheduledRidesAd
         void onFinishRide(Long rideId);
         void onStartRide(Long rideId);
         void onCancelRide(Long rideId);
+        void onTrackRide(Long rideId);
     }
 
     public ScheduledRidesAdapter(Context context, List<ScheduledRideDTO> rides, OnRideActionListener listener) {
@@ -65,21 +66,25 @@ public class ScheduledRidesAdapter extends RecyclerView.Adapter<ScheduledRidesAd
             holder.btnStart.setVisibility(View.VISIBLE);
             holder.btnEnd.setVisibility(View.GONE);
             holder.btnCancel.setVisibility(View.VISIBLE);
+            holder.btnTrack.setVisibility(View.GONE);
             holder.tvStatus.setTextColor(context.getColor(R.color.primary));
         } else if (status == RideStatus.ACTIVE) {
             holder.btnStart.setVisibility(View.GONE);
             holder.btnEnd.setVisibility(View.VISIBLE);
             holder.btnCancel.setVisibility(View.GONE);
+            holder.btnTrack.setVisibility(View.VISIBLE);
             holder.tvStatus.setTextColor(context.getColor(R.color.accent));
         } else {
             holder.btnStart.setVisibility(View.GONE);
             holder.btnEnd.setVisibility(View.GONE);
             holder.btnCancel.setVisibility(View.GONE);
+            holder.btnTrack.setVisibility(View.GONE);
         }
 
         holder.btnStart.setOnClickListener(v -> listener.onStartRide(currentRide.getRideId()));
         holder.btnEnd.setOnClickListener(v -> listener.onFinishRide(currentRide.getRideId()));
         holder.btnCancel.setOnClickListener(v -> listener.onCancelRide(currentRide.getRideId()));
+        holder.btnTrack.setOnClickListener(v -> listener.onTrackRide(currentRide.getRideId()));
         List<UserProfileResponseDTO> passengers = currentRide.getPassengers();
         if (passengers != null && !passengers.isEmpty()) {
             final int[] currentIndex = {0};
@@ -125,7 +130,7 @@ public class ScheduledRidesAdapter extends RecyclerView.Adapter<ScheduledRidesAd
         ImageView imageView, imgPanic;
         TextView tvDeparture, tvDestination, tvPrice, tvStartTime, tvEndTime, tvStatus, tvPassengerName;
         ImageButton btnNext, btnPrev;
-        Button btnStart, btnEnd, btnCancel;
+        Button btnStart, btnEnd, btnCancel, btnTrack;
 
         public ActiveViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -143,6 +148,7 @@ public class ScheduledRidesAdapter extends RecyclerView.Adapter<ScheduledRidesAd
             btnStart = itemView.findViewById(R.id.btnStartRide);
             btnEnd = itemView.findViewById(R.id.btnEndRide);
             btnCancel = itemView.findViewById(R.id.btnCancelRide);
+            btnTrack = itemView.findViewById(R.id.btnTrackRide);
         }
     }
 }
