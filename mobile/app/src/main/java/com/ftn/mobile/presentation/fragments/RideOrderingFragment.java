@@ -429,7 +429,7 @@ public class RideOrderingFragment extends Fragment {
             @Override
             public void onResponse(Call<CreateRideResponseDTO> call, Response<CreateRideResponseDTO> response) {
                 if(response.isSuccessful() && response.body() != null) {
-                    updateDialogStatus("FOUND", response.body().getMessage());
+                    updateDialogStatus("FOUND", response.body().getMessage(), true);
                 } else {
                     String errorMsg = "No drivers available.";
                     try {
@@ -439,12 +439,12 @@ public class RideOrderingFragment extends Fragment {
                     } catch (Exception e) {
 
                     }
-                    updateDialogStatus("NOT_FOUND", errorMsg);
+                    updateDialogStatus("NOT_FOUND", errorMsg, false);
                 }
             }
             @Override
             public void onFailure(Call<CreateRideResponseDTO> call, Throwable t) {
-                updateDialogStatus("ERROR", "Network error: " + t.getMessage());
+                updateDialogStatus("ERROR", "Network error: " + t.getMessage(), false);
             }
         });
     }
@@ -470,7 +470,7 @@ public class RideOrderingFragment extends Fragment {
         searchDialog.show();
     }
 
-    private void updateDialogStatus(String status, String msg) {
+    private void updateDialogStatus(String status, String msg, boolean isSuccess) {
         if (searchDialog == null || !searchDialog.isShowing()) return;
 
         getActivity().runOnUiThread(() -> {
@@ -478,10 +478,18 @@ public class RideOrderingFragment extends Fragment {
             progressSearch.setVisibility(View.GONE);
             btnDismissDialog.setVisibility(View.VISIBLE);
 
-            if (status.equals("FOUND")) {
+            if (isSuccess) {
                 tvSearchStatus.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
+                btnDismissDialog.setText("VIEW MY RIDES");
+
+                btnDismissDialog.setOnClickListener(v -> {
+                    searchDialog.dismiss();
+                    navigateToUpcomingRides();
+                });
             } else {
                 tvSearchStatus.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
+                btnDismissDialog.setText("CLOSE");
+                btnDismissDialog.setOnClickListener(v -> searchDialog.dismiss());
             }
         });
     }
@@ -598,5 +606,12 @@ public class RideOrderingFragment extends Fragment {
             EditText et = (EditText) ((LinearLayout) lastRow).getChildAt(1);
             et.setText(address);
         }
+    }
+
+    private void navigateToUpcomingRides() {
+        getParentFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container, new PassengerUpcomingRidesFragment())
+                .addToBackStack(null)
+                .commit();
     }
 }

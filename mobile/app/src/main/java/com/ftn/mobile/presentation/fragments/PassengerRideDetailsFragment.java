@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.ftn.mobile.R;
 import com.ftn.mobile.data.remote.ApiProvider;
+import com.ftn.mobile.data.remote.dto.FavouriteRideDTO;
 import com.ftn.mobile.data.remote.dto.rides.PassengerRideDetailsResponseDTO;
 import com.ftn.mobile.data.remote.dto.rides.RideGradeDTO;
 import com.ftn.mobile.data.remote.dto.rides.RideStopDTO;
@@ -35,6 +36,7 @@ import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Polyline;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import retrofit2.Call;
@@ -61,6 +63,9 @@ public class PassengerRideDetailsFragment extends Fragment {
     private RideStopsAdapter stopsAdapter;
     private RideGradesAdapter gradesAdapter;
     private RideReportsAdapter reportsAdapter;
+
+    private Button btnFavourite;
+    private Long favoriteId = null;
 
     public static PassengerRideDetailsFragment newInstance(long rideId) {
         PassengerRideDetailsFragment f = new PassengerRideDetailsFragment();
@@ -97,6 +102,8 @@ public class PassengerRideDetailsFragment extends Fragment {
         progress = view.findViewById(R.id.progress);
         //buttons
         btnReorder = view.findViewById(R.id.btnReorder);
+        btnFavourite = view.findViewById(R.id.btnAddToFavourite);
+
         // recyclers
         rvStops = view.findViewById(R.id.rvStops);
         rvGrades = view.findViewById(R.id.rvGrades);
@@ -120,6 +127,14 @@ public class PassengerRideDetailsFragment extends Fragment {
         }
         loadDetails(rideId);
         btnReorder.setOnClickListener(v -> reorderRide());
+
+        btnFavourite.setOnClickListener(v -> {
+            if (favoriteId != null) {
+                removeFromFavourites(favoriteId);
+            } else {
+                addToFavourites(rideId);
+            }
+        });
     }
     private void reorderRide(){
         RideOrderingFragment rideOrderingFragment = RideOrderingFragment.newInstance(rideId);
@@ -164,6 +179,7 @@ public class PassengerRideDetailsFragment extends Fragment {
                 setLoading(false);
                 if (response.isSuccessful() && response.body() != null) {
                     bind(response.body());
+                    checkIfFavourite();
                 } else {
                     Toast.makeText(requireContext(), "Failed: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
@@ -240,6 +256,63 @@ public class PassengerRideDetailsFragment extends Fragment {
 
     private String safe(String s) {
         return (s == null || s.trim().isEmpty()) ? "-" : s;
+    }
+
+    private void checkIfFavourite() {
+        ApiProvider.favourite().getFavourites().enqueue(new Callback<List<FavouriteRideDTO>>() {
+            @Override
+            public void onResponse(Call<List<FavouriteRideDTO>> call, Response<List<FavouriteRideDTO>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    favoriteId = null;
+                    for (FavouriteRideDTO fav : response.body()) {
+                        if (fav.getId().equals(rideId)) {
+                            favoriteId = fav.getId();
+                            break;
+                        }
+                    }
+                    updateFavouriteButtonUI();
+                }
+            }
+            @Override
+            public void onFailure(Call<List<FavouriteRideDTO>> call, Throwable t) {}
+        });
+    }
+
+    private void updateFavouriteButtonUI() {
+        if (favoriteId != null) {
+            btnFavourite.setText("Remove from Favourites");
+        } else {
+            btnFavourite.setText("⭐ Add to Favourites");
+        }
+    }
+
+    private void addToFavourites(Long id) {
+        ApiProvider.favourite().addToFavourites(id).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    Toast.makeText(requireContext(), "Added to favourites!", Toast.LENGTH_SHORT).show();
+                    checkIfFavourite();
+                }
+            }
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {}
+        });
+    }
+
+    private void removeFromFavourites(Long id) {
+        ApiProvider.favourite().removeFromFavourites(id).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    Toast.makeText(requireContext(), "Removed from favourites", Toast.LENGTH_SHORT).show();
+                    favoriteId = null;
+                    updateFavouriteButtonUI();
+                }
+            }
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {}
+        });
     }
 }
 

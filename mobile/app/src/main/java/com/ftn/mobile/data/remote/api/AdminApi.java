@@ -1,5 +1,7 @@
 package com.ftn.mobile.data.remote.api;
 
+import com.ftn.mobile.data.remote.dto.AdminUserDTO;
+import com.ftn.mobile.data.remote.dto.BlockRequestDTO;
 import com.ftn.mobile.data.remote.dto.CreateDriverRequestDTO;
 import com.ftn.mobile.data.remote.dto.DriverActivityResponseDTO;
 import com.ftn.mobile.data.remote.dto.ProfileChangeRequestDTO;
@@ -11,6 +13,7 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Path;
 
 public interface AdminApi {
@@ -29,5 +32,17 @@ public interface AdminApi {
     //POST /api/v1/admin/create-driver
     @POST("api/v1/admin/create-driver")
     Call<Void> createDriver(@Body CreateDriverRequestDTO dto);
+
+    @GET("api/v1/admin/drivers")
+    Call<List<AdminUserDTO>> getDrivers();
+
+    @GET("api/v1/admin/passengers")
+    Call<List<AdminUserDTO>> getPassengers();
+
+    @PUT("api/v1/admin/block/{id}")
+    Call<Void> blockUser(@Path("id") Long id, @Body BlockRequestDTO req);
+
+    @PUT("api/v1/admin/unblock/{id}")
+    Call<Void> unblockUser(@Path("id") Long id);
 
 }
