@@ -171,5 +171,19 @@ public class DriverScheduledRidesFragment extends Fragment implements ScheduledR
                 .setNegativeButton("Back", (dialog, which) -> dialog.dismiss())
                 .show();
     }
+    @Override
+    public void onTrackRide(Long rideId) {
+        RideTrackingFragment fragment = new RideTrackingFragment();
+
+        Bundle args = new Bundle();
+        args.putLong("rideId", rideId);
+        fragment.setArguments(args);
+
+        requireActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_container, fragment)
+                .addToBackStack(null)
+                .commit();
+    }
 
 }

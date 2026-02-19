@@ -25,6 +25,7 @@ import com.ftn.mobile.data.remote.ApiProvider;
 import com.ftn.mobile.data.remote.dto.InconsistencyReportRequestDTO;
 import com.ftn.mobile.data.remote.dto.RideTrackingDTO;
 import com.ftn.mobile.data.remote.dto.RoutePointDTO;
+import com.ftn.mobile.data.remote.dto.rides.PanicRideDTO;
 import com.ftn.mobile.presentation.viewModel.RideTrackingViewModel;
 import com.google.gson.Gson;
 
@@ -56,7 +57,7 @@ public class RideTrackingFragment extends Fragment {
     String color = "#6E58C6";
     int routeColor = Color.parseColor(color);
     private LinearLayout ratingButtonsContainer;
-    private Button btnRateDriver, btnRateVehicle, btnReport;
+    private Button btnRateDriver, btnRateVehicle, btnReport, btnPanic;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -76,13 +77,69 @@ public class RideTrackingFragment extends Fragment {
         ratingButtonsContainer = v.findViewById(R.id.ratingButtonsContainer);
         btnRateDriver = v.findViewById(R.id.btnRateDriver);
         btnRateVehicle = v.findViewById(R.id.btnRateVehicle);
-
+        btnPanic = v.findViewById(R.id.btnPanic);
+        btnPanic.setOnClickListener(view -> showPanicDialog());
         btnRateDriver.setOnClickListener(view -> showRatingDialog(true));
         btnRateVehicle.setOnClickListener(view -> showRatingDialog(false));
         btnReport.setOnClickListener(view -> showInconsistencyDialog());
 
         setupMap();
         return v;
+    }
+    private void showPanicDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setTitle("PANIC ALERT");
+
+        final EditText input = new EditText(requireContext());
+        input.setHint("Enter panic reason...");
+        input.setMinLines(2);
+        input.setMaxLines(5);
+        builder.setView(input);
+
+        builder.setPositiveButton("Send", (dialog, which) -> {
+            String reason = input.getText().toString().trim();
+
+            if (reason.isEmpty()) {
+                Toast.makeText(getContext(), "Reason is required", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            sendPanic(reason);
+        });
+
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
+        builder.show();
+    }
+
+    private void sendPanic(String reason) {
+
+        if (rideId == null) {
+            Toast.makeText(getContext(), "Ride not loaded", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        btnPanic.setEnabled(false);
+
+        PanicRideDTO request = new PanicRideDTO(rideId, reason);
+
+        ApiProvider.ride().panic(request).enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                btnPanic.setEnabled(true);
+
+                if (response.isSuccessful()) {
+                    Toast.makeText(getContext(), "Success", Toast.LENGTH_LONG).show();
+                } else {
+                    //Toast.makeText(getContext(), "Panic failed (" + response.code() + ")", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                btnPanic.setEnabled(true);
+                //Toast.makeText(getContext(), "Server error", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
@@ -142,7 +199,7 @@ public class RideTrackingFragment extends Fragment {
         }
         vehicleMarker.setPosition(pos);
 
-        if (data.getRoutePoints() != null && routePolyline == null) {
+        /**if (data.getRoutePoints() != null && routePolyline == null) {
             routePolyline = new Polyline();
             routePolyline.getOutlinePaint().setColor(routeColor);
             routePolyline.getOutlinePaint().setStrokeWidth(12f);
@@ -156,7 +213,32 @@ public class RideTrackingFragment extends Fragment {
             addStationMarker(routePath.get(0), "Pickup", R.drawable.ic_start);
 
             addStationMarker(routePath.get(routePath.size() - 1), "Destination", R.drawable.ic_end);
+        }**/
+        if (data.getRoutePoints() != null && !data.getRoutePoints().isEmpty() && routePolyline == null) {
+
+            routePolyline = new Polyline();
+            routePolyline.getOutlinePaint().setColor(routeColor);
+            routePolyline.getOutlinePaint().setStrokeWidth(12f);
+
+            List<GeoPoint> routePath = new ArrayList<>();
+            for (RoutePointDTO p : data.getRoutePoints()) {
+                routePath.add(new GeoPoint(p.getLat(), p.getLng()));
+            }
+
+            if (!routePath.isEmpty()) {
+                routePolyline.setPoints(routePath);
+                map.getOverlays().add(0, routePolyline);
+
+                addStationMarker(routePath.get(0), "Pickup", R.drawable.ic_start);
+                addStationMarker(routePath.get(routePath.size() - 1), "Destination", R.drawable.ic_end);
+            }
+
+        } else if (routePolyline == null) {
+            // opcionalno: da korisnik zna zašto nema rute
+            // Toast.makeText(getContext(), "Route not available yet", Toast.LENGTH_SHORT).show();
         }
+
+
 
         map.getController().animateTo(pos);
         etaText.setText("ETA: " + data.getEta() + " min");
