@@ -1,8 +1,8 @@
 package com.ftn.mobile.data.remote.api;
 
 import com.ftn.mobile.data.remote.dto.DriverActivationRequestDTO;
-import com.ftn.mobile.data.remote.dto.UserLoginRequestDTO;
-import com.ftn.mobile.data.remote.dto.UserTokenStateDTO;
+import com.ftn.mobile.data.remote.dto.auth.UserLoginRequestDTO;
+import com.ftn.mobile.data.remote.dto.auth.UserTokenStateDTO;
 
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;

@@ -26,7 +26,6 @@ public final class ApiProvider {
     private static PriceApi priceApi;
 
     private static RideApi rideApi;
-
     private static FavouriteApi favouriteApi;
 
     private static VehicleApi vehicleApi;

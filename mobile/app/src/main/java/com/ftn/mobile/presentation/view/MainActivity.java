@@ -7,6 +7,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -21,6 +22,7 @@ import com.ftn.mobile.data.local.UserRoleManger;
 import com.ftn.mobile.presentation.fragments.DriverHistoryFragment;
 import com.ftn.mobile.presentation.fragments.DriverScheduledRidesFragment;
 import com.ftn.mobile.presentation.fragments.HomeFragment;
+import com.ftn.mobile.presentation.fragments.PassengerRideHistoryFragment;
 import com.ftn.mobile.presentation.fragments.ReportFragment;
 import com.ftn.mobile.presentation.fragments.RideFormUnregisteredFragment;
 import com.ftn.mobile.presentation.fragments.RideOrderingFragment;
@@ -59,10 +61,18 @@ public class MainActivity extends AppCompatActivity {
             boolean isLoggedIn = (role != null);
 
             MenuItem loginItem = menu.findItem(R.id.nav_login);
-            if (loginItem != null) loginItem.setVisible(!isLoggedIn);
+            loginItem.setVisible(true);
+            //if (loginItem != null) loginItem.setVisible(!isLoggedIn);
 
             MenuItem registerItem = menu.findItem(R.id.nav_register);
-            if (registerItem != null) registerItem.setVisible(!isLoggedIn);
+            //if (registerItem != null) registerItem.setVisible(!isLoggedIn);
+            registerItem.setVisible(true);
+
+            MenuItem passengerRideHistoryItem = menu.findItem(R.id.nav_passenger_ride_history);
+            if (passengerRideHistoryItem != null) {
+                boolean isPassenger = "ROLE_PASSENGER".equals(role);
+                passengerRideHistoryItem.setVisible(isPassenger);
+            }
 
             MenuItem logoutItem = menu.findItem(R.id.nav_logout);
             if (logoutItem != null) logoutItem.setVisible(isLoggedIn);
@@ -139,7 +149,11 @@ public class MainActivity extends AppCompatActivity {
                 openFragment(new HomeFragment(), "SmartRide");
             } else if (id == R.id.nav_history) {
                 openFragment(new DriverHistoryFragment(), "Ride History");
-            } else if (id == R.id.nav_profile){
+            }
+            else if(id == R.id.nav_passenger_ride_history){
+                openFragment(new PassengerRideHistoryFragment(), "Ride history");
+            }
+            else if (id == R.id.nav_profile){
                 openFragment(new ProfileFragment(), "Profile");
             } else if (id == R.id.nav_register) {
                 Intent intent = new Intent(MainActivity.this, RegisterActivity.class);

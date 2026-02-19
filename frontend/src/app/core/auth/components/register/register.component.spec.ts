@@ -30,7 +30,7 @@ describe('RegisterComponent', () => {
       providers: [
         provideRouter([]),
 
-        // ubaci spy-eve u DI
+
         { provide: AuthService, useValue: authServiceSpy },
         { provide: Router, useValue: routerSpy },
         { provide: MatSnackBar, useValue: snackBarSpy },
@@ -238,6 +238,7 @@ describe('RegisterComponent', () => {
   });
 
   it('should show validation error for email when touched and invalid', () => {
+    //dom test-trazi elemente koji prikazuju gresku i provjerava da li tekst sadrzi email
     component.email.setValue('');
     component.email.markAsTouched();
     fixture.detectChanges();
