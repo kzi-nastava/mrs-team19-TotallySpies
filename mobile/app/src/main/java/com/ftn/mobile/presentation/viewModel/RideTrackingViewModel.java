@@ -50,7 +50,7 @@ public class RideTrackingViewModel extends ViewModel {
     }
 
     public void sendReport(Long rideId, String reason) {
-        InconsistencyReportRequestDTO dto = new InconsistencyReportRequestDTO(reason);
+        InconsistencyReportRequestDTO dto = new InconsistencyReportRequestDTO(rideId, reason);
         ApiProvider.ride().reportInconsistency(rideId, dto).enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {

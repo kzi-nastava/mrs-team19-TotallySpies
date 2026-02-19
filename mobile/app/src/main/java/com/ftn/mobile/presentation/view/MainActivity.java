@@ -1,6 +1,8 @@
 package com.ftn.mobile.presentation.view;
 
+import android.Manifest;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,6 +18,7 @@ import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.ftn.mobile.R;
 import com.ftn.mobile.data.local.TokenStorage;
@@ -29,7 +32,9 @@ import com.ftn.mobile.presentation.fragments.AdminTrackingFragment;
 import com.ftn.mobile.presentation.fragments.DriverHistoryFragment;
 import com.ftn.mobile.presentation.fragments.DriverScheduledRidesFragment;
 import com.ftn.mobile.presentation.fragments.HomeFragment;
+import com.ftn.mobile.presentation.fragments.NotificationFragment;
 import com.ftn.mobile.presentation.fragments.PassengerRideHistoryFragment;
+import com.ftn.mobile.presentation.fragments.PassengerUpcomingRidesFragment;
 import com.ftn.mobile.presentation.fragments.ReportFragment;
 import com.ftn.mobile.presentation.fragments.RideFormUnregisteredFragment;
 import com.ftn.mobile.presentation.fragments.RideOrderingFragment;
@@ -37,6 +42,7 @@ import com.ftn.mobile.presentation.fragments.DriverRegistrationFragment;
 import com.ftn.mobile.presentation.fragments.PricingFragment;
 import com.ftn.mobile.presentation.fragments.RideTrackingFragment;
 import com.ftn.mobile.presentation.fragments.profile.ProfileFragment;
+import com.ftn.mobile.presentation.viewModel.NotificationViewModel;
 import com.google.android.material.navigation.NavigationView;
 
 import retrofit2.Call;
@@ -63,6 +69,9 @@ public class MainActivity extends AppCompatActivity {
                     insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom);
             return insets;
         });*/
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 1);
+        }
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -153,7 +162,15 @@ public class MainActivity extends AppCompatActivity {
             if (chatItem != null){
                 chatItem.setVisible(isLoggedIn);
             }
-
+            MenuItem notificationItem = menu.findItem(R.id.nav_notifications);
+            if (notificationItem != null){
+                notificationItem.setVisible(isLoggedIn);
+            }
+            MenuItem upcomingRides = menu.findItem(R.id.nav_upcoming_rides);
+            if (upcomingRides != null) {
+                boolean isPassenger = "ROLE_PASSENGER".equals(role);
+                upcomingRides.setVisible(isPassenger);
+            }
             if(!isLoggedIn){
                 showRideFormUnregistered();
             }
@@ -172,6 +189,23 @@ public class MainActivity extends AppCompatActivity {
             }
         } else{
             UserRoleManger.updateRole(null);
+        }
+
+        NotificationViewModel notificationViewModel = new ViewModelProvider(this).get(NotificationViewModel.class);
+        Long userId = UserRoleManger.getUserIdFromToken(token);
+        if (userId != null) {
+            notificationViewModel.init(userId, this);
+            notificationViewModel.getUnreadCount().observe(this, count -> {
+                Menu menu1 = navigationView.getMenu();
+                MenuItem item = menu.findItem(R.id.nav_notifications);
+                if (item != null) {
+                    if (count > 0) {
+                        item.setTitle("Notifications (" + count + ")");
+                    } else {
+                        item.setTitle("Notifications");
+                    }
+                }
+            });
         }
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -254,6 +288,9 @@ public class MainActivity extends AppCompatActivity {
             } else if (id == R.id.nav_register_driver){
                 openFragment(new DriverRegistrationFragment(), "Driver registration");
             }
+            else if (id == R.id.nav_upcoming_rides){
+                openFragment(new PassengerUpcomingRidesFragment(), "Upcoming Rides");
+            }
             else if (id == R.id.nav_support_chat) {
                 String role = UserRoleManger.getCurrentRole();
                 if ("ROLE_ADMIN".equals(role)) {
@@ -268,6 +305,9 @@ public class MainActivity extends AppCompatActivity {
             }
             else if (id == R.id.nav_pricing) {
                 openFragment(new PricingFragment(), "Pricing");
+            }
+            else if (id == R.id.nav_notifications) {
+                openFragment(new NotificationFragment(), "Notifications");
             }
             else if (id == R.id.nav_scheduled) {
                 openFragment(new DriverScheduledRidesFragment(), "My Rides");

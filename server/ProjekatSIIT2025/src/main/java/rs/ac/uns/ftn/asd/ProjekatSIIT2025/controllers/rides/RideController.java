@@ -45,12 +45,12 @@ public class RideController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PostMapping(value = "/{id}/inconsistency-report", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/{rideId}/inconsistency-report", consumes = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('PASSENGER')")
     public ResponseEntity<Map<String, String>> reportInconsistency(
-            @PathVariable Long id, 
+            @PathVariable Long rideId, 
             @Valid @RequestBody InconsistencyReportRequestDTO request) {
-                boolean isReported = rideService.reportInconsistency(id, request);
+                boolean isReported = rideService.reportInconsistency(rideId, request);
                 
                 if (isReported) {
                     return ResponseEntity.status(HttpStatus.CREATED).body(Collections.singletonMap("message", "Consistency report sent successfully."));
