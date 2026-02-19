@@ -1,5 +1,7 @@
 package rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides;
 
+import java.util.List;
+
 public class RideTrackingDTO {
     private Long rideId;
     private double vehicleLat;
@@ -12,9 +14,10 @@ public class RideTrackingDTO {
     private String profilePicture;
     private String pickupAddress;
     private String destinationAddress;
+    private List<RoutePointDTO> routePoints;
 
     public RideTrackingDTO(Long rideId, double vehicleLat, double vehicleLng, int eta, String status, String driverName,
-            String carModel, double rating, String profilePicture, String pickupAddress, String destinationAddress) {
+            String carModel, double rating, String profilePicture, String pickupAddress, String destinationAddress, List<RoutePointDTO> routePoints) {
         this.rideId = rideId;
         this.vehicleLat = vehicleLat;
         this.vehicleLng = vehicleLng;
@@ -26,6 +29,7 @@ public class RideTrackingDTO {
         this.profilePicture = profilePicture;
         this.pickupAddress = pickupAddress;
         this.destinationAddress = destinationAddress;
+        this.routePoints = routePoints;
     }
 
 
@@ -127,6 +131,16 @@ public class RideTrackingDTO {
 
     public void setRating(double rating) {
         this.rating = rating;
+    }
+
+
+    public List<RoutePointDTO> getRoutePoints() {
+        return routePoints;
+    }
+
+
+    public void setRoutePoints(List<RoutePointDTO> routePoints) {
+        this.routePoints = routePoints;
     }
 
     

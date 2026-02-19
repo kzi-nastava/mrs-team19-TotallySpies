@@ -306,9 +306,15 @@ public class RideService {
         vehicleLat = start.getLatitude();
         vehicleLng = start.getLongitude();
     }
+    List<RoutePointDTO> path = new ArrayList<>();
+    if (ride.getRoutePoints() != null) {
+        for (RoutePoint rp : ride.getRoutePoints()) {
+            path.add(new RoutePointDTO(rp.getLatitude(), rp.getLongitude()));
+        }
+    }
 
     return new RideTrackingDTO(
-        vehicle.getId(),
+        ride.getId(),
         vehicleLat,
         vehicleLng,
         eta,
@@ -318,7 +324,7 @@ public class RideService {
         ride.getDriver().getAverageRating(),
         ride.getDriver().getProfilePicture(),
         ride.getStops().get(0).getAddress(),
-        ride.getStops().get(ride.getStops().size() - 1).getAddress());
+        ride.getStops().get(ride.getStops().size() - 1).getAddress(), path);
 }
 
     @Transactional
@@ -1076,55 +1082,55 @@ public class RideService {
     }
 
     public List<ActiveRideDTO> findActiveRides(String driverName) {
-    List<Ride> rides;
-    if (driverName != null && !driverName.isEmpty()) {
-        rides = rideRepository.findActiveByDriverName(driverName, RideStatus.ACTIVE);
-    } else {
-        rides = rideRepository.findByStatus(RideStatus.ACTIVE);
-    }
-
-    return rides.stream().map(ride -> {
-        ActiveRideDTO dto = new ActiveRideDTO();
-        dto.setId(ride.getId());
-        dto.setStartTime(ride.getStartedAt());
-        dto.setEndTime(ride.getFinishedAt());
-        dto.setPrice(ride.getTotalPrice());
-        dto.setStatus(ride.getStatus());
-
-        dto.setPassengers(ride.getPassengers().stream()
-            .map(p -> p.getName() + " " + p.getLastName())
-            .collect(Collectors.toList()));
-
-        if (ride.getStops() != null && !ride.getStops().isEmpty()) {
-            dto.setStartLocation(ride.getStops().stream()
-                .min(Comparator.comparingInt(RideStop::getOrderIndex))
-                .map(RideStop::getAddress).orElse("Unknown"));
-            dto.setEndLocation(ride.getStops().stream()
-                .max(Comparator.comparingInt(RideStop::getOrderIndex))
-                .map(RideStop::getAddress).orElse("Unknown"));
-        }
-
-        if (ride.getPanicNotification() != null) {
-            dto.setPanicPressed(true);
-            dto.setPanicReason(ride.getPanicNotification().getReason());
+        List<Ride> rides;
+        if (driverName != null && !driverName.isEmpty()) {
+            rides = rideRepository.findActiveByDriverName(driverName, RideStatus.ACTIVE);
         } else {
-            dto.setPanicPressed(false);
+            rides = rideRepository.findByStatus(RideStatus.ACTIVE);
         }
 
-        if (ride.getDriver() != null) {
-            dto.setDriverId(ride.getDriver().getId());
-            dto.setDriverName(ride.getDriver().getName());
-            dto.setDriverPicture(ride.getDriver().getProfilePicture());
-            dto.setDriverAverageRating(ride.getDriver().getAverageRating());
-            
-            if (ride.getDriver().getVehicle() != null) {
-                dto.setVehicleModel(ride.getDriver().getVehicle().getModel());
+        return rides.stream().map(ride -> {
+            ActiveRideDTO dto = new ActiveRideDTO();
+            dto.setId(ride.getId());
+            dto.setStartTime(ride.getStartedAt());
+            dto.setEndTime(ride.getFinishedAt());
+            dto.setPrice(ride.getTotalPrice());
+            dto.setStatus(ride.getStatus());
+
+            dto.setPassengers(ride.getPassengers().stream()
+                .map(p -> p.getName() + " " + p.getLastName())
+                .collect(Collectors.toList()));
+
+            if (ride.getStops() != null && !ride.getStops().isEmpty()) {
+                dto.setStartLocation(ride.getStops().stream()
+                    .min(Comparator.comparingInt(RideStop::getOrderIndex))
+                    .map(RideStop::getAddress).orElse("Unknown"));
+                dto.setEndLocation(ride.getStops().stream()
+                    .max(Comparator.comparingInt(RideStop::getOrderIndex))
+                    .map(RideStop::getAddress).orElse("Unknown"));
             }
-        }
 
-        return dto;
-    }).collect(Collectors.toList());
-}
+            if (ride.getPanicNotification() != null) {
+                dto.setPanicPressed(true);
+                dto.setPanicReason(ride.getPanicNotification().getReason());
+            } else {
+                dto.setPanicPressed(false);
+            }
+
+            if (ride.getDriver() != null) {
+                dto.setDriverId(ride.getDriver().getId());
+                dto.setDriverName(ride.getDriver().getName());
+                dto.setDriverPicture(ride.getDriver().getProfilePicture());
+                dto.setDriverAverageRating(ride.getDriver().getAverageRating());
+                
+                if (ride.getDriver().getVehicle() != null) {
+                    dto.setVehicleModel(ride.getDriver().getVehicle().getModel());
+                }
+            }
+
+            return dto;
+        }).collect(Collectors.toList());
+    }
 
     public List<PassengerUpcomingRideDTO> findUpcomingRides(String email) {
         User user = userRepository.findByEmail(email);
@@ -1168,5 +1174,30 @@ public class RideService {
         dto.setLocations(stops);
 
         return dto;
+    }
+    
+    @Transactional
+    public RideTrackingDTO getActiveRideForPassenger() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        Ride ride = rideRepository.findActiveRideByPassengerEmail(email); 
+        
+        if (ride == null) return null;
+        return getRideTrackingInfo(ride.getId());
+    }
+
+    public RideTrackingDTO getLastCompletedRideForPassenger(String email) {
+        Passenger passenger = passengerRepository.findByEmail(email)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Passenger not found"));
+        
+        LocalDateTime threeDaysAgo = LocalDateTime.now().minusDays(3);
+        
+        Ride ride = rideRepository.findTopByPassengerAndStatusAndFinishedAtAfterOrderByFinishedAtDesc(
+            passenger, RideStatus.COMPLETED, threeDaysAgo);
+        
+        if (ride == null) {
+            return null;
+        }
+        
+        return getRideTrackingInfo(ride.getId());
     }
 }

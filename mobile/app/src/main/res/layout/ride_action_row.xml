@@ -214,6 +214,16 @@
                     android:backgroundTint="@color/accent"
                     android:visibility="gone"
                     tools:visibility="visible"/>
+                <Button
+                    android:id="@+id/btnCancelRide"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="4dp"
+                    android:text="CANCEL"
+                    android:backgroundTint="@color/error"
+                    android:visibility="gone"
+                    tools:visibility="visible"/>
             </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>

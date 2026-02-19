@@ -1,8 +1,14 @@
 package com.ftn.mobile.data.remote.api;
 
+import com.ftn.mobile.data.remote.dto.ActiveRideDTO;
 import com.ftn.mobile.data.remote.dto.CreateRideRequestDTO;
 import com.ftn.mobile.data.remote.dto.CreateRideResponseDTO;
+import com.ftn.mobile.data.remote.dto.PassengerUpcomingRideDTO;
+import com.ftn.mobile.data.remote.dto.InconsistencyReportRequestDTO;
+import com.ftn.mobile.data.remote.dto.RideTrackingDTO;
 import com.ftn.mobile.data.remote.dto.ScheduledRideDTO;
+import com.ftn.mobile.data.remote.dto.rides.CancelRideDTO;
+import com.ftn.mobile.data.remote.dto.rides.PassengerRideDetailsResponseDTO;
 
 import java.util.List;
 
@@ -24,6 +30,26 @@ public interface RideApi {
     @PUT("api/v1/rides/{id}/end")
     Call<ScheduledRideDTO> finishRide(@Path("id") Long id);
 
+    @GET("api/v1/rides/passenger-upcoming")
+    Call<List<PassengerUpcomingRideDTO>> getPassengerUpcoming();
+
     @PUT("api/v1/rides/{id}/start")
     Call<ResponseBody> startRide(@Path("id") Long id);
+    @PUT("api/v1/rides/cancel-ride")
+    Call<String> cancelRide(@Body CancelRideDTO request);
+    @GET("api/v1/rides/{id}/details")
+    Call<PassengerRideDetailsResponseDTO> getRideDetails(@Path("id") Long id);
+    @POST("api/v1/rides/{rideId}/inconsistency-report")
+    Call<ResponseBody> reportInconsistency(@Path("rideId") long rideId, @Body InconsistencyReportRequestDTO request);
+    @GET("api/v1/rides/active-tracking")
+    Call<RideTrackingDTO> getActiveRide();
+
+    @GET("api/v1/rides/{rideId}/location")
+    Call<RideTrackingDTO> getRideLocation(@Path("rideId") long rideId);
+
+    @GET("api/v1/rides/last-completed")
+    Call<RideTrackingDTO> getLastCompletedRide();
+
+    @GET("api/v1/rides/active-admin")
+    Call<List<ActiveRideDTO>> getActiveRidesForAdmin();
 }

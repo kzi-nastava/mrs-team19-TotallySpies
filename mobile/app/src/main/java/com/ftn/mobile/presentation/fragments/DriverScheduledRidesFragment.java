@@ -1,10 +1,12 @@
 package com.ftn.mobile.presentation.fragments;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -16,8 +18,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.ftn.mobile.R;
 import com.ftn.mobile.data.remote.ApiProvider;
 import com.ftn.mobile.data.remote.dto.ScheduledRideDTO;
+import com.ftn.mobile.data.remote.dto.rides.CancelRideDTO;
 import com.ftn.mobile.presentation.adapter.ScheduledRidesAdapter;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -91,6 +96,7 @@ public class DriverScheduledRidesFragment extends Fragment implements ScheduledR
         });
     }
 
+
     @Override
     public void onStartRide(Long rideId) {
         ApiProvider.ride().startRide(rideId).enqueue(new Callback<okhttp3.ResponseBody>() {
@@ -111,4 +117,59 @@ public class DriverScheduledRidesFragment extends Fragment implements ScheduledR
             }
         });
     }
+
+    @Override
+    public void onCancelRide(Long rideId) {
+
+        final EditText input = new EditText(getContext());
+        input.setHint("Enter cancellation reason");
+        input.setPadding(40, 20, 40, 20);
+
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Cancel Ride")
+                .setMessage("Please enter reason for cancellation:")
+                .setView(input)
+                .setPositiveButton("Cancel Ride", (dialog, which) -> {
+
+                    String reason = input.getText().toString().trim();
+
+                    if (reason.isEmpty()) {
+                        Toast.makeText(getContext(), "Reason is required", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+                    String isoTime = LocalDateTime.now().format(formatter);
+
+                    CancelRideDTO request = new CancelRideDTO(
+                            rideId,
+                            reason,
+                            isoTime
+                    );
+
+                    ApiProvider.ride().cancelRide(request)
+                            .enqueue(new Callback<String>() {
+
+                                @Override
+                                public void onResponse(Call<String> call, Response<String> response) {
+                                    if (response.isSuccessful()) {
+                                        Toast.makeText(getContext(), "Success", Toast.LENGTH_SHORT).show();
+                                        loadActiveAndScheduledRides();
+                                    } else {
+                                        Toast.makeText(getContext(), "Failed to cancel ride", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call<String> call, Throwable t) {
+                                    Log.e("API_ERROR", "Cancel error: " + t.getMessage());
+                                    //Toast.makeText(getContext(), "Server error", Toast.LENGTH_SHORT).show();
+                                }
+
+                            });
+
+                })
+                .setNegativeButton("Back", (dialog, which) -> dialog.dismiss())
+                .show();
+    }
+
 }

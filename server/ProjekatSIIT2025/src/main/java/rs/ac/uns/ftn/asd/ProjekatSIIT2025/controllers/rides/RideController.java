@@ -1,5 +1,6 @@
 package rs.ac.uns.ftn.asd.ProjekatSIIT2025.controllers.rides;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -12,11 +13,17 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import jakarta.validation.Valid;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.*;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.Passenger;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.Ride;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.RideStatus;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.PassengerRepository;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.repositories.RideRepository;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.services.RideService;
 
 @RestController
@@ -26,18 +33,24 @@ public class RideController {
     @Autowired
     RideService rideService;
 
+    @Autowired
+    PassengerRepository passengerRepository;
+
+    @Autowired
+    RideRepository rideRepository;
+
     @GetMapping(value = "/{id}/location", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<RideTrackingDTO> getRideLocation(@PathVariable Long id) {
         RideTrackingDTO response = rideService.getRideTrackingInfo(id);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PostMapping(value = "/{id}/inconsistency-report", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/{rideId}/inconsistency-report", consumes = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('PASSENGER')")
     public ResponseEntity<Map<String, String>> reportInconsistency(
-            @PathVariable Long id, 
+            @PathVariable Long rideId, 
             @Valid @RequestBody InconsistencyReportRequestDTO request) {
-                boolean isReported = rideService.reportInconsistency(id, request);
+                boolean isReported = rideService.reportInconsistency(rideId, request);
                 
                 if (isReported) {
                     return ResponseEntity.status(HttpStatus.CREATED).body(Collections.singletonMap("message", "Consistency report sent successfully."));
@@ -92,7 +105,7 @@ public class RideController {
         CreateRideResponseDTO responseDTO = rideService.createRide(requestDTO, email);
         return ResponseEntity.ok(responseDTO);
     }
-    @PreAuthorize("hasRole('PASSENGER')")
+    //@PreAuthorize("hasRole('PASSENGER')")
     @GetMapping(value = "/{id}/details", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PassengerRideDetailsResponseDTO> getRideDetails(@PathVariable Long id ){
         PassengerRideDetailsResponseDTO response = rideService.getRideDetails(id);
@@ -119,6 +132,31 @@ public class RideController {
         String email = auth.getName();
         List<PassengerUpcomingRideDTO> upcomingRides = rideService.findUpcomingRides(email);
         return ResponseEntity.ok(upcomingRides);
+    }
+
+    @GetMapping(value = "/active-tracking", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('PASSENGER')")
+    public ResponseEntity<RideTrackingDTO> getActiveRideTracking() {
+        RideTrackingDTO response = rideService.getActiveRideForPassenger();
+        
+        if (response != null) {
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/last-completed")
+    @PreAuthorize("hasRole('PASSENGER')")
+    public ResponseEntity<RideTrackingDTO> getLastCompletedRide() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        RideTrackingDTO dto = rideService.getLastCompletedRideForPassenger(email);
+        
+        if (dto == null) {
+            return ResponseEntity.notFound().build();
+        }
+        
+        return ResponseEntity.ok(dto);
     }
 
 }

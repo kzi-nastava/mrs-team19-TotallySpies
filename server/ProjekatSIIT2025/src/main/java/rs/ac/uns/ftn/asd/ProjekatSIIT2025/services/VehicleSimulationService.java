@@ -2,6 +2,7 @@ package rs.ac.uns.ftn.asd.ProjekatSIIT2025.services;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.VehicleDisplayResponseDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.RideTrackingDTO;
+import rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.rides.RoutePointDTO;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.Driver;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.Ride;
 import rs.ac.uns.ftn.asd.ProjekatSIIT2025.model.RideStatus;
@@ -67,7 +69,9 @@ public class VehicleSimulationService {
                     int totalPoints = activeRide.getRoutePoints().size();
                     int remainingPoints = totalPoints - driver.getVehicle().getCurrentRouteIndex();
                     int etaMinutes = Math.max(1, (remainingPoints * 2) / 60);
-
+                    List<RoutePointDTO> pathForMobile = activeRide.getRoutePoints().stream()
+                        .map(rp -> new RoutePointDTO(rp.getLatitude(), rp.getLongitude()))
+                        .collect(Collectors.toList());
                     RideTrackingDTO trackingDTO = new RideTrackingDTO(
                         activeRide.getId(),
                         driver.getVehicle().getCurrentLat(),
@@ -79,7 +83,9 @@ public class VehicleSimulationService {
                         driver.getAverageRating(),
                         driver.getProfilePicture(),
                         activeRide.getStops().get(0).getAddress(),
-                        activeRide.getStops().get(activeRide.getStops().size() - 1).getAddress()
+                        activeRide.getStops().get(activeRide.getStops().size() - 1).getAddress(),
+                        pathForMobile
+
                     );
 
                     messagingTemplate.convertAndSend("/topic/ride/"+ activeRide.getId(), trackingDTO);
@@ -90,9 +96,11 @@ public class VehicleSimulationService {
 
             allVehiclesUpdates.add(new VehicleDisplayResponseDTO(
                     driver.getVehicle().getId(),
+                    driver.getId(),
                     driver.getVehicle().getCurrentLat(),
                     driver.getVehicle().getCurrentLng(),
-                    activeRide != null
+                    activeRide != null,
+                    driver.getName()
             ));
         }
 

@@ -80,6 +80,7 @@ dependencies {
     implementation("io.reactivex.rxjava2:rxjava:2.2.21")
 
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+    implementation("androidx.lifecycle:lifecycle-process:2.6.2")
 
     implementation(libs.appcompat)
     implementation(libs.material)

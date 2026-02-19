@@ -1,6 +1,7 @@
 package com.ftn.mobile.presentation.fragments.profile;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -32,6 +33,9 @@ public class ProfileFragment extends Fragment {
     private ProfileViewModel viewModel;
     private ProfileImageManager profileImageManager;
 
+    View cardBlockStatus;
+    TextView tvBlockStatusDesc, tvBlockReason;
+
     private final ActivityResultLauncher<Intent> editProfileLauncher =
             registerForActivityResult(
                     new ActivityResultContracts.StartActivityForResult(),
@@ -52,6 +56,10 @@ public class ProfileFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.activity_profile, container, false);
+
+        cardBlockStatus = view.findViewById(R.id.cardBlockStatus);
+        tvBlockStatusDesc = view.findViewById(R.id.tvBlockStatusDesc);
+        tvBlockReason = view.findViewById(R.id.tvBlockReason);
 
         viewModel = new ViewModelProvider(requireActivity()).get(ProfileViewModel.class);
 
@@ -75,6 +83,21 @@ public class ProfileFragment extends Fragment {
 
         viewModel.getDriverActivity().observe(getViewLifecycleOwner(), activity -> {
             if (activity != null) tvActiveHours.setText(activity);
+        });
+
+        viewModel.getBlockedStatus().observe(getViewLifecycleOwner(), status -> {
+            if (status == null) return;
+
+            if (status.isBlocked()) {
+                tvBlockStatusDesc.setText("Your account is BLOCKED");
+                tvBlockStatusDesc.setTextColor(Color.parseColor("#FF4444"));
+                tvBlockReason.setVisibility(View.VISIBLE);
+                tvBlockReason.setText("Reason: " + status.getBlockReason());
+            } else {
+                tvBlockStatusDesc.setText("Your account is active (Not blocked)");
+                tvBlockStatusDesc.setTextColor(Color.parseColor("#4CAF50"));
+                tvBlockReason.setVisibility(View.GONE);
+            }
         });
 
         UserRoleManger.getRoleLiveData().observe(getViewLifecycleOwner(), role -> {
@@ -122,16 +145,21 @@ public class ProfileFragment extends Fragment {
     private void updateUIForRole(View root, String role) {
         View adminPanel = root.findViewById(R.id.ConstraintLayoutAdminInfo);
         View driverPanel = root.findViewById(R.id.ConstraintLayoutDriver);
+        View cardBlockStatus = root.findViewById(R.id.cardBlockStatus);
 
         if ("ROLE_ADMIN".equals(role)) {
             adminPanel.setVisibility(View.VISIBLE);
             driverPanel.setVisibility(View.GONE);
+            cardBlockStatus.setVisibility(View.GONE);
         } else if ("ROLE_DRIVER".equals(role)) {
             adminPanel.setVisibility(View.GONE);
             driverPanel.setVisibility(View.VISIBLE);
+            cardBlockStatus.setVisibility(View.VISIBLE);
+            viewModel.loadBlockedStatus();
         } else {
             adminPanel.setVisibility(View.GONE);
             driverPanel.setVisibility(View.GONE);
+            cardBlockStatus.setVisibility(View.GONE);
         }
     }
 }

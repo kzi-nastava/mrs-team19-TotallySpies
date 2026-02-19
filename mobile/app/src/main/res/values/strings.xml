@@ -180,6 +180,30 @@
     <string name="price_luxury">Luxury</string>
     <string name="price_van">Van</string>
     <string name="choose">CHOOSE</string>
+    <string name="driver_name">Driver Name</string>
+    <string name="driver_email_com">driver@email.com</string>
+    <string name="_381_64_000_000">+381 64 000 000</string>
+    <string name="distance">Distance:</string>
+    <string name="_12_5_km">12.5 km</string>
+    <string name="total_price">Total price:</string>
+    <string name="_1200_rsd">1200 RSD</string>
+    <string name="ride_stops">Ride Stops</string>
+    <string name="ride_grades">Ride Grades</string>
+    <string name="reports">Reports</string>
+    <string name="type_a_message">Type a message...</string>
+    <string name="send">Send</string>
+    <string name="rate_driver">Rate Driver</string>
+    <string name="eta">ETA: --</string>
+    <string name="driver">Driver: --</string>
+    <string name="rate_vehicle">Rate Vehicle</string>
+    <string name="report">Report</string>
+    <string name="comment">Comment</string>
+    <string name="active">ACTIVE</string>
+    <string name="passengers">Passengers: -</string>
+    <string name="from">From: -</string>
+    <string name="to">To: -</string>
+    <string name="price_0_rsd">Price: 0 RSD</string>
+    <string name="start">Start: -</string>
 
     <string-array name="vehicle_types">
         <item>Standard</item>
