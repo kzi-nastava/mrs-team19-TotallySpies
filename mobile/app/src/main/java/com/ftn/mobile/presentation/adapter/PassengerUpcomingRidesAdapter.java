@@ -47,7 +47,7 @@ public class PassengerUpcomingRidesAdapter extends RecyclerView.Adapter<Passenge
         Collections.sort(stops, (a, b) -> Integer.compare(a.getOrderIndex(), b.getOrderIndex()));
 
         for (RideStopDTO stop : stops) {
-            View stopView = inflater.inflate(R.layout.item_ride_stop, holder.stopsContainer, false);
+            View stopView = inflater.inflate(R.layout.item_ride_stop_upcoming, holder.stopsContainer, false);
             TextView addr = stopView.findViewById(R.id.txtAddress);
             addr.setText(stop.getAddress());
 
