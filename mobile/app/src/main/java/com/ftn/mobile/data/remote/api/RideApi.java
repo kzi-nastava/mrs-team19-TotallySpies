@@ -37,9 +37,8 @@ public interface RideApi {
 
     @GET("api/v1/rides/{id}/details")
     Call<PassengerRideDetailsResponseDTO> getRideDetails(@Path("id") Long id);
-    @POST("api/v1/rides/{id}/inconsistency-report")
-    Call<ResponseBody> reportInconsistency(@Path("id") Long id, @Body  InconsistencyReportRequestDTO request);
-
+    @POST("api/v1/rides/{rideId}/inconsistency-report")
+    Call<ResponseBody> reportInconsistency(@Path("rideId") long rideId, @Body InconsistencyReportRequestDTO request);
     @GET("api/v1/rides/active-tracking")
     Call<RideTrackingDTO> getActiveRide();
 

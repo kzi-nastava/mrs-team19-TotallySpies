@@ -1,11 +1,15 @@
 package com.ftn.mobile.data.remote.dto;
 
 public class InconsistencyReportRequestDTO {
-    Long id;
+    Long rideId;
     String description;
 
-    public InconsistencyReportRequestDTO(String description) {
+    public InconsistencyReportRequestDTO(Long rideId, String description) {
+        this.rideId = rideId;
         this.description = description;
+    }
+
+    public InconsistencyReportRequestDTO() {
     }
 
     public String getDescription() {
@@ -16,11 +20,5 @@ public class InconsistencyReportRequestDTO {
         this.description = description;
     }
 
-    public Long getId() {
-        return id;
-    }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
 }
