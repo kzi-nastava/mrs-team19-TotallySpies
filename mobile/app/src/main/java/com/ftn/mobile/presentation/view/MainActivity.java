@@ -23,6 +23,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.ftn.mobile.R;
 import com.ftn.mobile.data.local.TokenStorage;
 import com.ftn.mobile.data.local.UserRoleManger;
+import com.ftn.mobile.presentation.fragments.AdminRideHistoryFragment;
 import com.ftn.mobile.presentation.fragments.ChatFragment;
 import com.ftn.mobile.presentation.fragments.ChatListFragment;
 import com.ftn.mobile.data.remote.ApiProvider;
@@ -94,6 +95,11 @@ public class MainActivity extends AppCompatActivity {
             if (passengerRideHistoryItem != null) {
                 boolean isPassenger = "ROLE_PASSENGER".equals(role);
                 passengerRideHistoryItem.setVisible(isPassenger);
+            }
+            MenuItem adminRideHistoryItem = menu.findItem(R.id.nav_admin_ride_history);
+            if (adminRideHistoryItem != null) {
+                boolean isAdmin = "ROLE_ADMIN".equals(role);
+                adminRideHistoryItem.setVisible(isAdmin);
             }
 
             MenuItem logoutItem = menu.findItem(R.id.nav_logout);
@@ -208,6 +214,9 @@ public class MainActivity extends AppCompatActivity {
             }
             else if(id == R.id.nav_passenger_ride_history){
                 openFragment(new PassengerRideHistoryFragment(), "Ride history");
+            }
+            else if(id == R.id.nav_admin_ride_history){
+                openFragment(new AdminRideHistoryFragment(), "Ride history");
             }
             else if (id == R.id.nav_profile){
                 openFragment(new ProfileFragment(), "Profile");
