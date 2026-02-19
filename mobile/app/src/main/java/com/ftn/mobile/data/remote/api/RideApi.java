@@ -2,6 +2,7 @@ package com.ftn.mobile.data.remote.api;
 
 import com.ftn.mobile.data.remote.dto.CreateRideRequestDTO;
 import com.ftn.mobile.data.remote.dto.CreateRideResponseDTO;
+import com.ftn.mobile.data.remote.dto.PassengerUpcomingRideDTO;
 import com.ftn.mobile.data.remote.dto.ScheduledRideDTO;
 
 import java.util.List;
@@ -22,4 +23,7 @@ public interface RideApi {
 
     @PUT("api/v1/rides/{id}/end")
     Call<ScheduledRideDTO> finishRide(@Path("id") Long id);
+
+    @GET("api/v1/rides/passenger-upcoming")
+    Call<List<PassengerUpcomingRideDTO>> getPassengerUpcoming();
 }

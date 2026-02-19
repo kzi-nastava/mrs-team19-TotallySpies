@@ -2,28 +2,20 @@ package com.ftn.mobile.presentation.view;
 
 import android.app.AlertDialog;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ftn.mobile.R;
-import com.ftn.mobile.data.model.CarInfo;
-import com.ftn.mobile.data.model.Driver;
-import com.ftn.mobile.data.model.User;
 import com.ftn.mobile.data.remote.ApiProvider;
 import com.ftn.mobile.data.remote.dto.AdminUserDTO;
 import com.ftn.mobile.data.remote.dto.BlockRequestDTO;
-import com.ftn.mobile.presentation.adapter.DriverAdapter;
 import com.ftn.mobile.presentation.adapter.UserAdapter;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import retrofit2.Call;
