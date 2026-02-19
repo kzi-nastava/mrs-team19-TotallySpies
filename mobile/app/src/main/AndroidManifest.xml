@@ -79,6 +79,9 @@
         <activity
             android:name=".presentation.view.AdminListActivity"
             android:exported="false" />
+        <activity
+            android:name=".presentation.view.AdminProfileChangeRequestsActivity"
+            android:exported="false" />
     </application>
 
 </manifest>
