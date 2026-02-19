@@ -96,9 +96,11 @@ public class VehicleSimulationService {
 
             allVehiclesUpdates.add(new VehicleDisplayResponseDTO(
                     driver.getVehicle().getId(),
+                    driver.getId(),
                     driver.getVehicle().getCurrentLat(),
                     driver.getVehicle().getCurrentLng(),
-                    activeRide != null
+                    activeRide != null,
+                    driver.getName()
             ));
         }
 

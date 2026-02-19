@@ -1,5 +1,6 @@
 package com.ftn.mobile.data.remote.api;
 
+import com.ftn.mobile.data.remote.dto.ActiveRideDTO;
 import com.ftn.mobile.data.remote.dto.CreateRideRequestDTO;
 import com.ftn.mobile.data.remote.dto.CreateRideResponseDTO;
 import com.ftn.mobile.data.remote.dto.PassengerUpcomingRideDTO;
@@ -47,4 +48,7 @@ public interface RideApi {
 
     @GET("api/v1/rides/last-completed")
     Call<RideTrackingDTO> getLastCompletedRide();
+
+    @GET("api/v1/rides/active-admin")
+    Call<List<ActiveRideDTO>> getActiveRidesForAdmin();
 }
