@@ -25,6 +25,9 @@
     <item
         android:id="@+id/nav_passenger_ride_history"
         android:title="Ride history" />
+    <item
+        android:id="@+id/nav_admin_ride_history"
+        android:title="Ride history" />
 
     <item
         android:id="@+id/nav_ride_ordering"
