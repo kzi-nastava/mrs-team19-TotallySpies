@@ -19,6 +19,10 @@ import androidx.fragment.app.Fragment;
 import com.ftn.mobile.R;
 import com.ftn.mobile.data.local.TokenStorage;
 import com.ftn.mobile.data.local.UserRoleManger;
+import com.ftn.mobile.presentation.fragments.ChatFragment;
+import com.ftn.mobile.presentation.fragments.ChatListFragment;
+import com.ftn.mobile.data.remote.ApiProvider;
+import com.ftn.mobile.data.remote.dto.RideTrackingDTO;
 import com.ftn.mobile.presentation.fragments.DriverHistoryFragment;
 import com.ftn.mobile.presentation.fragments.DriverScheduledRidesFragment;
 import com.ftn.mobile.presentation.fragments.HomeFragment;
@@ -28,8 +32,13 @@ import com.ftn.mobile.presentation.fragments.RideFormUnregisteredFragment;
 import com.ftn.mobile.presentation.fragments.RideOrderingFragment;
 import com.ftn.mobile.presentation.fragments.DriverRegistrationFragment;
 import com.ftn.mobile.presentation.fragments.PricingFragment;
+import com.ftn.mobile.presentation.fragments.RideTrackingFragment;
 import com.ftn.mobile.presentation.fragments.profile.ProfileFragment;
 import com.google.android.material.navigation.NavigationView;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -112,9 +121,19 @@ public class MainActivity extends AppCompatActivity {
                 pricingItem.setVisible(isAdmin);
             }
 
+            MenuItem trackingItem = menu.findItem(R.id.nav_tracking);
+            if (trackingItem != null) {
+                boolean isPassenger = "ROLE_PASSENGER".equals(role);
+                trackingItem.setVisible(isPassenger);
+            }
+
             MenuItem reportItem = menu.findItem(R.id.nav_report);
             if (reportItem != null){
                 reportItem.setVisible(isLoggedIn);
+            }
+            MenuItem chatItem = menu.findItem(R.id.nav_support_chat);
+            if (chatItem != null){
+                chatItem.setVisible(isLoggedIn);
             }
 
             if(!isLoggedIn){
@@ -173,10 +192,58 @@ public class MainActivity extends AppCompatActivity {
                 showRideFormUnregistered();
                 Toast.makeText(MainActivity.this, "Logged out", Toast.LENGTH_SHORT).show();
             }
+            else if (id == R.id.nav_tracking) {
+                ApiProvider.ride().getActiveRide().enqueue(new Callback<RideTrackingDTO>() {
+                    @Override
+                    public void onResponse(Call<RideTrackingDTO> call, Response<RideTrackingDTO> response) {
+                        if (response.isSuccessful() && response.body() != null) {
+                            Long activeRideId = response.body().getRideId();
+                            openTrackingFragment(activeRideId);
+                        } else {
+                            ApiProvider.ride().getLastCompletedRide().enqueue(new Callback<RideTrackingDTO>() {
+                                @Override
+                                public void onResponse(Call<RideTrackingDTO> call2, Response<RideTrackingDTO> response2) {
+                                    if (response2.isSuccessful() && response2.body() != null) {
+                                        openTrackingFragment(response2.body().getRideId());
+                                    } else {
+                                        Toast.makeText(MainActivity.this,
+                                                "No active or recent completed rides.",
+                                                Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call<RideTrackingDTO> call2, Throwable t) {
+                                    Toast.makeText(MainActivity.this,
+                                            "Error checking completed ride",
+                                            Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<RideTrackingDTO> call, Throwable t) {
+                        Toast.makeText(MainActivity.this, "server error.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
             else if (id == R.id.nav_ride_ordering) {
                 openFragment(new RideOrderingFragment(), "Ride ordering");
             } else if (id == R.id.nav_register_driver){
                 openFragment(new DriverRegistrationFragment(), "Driver registration");
+            }
+            else if (id == R.id.nav_support_chat) {
+                String role = UserRoleManger.getCurrentRole();
+                if ("ROLE_ADMIN".equals(role)) {
+                    openFragment(new ChatListFragment(), "Support Chats");
+                } else {
+                    ChatFragment fragment = new ChatFragment();
+                    Bundle args = new Bundle();
+                    args.putBoolean("isAdmin", false);
+                    fragment.setArguments(args);
+                    openFragment(fragment, "Support Chat");
+                }
             }
             else if (id == R.id.nav_pricing) {
                 openFragment(new PricingFragment(), "Pricing");
@@ -235,5 +302,13 @@ public class MainActivity extends AppCompatActivity {
             getSupportFragmentManager().beginTransaction().remove(fragment).commit();
             getSupportFragmentManager().popBackStack(null, androidx.fragment.app.FragmentManager.POP_BACK_STACK_INCLUSIVE);
         }
+    }
+
+    private void openTrackingFragment(Long id) {
+        RideTrackingFragment fragment = new RideTrackingFragment();
+        Bundle args = new Bundle();
+        args.putLong("rideId", id);
+        fragment.setArguments(args);
+        openFragment(fragment, "Ride Tracker");
     }
 }

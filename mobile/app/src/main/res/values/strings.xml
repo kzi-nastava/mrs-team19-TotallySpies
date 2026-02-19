@@ -190,6 +190,14 @@
     <string name="ride_stops">Ride Stops</string>
     <string name="ride_grades">Ride Grades</string>
     <string name="reports">Reports</string>
+    <string name="type_a_message">Type a message...</string>
+    <string name="send">Send</string>
+    <string name="rate_driver">Rate Driver</string>
+    <string name="eta">ETA: --</string>
+    <string name="driver">Driver: --</string>
+    <string name="rate_vehicle">Rate Vehicle</string>
+    <string name="report">Report</string>
+    <string name="comment">Comment</string>
 
     <string-array name="vehicle_types">
         <item>Standard</item>

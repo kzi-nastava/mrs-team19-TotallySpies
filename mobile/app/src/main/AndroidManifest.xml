@@ -4,6 +4,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:name=".App"
@@ -58,10 +59,6 @@
         <activity
             android:name=".presentation.view.EditProfileActivity"
             android:exported="false" />
-        <activity
-            android:name=".presentation.view.DriverHistoryActivity"
-            android:exported="false"
-            android:theme="@style/Theme.Mobile" />
         <activity
             android:name=".presentation.view.RegisterActivity"
             android:exported="true"
