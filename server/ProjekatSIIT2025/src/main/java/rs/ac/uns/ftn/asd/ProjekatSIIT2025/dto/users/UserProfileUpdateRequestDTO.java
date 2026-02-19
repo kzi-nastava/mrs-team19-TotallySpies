@@ -1,9 +1,13 @@
 package rs.ac.uns.ftn.asd.ProjekatSIIT2025.dto.users;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 
 public class UserProfileUpdateRequestDTO {
+    @NotBlank(message = "Name cannot be empty")
     private String name;
+
+    @NotBlank(message = "Last name cannot be empty")
     private String lastName;
     @Pattern(
             regexp = "^(\\+381 \\d{2} \\d{3} \\d{3,4}|\\d{11})$",

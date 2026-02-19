@@ -75,9 +75,15 @@ export class PassengerRidesHistoryComponent implements OnInit{
       from: fromIso,
       to: toIso,
     }).subscribe({
-      next: (response) => {this.rides = [...response]; // new reference (because of rendering problem)
-                      this.cdr.detectChanges();   // force render now
-        },
+      next: (response) => {
+        this.rides = response.filter(r =>
+          r &&
+          r.rideStops &&
+          r.rideStops.length >= 2
+        );
+
+        this.cdr.detectChanges();
+      },
       error: (err) => console.error(err),
     });
   }

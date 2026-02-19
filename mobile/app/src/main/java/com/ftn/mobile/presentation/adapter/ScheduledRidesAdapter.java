@@ -28,6 +28,7 @@ public class ScheduledRidesAdapter extends RecyclerView.Adapter<ScheduledRidesAd
 
     public interface OnRideActionListener {
         void onFinishRide(Long rideId);
+        void onStartRide(Long rideId);
     }
 
     public ScheduledRidesAdapter(Context context, List<ScheduledRideDTO> rides, OnRideActionListener listener) {
@@ -72,6 +73,7 @@ public class ScheduledRidesAdapter extends RecyclerView.Adapter<ScheduledRidesAd
             holder.btnEnd.setVisibility(View.GONE);
         }
 
+        holder.btnStart.setOnClickListener(v -> listener.onStartRide(currentRide.getRideId()));
         holder.btnEnd.setOnClickListener(v -> listener.onFinishRide(currentRide.getRideId()));
 
         List<UserProfileResponseDTO> passengers = currentRide.getPassengers();

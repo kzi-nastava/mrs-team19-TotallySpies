@@ -32,15 +32,18 @@ constructor(
     }
 
     const dto: InconsistencyReportRequestDTO = {
+      rideId: this.rideId,
       description: this.reportText
     };
 
     this.rideService.reportInconsistency(this.rideId, dto).subscribe({
-      next: () => {
-        alert('Report sent successfully.');
-        this.dialogRef.close(true);
-      },
-      error: (err:any) => alert('Error sending report: ' + err.error.message)
-    });
+    next: () => {
+      alert('Report sent successfully.');
+      this.dialogRef.close(true);
+    },
+    error: (err: any) => {
+      alert('Error sending report: ' + (err.error?.message || 'Server error'));
+    }
+  });
   }
 }

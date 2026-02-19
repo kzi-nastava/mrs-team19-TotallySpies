@@ -59,18 +59,22 @@ export class ChangeOldPasswordComponent {
           });;
         },
         error: (err) => {
-          console.error(err);
-          //alert('Failed to change password. Check your current password.');
-          this.snackBar.open(
-            'Failed to change password. Check your current password.',
-            'OK',
-            {
-              duration: 3500,
-              panelClass: ['error-snackbar'],
-              horizontalPosition: 'center',
-              verticalPosition: 'top'
-            }
-          );
+          let msg = 'Failed to change password.';
+
+          if (err.status === 400 && err.error.errors) {
+            msg = Object.values(err.error.errors).join(', ');
+          }
+          
+          else if (err.error && err.error.message) {
+            msg = err.error.message;
+          }
+
+          this.snackBar.open(msg, 'OK', {
+            duration: 4000,
+            panelClass: ['error-snackbar'],
+            horizontalPosition: 'center',
+            verticalPosition: 'top'
+          });
         }
       });
     } else {
