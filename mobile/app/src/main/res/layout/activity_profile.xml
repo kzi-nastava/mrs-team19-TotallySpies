@@ -453,20 +453,6 @@
                 </LinearLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_logout"
-                style="@style/Widget.MaterialComponents.Button.TextButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:text="LogOut"
-                android:textAllCaps="false"
-                android:textColor="#FF0000"
-                android:textSize="17sp"
-                app:icon="@drawable/logout_icon"
-                app:iconGravity="textStart"
-                app:iconTint="#FF0000" />
-
         </LinearLayout>
     </ScrollView>
 

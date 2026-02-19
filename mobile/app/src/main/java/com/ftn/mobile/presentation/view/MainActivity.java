@@ -34,6 +34,7 @@ import com.ftn.mobile.presentation.fragments.DriverScheduledRidesFragment;
 import com.ftn.mobile.presentation.fragments.HomeFragment;
 import com.ftn.mobile.presentation.fragments.NotificationFragment;
 import com.ftn.mobile.presentation.fragments.PassengerRideHistoryFragment;
+import com.ftn.mobile.presentation.fragments.PassengerUpcomingRidesFragment;
 import com.ftn.mobile.presentation.fragments.ReportFragment;
 import com.ftn.mobile.presentation.fragments.RideFormUnregisteredFragment;
 import com.ftn.mobile.presentation.fragments.RideOrderingFragment;
@@ -161,7 +162,15 @@ public class MainActivity extends AppCompatActivity {
             if (chatItem != null){
                 chatItem.setVisible(isLoggedIn);
             }
-
+            MenuItem notificationItem = menu.findItem(R.id.nav_notifications);
+            if (notificationItem != null){
+                notificationItem.setVisible(isLoggedIn);
+            }
+            MenuItem upcomingRides = menu.findItem(R.id.nav_upcoming_rides);
+            if (upcomingRides != null) {
+                boolean isPassenger = "ROLE_PASSENGER".equals(role);
+                upcomingRides.setVisible(isPassenger);
+            }
             if(!isLoggedIn){
                 showRideFormUnregistered();
             }
@@ -278,6 +287,9 @@ public class MainActivity extends AppCompatActivity {
                 openFragment(new RideOrderingFragment(), "Ride ordering");
             } else if (id == R.id.nav_register_driver){
                 openFragment(new DriverRegistrationFragment(), "Driver registration");
+            }
+            else if (id == R.id.nav_upcoming_rides){
+                openFragment(new PassengerUpcomingRidesFragment(), "Upcoming Rides");
             }
             else if (id == R.id.nav_support_chat) {
                 String role = UserRoleManger.getCurrentRole();
