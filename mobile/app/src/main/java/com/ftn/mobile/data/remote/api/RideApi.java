@@ -7,6 +7,7 @@ import com.ftn.mobile.data.remote.dto.PassengerUpcomingRideDTO;
 import com.ftn.mobile.data.remote.dto.InconsistencyReportRequestDTO;
 import com.ftn.mobile.data.remote.dto.RideTrackingDTO;
 import com.ftn.mobile.data.remote.dto.ScheduledRideDTO;
+import com.ftn.mobile.data.remote.dto.rides.CancelRideDTO;
 import com.ftn.mobile.data.remote.dto.rides.PassengerRideDetailsResponseDTO;
 
 import java.util.List;
@@ -34,7 +35,8 @@ public interface RideApi {
 
     @PUT("api/v1/rides/{id}/start")
     Call<ResponseBody> startRide(@Path("id") Long id);
-
+    @PUT("api/v1/rides/cancel-ride")
+    Call<String> cancelRide(@Body CancelRideDTO request);
     @GET("api/v1/rides/{id}/details")
     Call<PassengerRideDetailsResponseDTO> getRideDetails(@Path("id") Long id);
     @POST("api/v1/rides/{id}/inconsistency-report")
