@@ -1,4 +1,4 @@
-package com.ftn.mobile.data.remote.dto;
+package com.ftn.mobile.data.remote.dto.auth;
 
 import java.util.Date;
 

@@ -1,6 +1,5 @@
 package com.ftn.mobile.presentation.view;
 
-import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Patterns;
@@ -15,7 +14,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.ftn.mobile.R;
 import com.ftn.mobile.data.remote.ApiProvider;
-import com.ftn.mobile.data.remote.dto.VerifyEmailDTO;
+import com.ftn.mobile.data.remote.dto.auth.VerifyEmailDTO;
 import com.ftn.mobile.utils.DialogBox;
 
 import okhttp3.ResponseBody;
