@@ -180,6 +180,8 @@
     <string name="price_luxury">Luxury</string>
     <string name="price_van">Van</string>
     <string name="choose">CHOOSE</string>
+    <string name="type_a_message">Type a message...</string>
+    <string name="send">Send</string>
     <string name="rate_driver">Rate Driver</string>
     <string name="eta">ETA: --</string>
     <string name="driver">Driver: --</string>

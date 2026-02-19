@@ -63,5 +63,18 @@ public class UserRoleManger {
             return true; // Ako ne može da parsira, smatramo da je istekao
         }
     }
+    public static Long getUserIdFromToken(String token) {
+        try {
+            String[] chunks = token.split("\\.");
+            if (chunks.length >= 2) {
+                String payload = new String(android.util.Base64.decode(chunks[1], android.util.Base64.URL_SAFE));
+                JSONObject json = new JSONObject(payload);
+                return json.getLong("id");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
 }
