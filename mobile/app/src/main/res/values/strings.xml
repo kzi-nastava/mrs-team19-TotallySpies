@@ -186,6 +186,12 @@
     <string name="rate_vehicle">Rate Vehicle</string>
     <string name="report">Report</string>
     <string name="comment">Comment</string>
+    <string name="active">ACTIVE</string>
+    <string name="passengers">Passengers: -</string>
+    <string name="from">From: -</string>
+    <string name="to">To: -</string>
+    <string name="price_0_rsd">Price: 0 RSD</string>
+    <string name="start">Start: -</string>
 
     <string-array name="vehicle_types">
         <item>Standard</item>

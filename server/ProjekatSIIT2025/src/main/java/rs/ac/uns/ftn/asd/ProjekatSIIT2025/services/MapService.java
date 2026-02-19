@@ -37,9 +37,11 @@ public class MapService {
             }
             markers.add(new VehicleDisplayResponseDTO(
                 driver.getVehicle().getId(),
+                driver.getId(),
                 driver.getVehicle().getCurrentLat(),
                 driver.getVehicle().getCurrentLng(),
-                isBusy
+                isBusy,
+                driver.getName()
             ));
         }
         return markers;

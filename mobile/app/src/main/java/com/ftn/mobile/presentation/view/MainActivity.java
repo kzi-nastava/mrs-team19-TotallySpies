@@ -20,6 +20,7 @@ import com.ftn.mobile.data.local.TokenStorage;
 import com.ftn.mobile.data.local.UserRoleManger;
 import com.ftn.mobile.data.remote.ApiProvider;
 import com.ftn.mobile.data.remote.dto.RideTrackingDTO;
+import com.ftn.mobile.presentation.fragments.AdminTrackingFragment;
 import com.ftn.mobile.presentation.fragments.DriverHistoryFragment;
 import com.ftn.mobile.presentation.fragments.DriverScheduledRidesFragment;
 import com.ftn.mobile.presentation.fragments.HomeFragment;
@@ -113,6 +114,13 @@ public class MainActivity extends AppCompatActivity {
             if (trackingItem != null) {
                 boolean isPassenger = "ROLE_PASSENGER".equals(role);
                 trackingItem.setVisible(isPassenger);
+            }
+
+            MenuItem adminTrackerItem = menu.findItem(R.id.nav_admin_tracker);
+            if (adminTrackerItem != null) {
+                boolean isAdmin = "ROLE_ADMIN".equals(role);
+                adminTrackerItem.setVisible(isAdmin);
+
             }
 
             MenuItem reportItem = menu.findItem(R.id.nav_report);
@@ -218,6 +226,9 @@ public class MainActivity extends AppCompatActivity {
             }
             else if (id == R.id.nav_scheduled) {
                 openFragment(new DriverScheduledRidesFragment(), "My Rides");
+            }
+            else if (id == R.id.nav_admin_tracker) {
+                openFragment(new AdminTrackingFragment(), "Current Rides");
             }
             else if (id == R.id.nav_report) {
                 openFragment(new ReportFragment(), "Reports");
