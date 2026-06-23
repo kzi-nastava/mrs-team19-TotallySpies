@@ -28,7 +28,7 @@ public class RideRepositoryCreateRideTest {
     private TestEntityManager entityManager;
 
     @Test
-    @DisplayName("2.4.1 - putnik ima aktivnu voznju -> vraca true")
+    @DisplayName("2.4.1 - passenger has an active ride -> returns true")
     public void existsByPassengersContainingAndStatus_passengerHasActiveRide_returnsTrue() {
         Passenger p1 = entityManager.find(Passenger.class, 1L);
 
@@ -38,7 +38,7 @@ public class RideRepositoryCreateRideTest {
     }
 
     @Test
-    @DisplayName("2.4.1 - putnik nema aktivnu voznju -> vraca false")
+    @DisplayName("2.4.1 - passenger has no active ride -> returns false")
     public void existsByPassengersContainingAndStatus_passengerHasNoActiveRide_returnsFalse() {
         // p2 ima samo PENDING i SCHEDULED, ne ACTIVE
         Passenger p2 = entityManager.find(Passenger.class, 2L);
@@ -49,7 +49,7 @@ public class RideRepositoryCreateRideTest {
     }
 
     @Test
-    @DisplayName("2.4.1 - vozac bez ACTIVE/SCHEDULED voznji -> prazna lista")
+    @DisplayName("2.4.1 - driver with no ACTIVE/SCHEDULED rides -> empty list")
     public void findByDriverIdAndStatusIn_noMatchingRides_returnsEmptyList() {
         Long driverId = 999L; // vozac koji ne postoji
 
@@ -60,7 +60,7 @@ public class RideRepositoryCreateRideTest {
     }
 
     @Test
-    @DisplayName("2.4.1 - vozac ima ACTIVE i SCHEDULED voznje -> vraca sve tri")
+    @DisplayName("2.4.1 - driver has ACTIVE and SCHEDULED rides -> returns all three")
     public void findByDriverAndStatusIn_driverHasActiveAndScheduled_returnsAll() {
         Driver driver = entityManager.find(Driver.class, 100L);
 
@@ -73,7 +73,7 @@ public class RideRepositoryCreateRideTest {
     }
 
     @Test
-    @DisplayName("2.4.1 - trazimo samo COMPLETED voznje vozaca -> vraca jednu")
+    @DisplayName("2.4.1 - querying only COMPLETED rides for a driver -> returns one")
     public void findByDriverAndStatusIn_completedOnly_returnsOne() {
         Driver driver = entityManager.find(Driver.class, 100L);
 
@@ -85,7 +85,7 @@ public class RideRepositoryCreateRideTest {
     }
 
     @Test
-    @DisplayName("2.4.1 - trazimo status koji vozac nema -> prazna lista")
+    @DisplayName("2.4.1 - querying status that the driver does not have -> empty list")
     public void findByDriverAndStatusIn_noMatchingStatus_returnsEmpty() {
         Driver driver = entityManager.find(Driver.class, 10L);
 

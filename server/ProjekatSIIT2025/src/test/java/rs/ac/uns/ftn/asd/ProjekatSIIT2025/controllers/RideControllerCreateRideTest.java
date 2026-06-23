@@ -50,7 +50,7 @@ public class RideControllerCreateRideTest {
 
 
     @Test
-    @DisplayName("2.4.1 autentifikovan putnik kreira voznju sa validnim podacima -> 200 OK i body sa rideId")
+    @DisplayName("2.4.1 authenticated passenger creates a ride with valid data -> 200 OK and response body with rideId")
     @WithMockUser(username = "passenger@test.com", roles = {"PASSENGER"})
     void createRide_validRequest_returns200() throws Exception {
         CreateRideRequestDTO request = buildValidCreateRideRequest();
@@ -79,7 +79,7 @@ public class RideControllerCreateRideTest {
     }
 
     @Test
-    @DisplayName("2.4.1 zahtijev bez lokacija (locations je null)-> 400")
+    @DisplayName("2.4.1 request missing locations (locations is null)-> 400")
     @WithMockUser(username = "passenger@test.com", roles = {"PASSENGER"})
     void createRide_missingLocations_returns400() throws Exception {
         CreateRideRequestDTO request = buildValidCreateRideRequest();
@@ -93,7 +93,7 @@ public class RideControllerCreateRideTest {
     }
 
     @Test
-    @DisplayName("2.4.1 samo jedan lokacija umjesto minimum dvije -> 400")
+    @DisplayName("2.4.1 only one location instead of minimum two -> 400")
     @WithMockUser(username = "passenger@test.com", roles = {"PASSENGER"})
     void createRide_onlyOneLocation_returns400() throws Exception {
         CreateRideRequestDTO request = buildValidCreateRideRequest();
@@ -107,7 +107,7 @@ public class RideControllerCreateRideTest {
     }
 
     @Test
-    @DisplayName("2.4.1 vehicleType je null -> 400")
+    @DisplayName("2.4.1 vehicleType is null -> 400")
     @WithMockUser(username = "passenger@test.com", roles = {"PASSENGER"})
     void createRide_missingVehicleType_returns400() throws Exception {
         CreateRideRequestDTO request = buildValidCreateRideRequest();
@@ -121,7 +121,7 @@ public class RideControllerCreateRideTest {
     }
 
     @Test
-    @DisplayName("2.4.1 distanceKm je null -> 400")
+    @DisplayName("2.4.1 distanceKm is null -> 400")
     @WithMockUser(username = "passenger@test.com", roles = {"PASSENGER"})
     void createRide_missingDistance_returns400() throws Exception {
         CreateRideRequestDTO request = buildValidCreateRideRequest();
@@ -135,7 +135,7 @@ public class RideControllerCreateRideTest {
     }
 
     @Test
-    @DisplayName("2.4.1 estimatedTime je null -> 400")
+    @DisplayName("2.4.1 estimatedTime is null -> 400")
     @WithMockUser(username = "passenger@test.com", roles = {"PASSENGER"})
     void createRide_missingEstimatedTime_returns400() throws Exception {
         CreateRideRequestDTO request = buildValidCreateRideRequest();
@@ -149,7 +149,7 @@ public class RideControllerCreateRideTest {
     }
 
     @Test
-    @DisplayName("2.4.1 estimatedTime je nula — @Positive -> 400")
+    @DisplayName("2.4.1 estimatedTime is zero — @Positive -> 400")
     @WithMockUser(username = "passenger@test.com", roles = {"PASSENGER"})
     void createRide_zeroEstimatedTime_returns400() throws Exception {
         CreateRideRequestDTO request = buildValidCreateRideRequest();
@@ -163,7 +163,7 @@ public class RideControllerCreateRideTest {
     }
 
     @Test
-    @DisplayName("2.4.1 zakazana voznja u buducnosti -> vraća PENDING status i poruku o zakazivanju")
+    @DisplayName("2.4.1 ride scheduled in the future -> returns PENDING status and scheduling message")
     @WithMockUser(username = "passenger@test.com", roles = {"PASSENGER"})
     void createRide_scheduledRide_returnsPendingStatus() throws Exception {
         CreateRideRequestDTO request = buildValidCreateRideRequest();
@@ -186,7 +186,7 @@ public class RideControllerCreateRideTest {
     }
 
     @Test
-    @DisplayName("2.4.1 izuzetak: putnik već ima aktivnu voznju.")
+    @DisplayName("2.4.1 exception: passenger already has an active ride.")
     @WithMockUser(username = "passenger@test.com", roles = {"PASSENGER"})
     void createRide_passengerHasActiveRide_returns400() throws Exception {
         CreateRideRequestDTO request = buildValidCreateRideRequest();
@@ -204,7 +204,7 @@ public class RideControllerCreateRideTest {
     }
 
     @Test
-    @DisplayName("2.4.1 izuzetak: nema dostupnih vozaca.")
+    @DisplayName("2.4.1 exception: no drivers available.")
     @WithMockUser(username = "passenger@test.com", roles = {"PASSENGER"})
     void createRide_noDriversAvailable_returns400() throws Exception {
         CreateRideRequestDTO request = buildValidCreateRideRequest();
@@ -222,7 +222,7 @@ public class RideControllerCreateRideTest {
     }
 
     @Test
-    @DisplayName("2.4.1 izuzetak: neautentifikovani korisnik pokušava da kreira vožnju -> 401")
+    @DisplayName("2.4.1 exception: unauthenticated user attempts to create a ride -> 403")
     void createRide_unauthenticated_returns401or403() throws Exception {
         CreateRideRequestDTO request = buildValidCreateRideRequest();
 

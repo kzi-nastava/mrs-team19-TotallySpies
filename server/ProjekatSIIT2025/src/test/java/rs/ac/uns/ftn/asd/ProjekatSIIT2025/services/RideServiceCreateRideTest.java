@@ -67,7 +67,7 @@ public class RideServiceCreateRideTest {
 
     @BeforeEach
     void setUp() {
-        // kreator voznje
+        // ride creator
         creator = new Passenger();
         creator.setId(1L);
         creator.setEmail("passenger@test.com");
@@ -75,7 +75,7 @@ public class RideServiceCreateRideTest {
         creator.setLastName("Anić");
         creator.setBlocked(false);
 
-        // kreiranje vozila za vozace
+        // creating vehicles for drivers
         vehicle = new Vehicle();
         vehicle.setCurrentLat(45.25);
         vehicle.setCurrentLng(19.83);
@@ -84,7 +84,7 @@ public class RideServiceCreateRideTest {
         vehicle.setPetTransport(false);
         vehicle.setBabyTransport(false);
 
-        // kreiranje vozaca
+        // creating drivers
         driver = new Driver();
         driver.setId(10L);
         driver.setEmail("driver@test.com");
@@ -93,7 +93,7 @@ public class RideServiceCreateRideTest {
         driver.setActive(true);
         driver.setVehicle(vehicle);
 
-        // validan zahtjev za kreiranje voznje
+        // valid request for creating a ride
         validRequest = new CreateRideRequestDTO();
         validRequest.setLocations(List.of(
                 new RideStopDTO(45.25, 19.83, "Polaziste"),
