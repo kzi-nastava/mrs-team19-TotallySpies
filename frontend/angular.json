@@ -76,8 +76,9 @@
               "src/app/shared/components/review-dialog/review-dialog.component.spec.ts",
               "src/app/features/passenger-rides-history/passenger-rides-history.component.spec.ts",
               "src/app/core/auth/components/register/register.component.spec.ts",
-              "src/app/core/auth/services/auth.service.spec.ts"
-
+              "src/app/core/auth/services/auth.service.spec.ts",
+              "src/app/features/driver-registration/driver-registration.component.spec.ts",
+              "src/app/shared/services/admin.service.spec.ts"
             ]
           }
         }
